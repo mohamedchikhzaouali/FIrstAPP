@@ -1,0 +1,290 @@
+::ng-deep body.take-quiz-active-body {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+background-image: url('/assets/take-quiz-background.jpg');
+background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
+background-attachment: fixed;
+margin: 0;
+}
+
+.quiz-container {
+max-width: 600px;
+width: 100%;
+background: #2d2d6edb;
+color: white;
+padding: 20px;
+border-radius: 10px;
+text-align: center;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+border: 0.75px solid #00ccff;
+}
+
+.quiz-title {
+font-size: 24px;
+font-weight: bold;
+}
+
+.quiz-details p {
+font-size: 16px;
+}
+
+.start-button {
+background-color: #a41f25;
+color: white;
+padding: 10px 20px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+
+.start-button:hover {
+  background-color: #72161b;
+}
+
+.question-header {
+font-size: 20px;
+margin-bottom: 10px;
+color: #00bdff;
+}
+
+.question-text {
+font-size: 18px;
+margin-bottom: 20px;
+}
+
+.answer-options {
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 15px;
+background: #3a3a7a;
+border-radius: 5px;
+cursor: pointer;
+transition: background 0.3s ease;
+margin-bottom: 10px;
+user-select: none;
+}
+
+.answer-options:hover, .answer-options.selected {
+background: #ff4757;
+}
+
+.answer-label {
+font-size: 16px;
+width: 100%;
+text-align: center;
+}
+
+.navigation-buttons {
+display: flex;
+justify-content: space-between;
+margin-top: 20px;
+}
+
+.prev-button {
+margin-right: auto;
+}
+
+.next-button {
+margin-left: auto;
+}
+
+.nav-button, .submit-button {
+background-color: #3498db;
+color: white;
+padding: 10px 20px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+
+.score-display {
+margin-bottom: 20px;
+}
+
+.quiz-details {
+margin-top: 20px;
+}
+
+.score-display {
+margin-bottom: 20px;
+}
+
+.circle-container {
+display: flex;
+justify-content: center;
+align-items: center;
+margin-bottom: 20px;
+}
+
+.score-circle {
+transform: rotate(0deg); /* Pour commencer à partir du haut */
+}
+
+.question-image {
+  max-width: 100%; /* L'image ne dépassera pas la largeur de son conteneur */
+  max-height: 200px; /* Vous pouvez ajuster la hauteur maximale ici */
+  width: auto; /* Laisser l'image garder ses proportions */
+  height: auto;
+  display: block;
+  margin: 15px auto;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  object-fit: cover; /* Si vous voulez que l'image couvre l'espace sans déformation */
+}
+
+.drag-and-drop-container {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.target-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.target-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.target-text {
+    color: black;
+    background-color: #e8e8e8;
+    padding: 8px 12px;
+    border-radius: 3px;
+    text-align: center;
+}
+
+.drop-area {
+    color: rgb(129, 0, 0);
+    background-color: #f0f0f0;
+    padding: 8px 12px;
+    border-radius: 3px;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.source-items {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.drag-item {
+    transition: transform 0.3s ease; /* Ajout de la transition */
+    background-color: #f0f0f0;
+    padding: 8px 12px;
+    border-radius: 3px;
+    cursor: move;
+    user-select: none;
+    color: black;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.modern-button {
+    background-color: #3498db; /* Couleur de fond moderne */
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.modern-button:hover {
+    background-color: #2980b9; /* Couleur plus foncée au survol */
+    transform: translateY(-2px); /* Légère élévation au survol */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
+}
+
+.modern-button:active {
+    transform: translateY(1px); /* Légère descente à l'activation */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.modern-button i {
+    font-size: 18px; /* Ajuster la taille de l'icône */
+}
+
+.timer {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ff4757;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -21px;
+}
+
+.blink {
+    animation: blinker 1s linear infinite;
+    color: red;
+    margin-left: 5px;
+}
+
+.clock-placeholder {
+    width: 21px; /* Ajuster cette valeur selon la largeur de l'icône + la marge */
+    display: inline-block;
+}
+
+.clock-container {
+    display: inline-flex; /* Assurer que les éléments internes sont alignés */
+    align-items: center;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
+
+.h2, h2 {
+  color: #0097ff;
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+  margin-top: -20px;
+}
+
+.btn-modern-back {
+          background: linear-gradient(135deg, #64B5F6, #1E88E5);
+          border: none;
+          padding: 8px 15px;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 0.9em;
+          color: white;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          margin-top: 4px;
+      }
+  
+      .btn-modern-back:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+  
+      .btn-modern-back i {
+          margin-right: 5px;
+          color: white;
+      }

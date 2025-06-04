@@ -1,0 +1,174 @@
+<body>
+<app-front-header-teacher *ngIf="(userRole$ | async) === 'TEACHER'"></app-front-header-teacher>
+<app-front-header-student *ngIf="(userRole$ | async) === 'STUDENT'"></app-front-header-student>
+
+<div class="page-content">
+
+<div class="main-content-wrapper">
+  <div class="main-content">
+
+    <div class="course-controls-panel">
+      <div class="controls-row main-controls-row">
+        <div class="filter-buttons-group">
+          <button class="btn btn-filter" [class.active]="filter === 'all'" (click)="setFilter('all')">
+            <i class="fas fa-th-list"></i> All Courses
+          </button>
+          <button class="btn btn-filter" [class.active]="filter === 'favorites'" (click)="setFilter('favorites')">
+            <i class="fas fa-heart"></i> Favorites
+          </button>
+        </div>
+
+        <div class="search-bar-container">
+          <div class="input-group search-input-group">
+            <span class="search-icon-display" title="Search">
+                <i class="fas fa-search"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control search-input-field"
+              placeholder="Search for a course..."
+              [(ngModel)]="searchQuery"
+              (input)="onSearchInput()"
+              (focus)="onSearchFocus()"
+              (blur)="onSearchBlur()"
+              (keydown.escape)="hideSuggestionsList()"
+              aria-label="Search for a course"
+            />
+            <ul class="suggestions-list-dropdown" *ngIf="showSuggestions && suggestions.length > 0"
+                (mouseenter)="onMouseEnterSuggestions()" (mouseleave)="onMouseLeaveSuggestions()">
+              <li *ngFor="let suggestion of suggestions"
+                  (click)="selectSuggestion(suggestion)"
+                  (mouseenter)="highlightSuggestion(suggestion)"
+                  [class.highlighted]="highlightedSuggestion === suggestion">
+                {{ suggestion.title }}
+              </li>
+            </ul>
+            <button class="btn btn-icon voice-search-button" (click)="openVoiceModal()" type="button" title="Voice search">
+              <i class="fas fa-microphone"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls-row secondary-controls-row">
+        <div class="form-group-filter">
+          <label for="priceRange" class="form-label-filter"><i class="fas fa-euro-sign"></i> Price:</label>
+          <select id="priceRange" class="form-select styled-dropdown"
+                  [(ngModel)]="selectedPriceRange"
+                  (ngModelChange)="handlePriceChange()">
+            <option value="all">All Prices</option>
+            <option value="free">Free</option>
+            <option value="under50">&lt; 50 €</option>
+            <option value="50to100">50-100 €</option>
+            <option value="above100">&gt; 100 €</option>
+          </select>
+        </div>
+
+        <div class="form-group-filter">
+          <label for="sortOption" class="form-label-filter"><i class="fas fa-sort-amount-down"></i> Sort by:</label>
+          <select id="sortOption" class="form-select styled-dropdown"
+                  [(ngModel)]="sortOption"
+                  (change)="onSortOptionChange(sortOption)">
+            <option value="default">Relevance</option>
+            <option value="priceAsc">Price (Ascending)</option>
+            <option value="priceDesc">Price (Descending)</option>
+            <option value="popularity">Popularity</option>
+            <option value="rating">Rating</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="filteredCourses && filteredCourses.length > 0; else noCoursesFoundTemplate"
+         class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4 course-grid">
+      <div *ngFor="let course of paginatedCourses()" class="col col-course-item d-flex align-items-stretch" [id]="'course-' + course.idCourse">
+        <div class="card h-100 course-card-item">
+          <div class="course-card-image-wrapper">
+            <img [src]="course.picture ? 'http://localhost:8087/courses/images/' + course.picture : 'assets/img/default-course-placeholder.png'"
+                 alt="Course image {{ course.title }}"
+                 class="course-card-image"
+                 onerror="this.onerror=null; this.src='assets/img/default-course-placeholder.png';" />
+            <span class="course-status-indicator" [ngClass]="{'status-available': course.status, 'status-unavailable': !course.status}">
+              {{ course.status ? 'Available' : 'Unavailable' }}
+            </span>
+             <button (click)="toggleFavorite(course); $event.stopPropagation();" class="btn btn-icon btn-favorite-overlay" [class.is-favorite]="course.liked" [title]="course.liked ? 'Remove from favorites' : 'Add to favorites'">
+                <i class="fa fa-heart"></i>
+            </button>
+          </div>
+          <div class="card-body course-card-body">
+            <div class="course-card-header">
+              <span class="course-category-label">{{ course.category }}</span>
+              <span class="course-rating-display" *ngIf="averageRating[course.idCourse] !== undefined && averageRating[course.idCourse] >= 0" title="Average rating {{ averageRating[course.idCourse] | number:'1.1-1' }}/5">
+                {{ averageRating[course.idCourse] | number:'1.1-1' }} <i class="fa fa-star"></i>
+              </span>
+               <span class="course-rating-display text-muted" *ngIf="averageRating[course.idCourse] === undefined || averageRating[course.idCourse] < 0" title="Not yet rated">
+                N/A <i class="far fa-star"></i>
+              </span>
+            </div>
+            <h5 class="course-card-title" [title]="course.title">{{ course.title }}</h5>
+            <p class="course-card-description" [title]="course.description">{{ (course.description || 'No description available.') | slice:0:80 }}{{ course.description && course.description.length > 80 ? '...' : '' }}</p>
+            
+            <div class="course-card-meta">
+                <span class="meta-item course-level"><i class="fas fa-layer-group"></i> {{ course.level }}</span>
+                <span class="meta-item course-price">{{ course.price === 0 ? 'Free' : (course.price | currency:'EUR':'symbol':'1.2-2':'fr') }}</span>
+            </div>
+
+            <div class="course-card-actions">
+              <a [routerLink]="['/details', course.idCourse]" class="btn btn-action btn-view-details">
+                <i class="fas fa-eye"></i> View Details
+              </a>
+              <button class="btn btn-icon btn-action-tts" (click)="textToSpeech(course); $event.stopPropagation();" [title]="isSpeaking ? 'Stop reading' : 'Read description'">
+                <i class="fas" [ngClass]="isSpeaking ? 'fa-stop-circle' : 'fa-volume-up'"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noCoursesFoundTemplate>
+      <div class="no-courses-message text-center">
+        <i class="fas fa-info-circle icon-no-courses"></i>
+        <p>No courses match your search criteria at the moment.</p>
+        <p>Please try other filters or broaden your search.</p>
+      </div>
+    </ng-template>
+
+    <nav *ngIf="filteredCourses && filteredCourses.length > itemsPerPage" class="pagination-area mt-5" aria-label="Course pagination">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link pagination-nav-button" (click)="prevPage()" aria-label="Previous">&laquo;</a>
+        </li>
+        <li *ngFor="let page of getPages()" class="page-item pagination-number-item" [class.active]="page === currentPage">
+          <a class="page-link" (click)="goToPage(page)">{{ page }}</a>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage >= totalPages()">
+          <a class="page-link pagination-nav-button" (click)="nextPage()" aria-label="Next">&raquo;</a>
+        </li>
+      </ul>
+    </nav>
+
+  </div>
+</div>
+
+
+<div class="voice-modal-overlay" [class.active]="isVoiceModalOpen" (click)="closeVoiceModal()">
+  <div class="voice-modal-content" (click)="$event.stopPropagation()">
+    <h5><i class="fas fa-microphone-alt"></i> Speak now...</h5>
+    <div class="voice-visualizer-container">
+      <div class="voice-circle" id="voice-visualization-circle"></div>
+    </div>
+    <p class="transcript" *ngIf="currentTranscript">Detected: <em>{{ currentTranscript }}</em></p>
+    <p class="transcript-final" *ngIf="finalTranscript">Result: <strong>{{ finalTranscript }}</strong></p>
+    <p *ngIf="voiceError" class="text-danger voice-error-message">{{ voiceError }}</p>
+    <button class="btn btn-danger mt-3 btn-cancel-voice" (click)="closeVoiceModal()">
+        <i class="fas fa-times-circle"></i> Cancel
+    </button>
+  </div>
+</div>
+
+<br><br><br>
+  </div>
+
+  <app-front-footer></app-front-footer>
+</body>

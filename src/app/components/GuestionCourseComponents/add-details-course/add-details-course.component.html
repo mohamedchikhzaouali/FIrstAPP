@@ -1,0 +1,209 @@
+<body>
+    <app-front-header-teacher *ngIf="(userRole$ | async) === 'TEACHER'"></app-front-header-teacher>
+
+<div class="page-content">
+<br><br><br>
+        <div class="container course-details">
+            <div *ngIf="course">
+                <div class="course-banner">
+                    <img [src]="course.picture ? 'http://localhost:8087/courses/images/' + course.picture : 'assets/img/default-course-banner.jpg'" alt="Course banner {{ course.title }}">
+                    <div class="overlay">
+                        <h1>{{ course.title }}</h1>
+                        <p class="course-banner-description">{{ course.description | slice:0:150 }}{{ course.description && course.description.length > 150 ? '...' : '' }}</p>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <div class="course-info p-4 shadow-sm section-card">
+                            <h3>About this course</h3>
+                            <p><strong>Full Description:</strong> {{ course.description }}</p>
+                            <p><strong>Publication Date:</strong> {{ course.date | date: 'dd MMMM yyyy':'':'en' }}</p>
+                            <p><strong>Level:</strong> <span class="badge bg-info-custom">{{ course.level }}</span></p>
+                            <p><strong>Category:</strong> <span class="badge bg-secondary-custom">{{ course.category }}</span></p>
+                            <p><strong>Status:</strong>
+                                <span class="status-badge" [ngClass]="{'available': course.status, 'unavailable': !course.status}">
+                                    {{ course.status ? 'Available' : 'Unavailable' }}
+                                </span>
+                            </p>
+                        </div>
+
+                        <div class="attachments mt-4 p-4 shadow-sm section-card">
+                            <h3>Course Resources</h3>
+                            <div *ngIf="attachments && attachments.length > 0; else noAttachments">
+                                <ul class="list-group attachment-list">
+                                    <li *ngFor="let attachment of attachments"
+                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="attachment-info">
+                                            <h5 class="attachment-title">{{ attachment.chapterTitle }}</h5>
+                                            <span class="badge attachment-type-badge">{{ attachment.type }}</span>
+                                            <span class="badge visibility-badge ms-2" [ngClass]="{'visible': attachment.visible, 'hidden': !attachment.visible}" (click)="toggleVisibility(attachment)" title="{{attachment.visible ? 'Make hidden' : 'Make visible'}}">
+                                                <i class="fas" [ngClass]="attachment.visible ? 'fa-eye' : 'fa-eye-slash'"></i> {{ attachment.visible ? 'Visible' : 'Hidden' }}
+                                            </span>
+                                        </div>
+                                        <div class="attachment-actions">
+                                            <a [href]="'http://localhost:8087/attachments/attachment/' + attachment.idAttachment"
+                                                class="btn btn-action btn-download me-2" target="_blank" title="Download">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                            <button class="btn btn-action btn-edit me-2" (click)="openEditForm(attachment)" title="Edit">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </button>
+                                            <button class="btn btn-action btn-delete"
+                                                    (click)="deleteAttachment(attachment.idAttachment)" title="Delete">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <ng-template #noAttachments>
+                                <p class="text-muted text-center">No resources added for this course yet.</p>
+                            </ng-template>
+                        </div>
+
+                        <div *ngIf="isEditing && editingAttachment" class="edit-attachment-form mt-4 p-4 shadow-sm section-card">
+                            <h4>Edit Resource: "{{ editingAttachment.chapterTitle }}"</h4>
+                            <form (ngSubmit)="updateAttachment()">
+                                <div class="mb-3">
+                                    <label for="editChapterTitle" class="form-label">Chapter/Resource Title</label>
+                                    <input type="text" [(ngModel)]="editingAttachment.chapterTitle" class="form-control"
+                                            id="editChapterTitle" name="editChapterTitle" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editVisibility" class="form-label">Visibility</label>
+                                    <select [(ngModel)]="editingAttachment.visible" class="form-select" id="editVisibility"
+                                            name="editVisibility">
+                                        <option [value]="true">Visible</option>
+                                        <option [value]="false">Hidden</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editFile" class="form-label">Replace file (optional)</label>
+                                    <input type="file" class="form-control" id="editFile" (change)="onEditFileSelected($event)">
+                                    <small *ngIf="editingAttachment.source" class="form-text text-muted">Current file: {{ editingAttachment.source.split('/').pop()?.split('\\')?.pop()}}</small>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-secondary me-2" (click)="cancelEdit()">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="reviews-section-teacher mt-4 p-4 shadow-sm section-card">
+                            <h3>Student Reviews</h3>
+                            <div *ngIf="course && averageRating > 0" class="average-rating-teacher mb-3">
+                                <strong>Average Rating:</strong>
+                                <span class="star-rating-display">
+                                    <i *ngFor="let star of [1, 2, 3, 4, 5]; let i = index"
+                                        class="fa"
+                                        [ngClass]="i < averageRating ? 'fa-star' : (i < averageRating + 0.5 && averageRating % 1 !== 0 ? 'fa-star-half-o' : 'fa-star-o')"></i>
+                                </span>
+                                ({{ averageRating.toFixed(1) }} / 5) - <span class="review-count">{{ reviews.length }} reviews</span>
+                            </div>
+                            <div *ngIf="reviews && reviews.length > 0; else noReviewsTemplate">
+                                <div class="reviews-list-teacher">
+                                    <div *ngFor="let review of reviews" class="review-card-teacher">
+                                        <div class="review-author-info">
+                                            <img [src]="review.author?.picture || 'assets/default-user.png'"
+                                                    alt="Photo of {{review.author?.name || 'Student'}}"
+                                                    class="author-picture">
+                                            <span class="author-name">{{ review.author?.name || 'Student' }} {{ review.author?.surname || '' }}</span>
+                                        </div>
+                                        <div class="review-content-teacher">
+                                            <p class="review-rating-line">
+                                                <strong>Rating:</strong>
+                                                <span class="star-rating">
+                                                    <i *ngFor="let star of [1, 2, 3, 4, 5]; let i = index"
+                                                        class="fa"
+                                                        [ngClass]="i < review.rating ? 'fa-star' : 'fa-star-o'"></i>
+                                                </span>
+                                                ({{review.rating}}/5)
+                                            </p>
+                                            <p class="review-comment-text"><strong>Comment:</strong> {{ review.comment }}</p>
+                                            
+                                            <div *ngIf="review.sentiment" class="review-ai-details mt-1">
+                                                <small class="text-muted">
+                                                    AI Sentiment:
+                                                    <span class="badge"
+                                                            [ngClass]="{
+                                                                'bg-success-custom': review.sentiment === 'Positif' || review.sentiment === 'Positive', 
+                                                                'bg-danger-custom': review.sentiment === 'Négatif' || review.sentiment === 'Negative',
+                                                                'bg-secondary-custom': review.sentiment === 'Neutre' || review.sentiment === 'Neutral' || review.sentiment === 'Indéterminé' || review.sentiment === 'Undetermined',
+                                                                'bg-warning-custom text-dark': review.sentiment === 'Erreur' || review.sentiment === 'Error'
+                                                            }">
+                                                        {{ review.sentiment === 'Positif' ? 'Positive' : 
+                                                           review.sentiment === 'Négatif' ? 'Negative' : 
+                                                           review.sentiment === 'Neutre' ? 'Neutral' : 
+                                                           review.sentiment === 'Indéterminé' ? 'Undetermined' :
+                                                           review.sentiment === 'Erreur' ? 'Error' : review.sentiment }}
+                                                    </span>
+                                                </small>
+                                            </div>
+                                            <div *ngIf="review.reviewSummary" class="review-ai-details mt-1">
+                                                <small class="text-muted fst-italic">AI Summary: {{ review.reviewSummary }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <ng-template #noReviewsTemplate>
+                                <p class="text-muted text-center mt-3">No reviews have been left for this course yet.</p>
+                            </ng-template>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="course-sidebar p-4 shadow-sm section-card">
+                            <h4 class="sidebar-title">Key Information</h4>
+                            <hr>
+                            <div class="sidebar-item">
+                                <span class="sidebar-label">Price:</span>
+                                <span class="sidebar-value price-value">{{ course.price | currency:'EUR':'symbol':'1.2-2':'en' }}</span>
+                            </div>
+                            <div class="sidebar-item">
+                                <span class="sidebar-label">Average Rating:</span>
+                                <span class="sidebar-value star-rating">
+                                        <i *ngFor="let star of [1, 2, 3, 4, 5]; let i = index"
+                                            class="fa"
+                                            [ngClass]="i < averageRating ? 'fa-star' : (i < averageRating + 0.5 && averageRating % 1 !== 0 ? 'fa-star-half-o' : 'fa-star-o')"></i>
+                                    ({{ averageRating.toFixed(1) }}/5)
+                                </span>
+                            </div>
+                            <div class="sidebar-item">
+                                <span class="sidebar-label">Total Reviews:</span>
+                                <span class="sidebar-value">{{ reviews.length }}</span>
+                            </div>
+                        </div>
+
+                        <div class="add-attachment mt-4 p-4 shadow-sm section-card">
+                            <h4>Add New Resource</h4>
+                            <hr>
+                            <div class="mb-3">
+                                <label for="chapterTitle" class="form-label">Resource Title <span class="text-danger">*</span></label>
+                                <input type="text" [(ngModel)]="chapterTitle" class="form-control"
+                                        id="chapterTitle" name="chapterTitleInput" placeholder="E.g., Introduction, Chapter 1..." required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="attachmentFile" class="form-label">File <span class="text-danger">*</span></label>
+                                <input type="file" class="form-control" id="attachmentFile" name="attachmentFileInput" (change)="onFileSelected($event)" required>
+                            </div>
+                            <button class="btn btn-success w-100" (click)="addAttachment()" [disabled]="!selectedFile || !chapterTitle.trim()">
+                                <i class="fas fa-plus-circle"></i> Add Resource
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="!course" class="container text-center mt-5">
+                <p>Loading course details...</p>
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+        <br><br><br>
+    </div>
+    
+    <app-front-footer></app-front-footer>
+</body>

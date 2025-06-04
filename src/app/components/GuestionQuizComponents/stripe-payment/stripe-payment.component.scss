@@ -1,0 +1,68 @@
+::ng-deep body {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+background-image: url('/assets/payment-background.jpg');
+background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
+background-attachment: fixed;
+margin: 0;
+}
+
+.payment-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.payment-card {
+  background-color: #7c2b3be3;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 400px;
+  border: 2px solid #13bac4;
+  box-shadow: 0 22px 8px rgb(0 0 0 / 22%);
+}
+
+.price-container {
+  margin-bottom: 20px;
+}
+
+.price-label {
+  font-size: 22px;
+  color: #ffffff;
+  font-weight: bold; 
+  margin-right: 10px;
+}
+
+.price-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #009f84;
+}
+
+.description {
+  font-size: 16px;
+  color: #d7d7d7;
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+.payment-button {
+  background-color: #009f84;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.payment-button:hover {
+  background-color: #006857;
+}

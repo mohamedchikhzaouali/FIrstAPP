@@ -1,0 +1,92 @@
+<body>
+  <app-front-header-teacher *ngIf="(userRole$ | async) === 'TEACHER'"></app-front-header-teacher>
+  <app-front-header-student *ngIf="(userRole$ | async) === 'STUDENT'"></app-front-header-student>
+  <br><br><br>
+
+  <div class="page-content">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <div class="container">
+
+      <button type="button" class="btn btn-modern-back" (click)="goBack()"><i class="fas fa-arrow-left"></i>Back</button>
+
+      <br><br>
+      <h2 class="styled-titre">Generate Training Quiz with AI</h2>
+      <br>
+
+    <form [formGroup]="quizGroup">
+      <div>
+        <label for="titleQuiz" class="styled-label">Quiz Title:</label>
+        <input type="text" id="titleQuiz" formControlName="titleQuiz" class="styled-input">
+        <div *ngIf="quizGroup.get('titleQuiz')?.invalid && (quizGroup.get('titleQuiz')?.dirty || quizGroup.get('titleQuiz')?.touched)" class="alert alert-danger">
+          The title is required.
+        </div>
+      </div>
+
+      <div>
+        <label for="theme" class="styled-label">Theme:</label>
+        <select id="theme" formControlName="theme" class="styled-select">
+          <option *ngFor="let t of themes" [value]="t">{{ t | titlecase }}</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="multipleChoiceCount" class="styled-label">Number of Multiple Choice Questions:</label>
+        <input
+          type="number"
+          id="multipleChoiceCount"
+          formControlName="multipleChoiceCount"
+          min="0"
+          max="10"
+          class="styled-input"
+          (input)="limitInput($event, 'multipleChoiceCount', 10)"
+        >
+        <div *ngIf="quizGroup.get('multipleChoiceCount')?.errors?.['min']" class="alert alert-danger">
+          The minimum number of multiple choice questions is 0.
+        </div>
+        <div *ngIf="quizGroup.get('multipleChoiceCount')?.errors?.['max']" class="alert alert-danger">
+          The maximum number of multiple choice questions is 10.
+        </div>
+        <div *ngIf="quizGroup.get('multipleChoiceCount')?.errors?.['pattern']" class="alert alert-danger">
+          Please enter a valid number.
+        </div>
+      </div>
+
+      <div>
+        <label for="dragAndDropCount" class="styled-label">Number of Drag-and-Drop Questions:</label>
+        <input
+          type="number"
+          id="dragAndDropCount"
+          formControlName="dragAndDropCount"
+          min="0"
+          max="10"
+          class="styled-input"
+          (input)="limitInput($event, 'dragAndDropCount', 10)"
+        >
+        <div *ngIf="quizGroup.get('dragAndDropCount')?.errors?.['min']" class="alert alert-danger">
+          The minimum number of drag-and-drop questions is 0.
+        </div>
+        <div *ngIf="quizGroup.get('dragAndDropCount')?.errors?.['max']" class="alert alert-danger">
+          The maximum number of drag-and-drop questions is 10.
+        </div>
+        <div *ngIf="quizGroup.get('dragAndDropCount')?.errors?.['pattern']" class="alert alert-danger">
+          Please enter a valid number.
+        </div>
+      </div>
+
+      <div *ngIf="quizGroup.errors?.['atLeastOneRequired']" class="alert alert-danger">
+        At least one type of question must be 1 or more.
+      </div>
+
+      <div class="button-container">
+        <button type="submit" (click)="generateQuiz()" class="styled-button" [disabled]="quizGroup.invalid">Generate the Quiz</button>
+      </div>
+    </form>
+
+    <div *ngIf="generationMessage" class="success-message">{{ generationMessage }}</div>
+    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+  </div>
+</div>
+<br><br><br><br>
+
+<app-front-footer></app-front-footer>

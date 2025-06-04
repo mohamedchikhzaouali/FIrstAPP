@@ -1,0 +1,374 @@
+<body>
+<app-front-header-teacher *ngIf="(userRole$ | async) === 'TEACHER'"></app-front-header-teacher>
+<app-front-header-student *ngIf="(userRole$ | async) === 'STUDENT'"></app-front-header-student>
+
+<div class="page-content">
+<br><br><br>
+<div class="course-detail-container">
+    <div class="course-card-wrapper">
+        <div class="course-card" *ngIf="course">
+
+            <div class="course-image-container">
+                <img [src]="course.picture ? 'http://localhost:8087/courses/images/' + course.picture : 'assets/default-image.jpg'" class="course-image" alt="Course image {{ course.title }}">
+                <div class="image-title-overlay">
+                    <h2 class="overlay-course-title">{{ course.title }}</h2>
+                </div>
+            </div>
+
+            <div class="course-info">
+                <div class="course-description-container">
+                    <p class="course-description">
+                        <span class="detail-label">Description:</span>
+                        {{ course.description }}
+                    </p>
+                </div>
+
+                <div class="course-details-grid">
+                    <div class="course-details-item">
+                        <i class="lucide lucide-calendar detail-icon"></i>
+                        <span class="detail-label">Date:</span> {{ course.date | date: 'longDate' }}
+                    </div>
+                    <div class="course-details-item">
+                        <i class="lucide lucide-bar-chart detail-icon"></i>
+                        <span class="detail-label">Level:</span> {{ course.level }}
+                    </div>
+                    <div class="course-details-item">
+                        <i class="lucide lucide-badge-check detail-icon"></i>
+                        <span class="detail-label">Status:</span>
+                        <span class="status-text" [ngClass]="{'status-available': course.status, 'status-unavailable': !course.status}">
+                            {{ course.status ? 'Available' : 'Unavailable' }}
+                        </span>
+                    </div>
+                    <div class="course-details-item">
+                        <i class="lucide lucide-dollar-sign detail-icon"></i>
+                        <span class="detail-label">Price:</span> {{ course.price | currency:'EUR':'symbol':'1.2-2':'fr' }}
+                    </div>
+                    <div class="course-details-item">
+                        <i class="lucide lucide-folder detail-icon"></i>
+                        <span class="detail-label">Category:</span> {{ course.category }}
+                    </div>
+                    <div class="course-details-item">
+                        <i class="lucide lucide-star detail-icon text-warning"></i>
+                        <span class="detail-label">Your Progress:</span>
+                        <div class="progress-circle"
+                             [style.--progress-percent]="courseScore"
+                             role="progressbar"
+                             [attr.aria-valuenow]="courseScore | number:'1.0-0'"
+                             aria-valuemin="0"
+                             aria-valuemax="100"
+                             [title]="'Your course progress: ' + (courseScore | number:'1.0-0') + '%'">
+                            <div class="progress-value">{{ courseScore | number:'1.0-0' }}%</div>
+                        </div>
+                    </div>
+                    <div class="course-details-item">
+                        <i class="lucide lucide-clock detail-icon"></i>
+                        <span class="detail-label">Your Time Spent:</span>
+                        {{ totalTimeSpentOnCourse | formatDuration }}
+                    </div>
+             </div> <div class="quiz-cta-section" *ngIf="!isLoadingQuizzes">
+                  <ng-container *ngIf="userRole$ | async as role">
+                      <ng-container *ngIf="role === 'STUDENT'">
+                          <div *ngIf="courseScore >= 80 && certifiedQuiz && !certifiedQuizPassed" class="quiz-cta-item quiz-cta-available">
+                              <div class="quiz-cta-icon">
+                                  <i class="lucide lucide-award"></i>
+                              </div>
+                              <div class="quiz-cta-content">
+                                  <h4>Ready for Certification?</h4>
+                                  <p>Your progress of <strong>{{ courseScore | number:'1.0-0' }}%</strong> allows you to take the certification quiz!</p>
+                                  <button class="btn take-quiz-button-cta" (click)="navigateToSpecificCertifiedQuiz(certifiedQuiz?.idQuiz)">
+                                      <i class="lucide lucide-file-question"></i> Take the Quiz: {{ certifiedQuiz?.titleQuiz }}
+                                  </button>
+                              </div>
+                          </div>
+
+                          <div *ngIf="certifiedQuiz && certifiedQuizPassed" class="quiz-cta-item quiz-cta-passed">
+                               <div class="quiz-cta-icon">
+                                  <i class="lucide lucide-check-circle-2"></i>
+                              </div>
+                              <div class="quiz-cta-content">
+                                  <h4>Certification Quiz Passed!</h4>
+                                  <p>Congratulations! You have already passed the certification quiz "{{certifiedQuiz?.titleQuiz}}" for this course.</p>
+                              </div>
+                          </div>
+
+                          <div *ngIf="courseScore < 80 && certifiedQuiz && !certifiedQuizPassed" class="quiz-cta-item quiz-cta-pending">
+                              <div class="quiz-cta-icon">
+                                  <i class="lucide lucide-loader"></i>
+                              </div>
+                              <div class="quiz-cta-content">
+                                  <h4>Keep up the effort!</h4>
+                                  <p>Reach 80% progress (currently {{ courseScore | number:'1.0-0' }}%) to unlock the certification quiz "{{certifiedQuiz?.titleQuiz}}".</p>
+                              </div>
+                          </div>
+
+                          <div *ngIf="!certifiedQuiz && courseScore >= 80" class="quiz-cta-item quiz-cta-unavailable">
+                              <div class="quiz-cta-icon">
+                                  <i class="lucide lucide-alert-triangle"></i>
+                              </div>
+                              <div class="quiz-cta-content">
+                                  <h4>Certification Quiz</h4>
+                                  <p>Your score is excellent, but no certification quiz is configured for this course.</p>
+                              </div>
+                          </div>
+                           <div *ngIf="!certifiedQuiz && courseScore < 80" class="quiz-cta-item quiz-cta-unavailable">
+                              <div class="quiz-cta-icon">
+                                  <i class="lucide lucide-shield-off"></i>
+                              </div>
+                              <div class="quiz-cta-content">
+                                  <h4>Certification Quiz</h4>
+                                  <p>No certification quiz is currently available for this course.</p>
+                              </div>
+                          </div>
+                      </ng-container>
+                  </ng-container>
+              </div>
+
+              <div class="training-quizzes-section" *ngIf="!isLoadingQuizzes">
+                  <ng-container *ngIf="userRole$ | async as role">
+                      <ng-container *ngIf="role === 'STUDENT'">
+                          <div *ngIf="availableTrainingQuizzes.length > 0" class="training-quiz-cta">
+                              <button class="btn btn-info btn-block view-training-quizzes-btn" (click)="openTrainingQuizModal()">
+                                  <i class="lucide lucide-list-checks"></i> Available Training Quizzes
+                              </button>
+                              <p class="text-muted small mt-1">Click to see the list of quizzes to practice.</p>
+                          </div>
+
+                          <div *ngIf="availableTrainingQuizzes.length === 0 && !isLoadingQuizzes && !certifiedQuiz" class="quiz-cta-item quiz-cta-unavailable" style="margin-top: 1.5rem;">
+                             <div class="quiz-cta-icon"><i class="lucide lucide-info"></i></div>
+                             <div class="quiz-cta-content">
+                                 <h4>Training Quiz</h4>
+                                 <p>No training quizzes available for this course at the moment.</p>
+                             </div>
+                          </div>
+                      </ng-container>
+                  </ng-container>
+              </div>
+              <div class="modal-overlay" *ngIf="showTrainingQuizModal" (click)="closeTrainingQuizModal()">
+                  <div class="modal-content" (click)="$event.stopPropagation()">
+                      <div class="modal-header">
+                          <h3><i class="lucide lucide-graduation-cap"></i> Available Training Quizzes</h3>
+                          <button class="modal-close-button" (click)="closeTrainingQuizModal()" title="Close">&times;</button>
+                      </div>
+                      <div class="modal-body">
+                          <ul class="quiz-list-modal">
+                              <li *ngFor="let trainingQuiz of availableTrainingQuizzes"
+                                  (click)="navigateToSpecificQuiz(trainingQuiz.idQuiz)"
+                                  class="quiz-list-item-modal"
+                                  tabindex="0"
+                                  (keydown.enter)="navigateToSpecificQuiz(trainingQuiz.idQuiz)">
+                                  <i class="lucide lucide-edit-3 quiz-list-icon"></i>
+                                  <span>{{ trainingQuiz.titleQuiz }}</span>
+                                  <i class="lucide lucide-chevron-right quiz-list-arrow"></i>
+                              </li>
+                              <li *ngIf="availableTrainingQuizzes.length === 0" class="no-quiz-modal-message">
+                                  No training quizzes found.
+                              </li>
+                          </ul>
+                      </div>
+                      <!--<div class="modal-footer">
+                          <button class="btn btn-secondary" (click)="closeTrainingQuizModal()">Close</button>
+                      </div>-->
+                  </div>
+              </div>
+              <div class="loading-quiz-status" *ngIf="isLoadingQuizzes">
+                  <p class="text-muted"><i class="lucide lucide-loader-2 animate-spin"></i> Loading quiz information...</p>
+              </div>
+
+                <div class="attachments-section">
+                    <h3 class="section-title"><i class="lucide lucide-paperclip"></i> Attachments</h3>
+                    <div *ngIf="attachments && attachments.length > 0; else noAttachments">
+                        <table class="attachments-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Type</th>
+                                    <th>Your Time Spent</th>
+                                    <th>Download</th>
+                                    <th>Your Validation</th>
+                                    <th>View</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let attachment of attachments">
+                                    <td>{{ attachment.chapterTitle }}</td>
+                                    <td><span class="badge bg-info">{{ attachment.type }}</span></td>
+                                    <td>{{ attachment.timeSpentByCurrentUser | formatDuration }}</td>
+                                    <td>
+                                        <a [href]="attachmentService.getAttachmentFileUrl(attachment.idAttachment)" class="download-button" target="_blank" title="Download attachment">
+                                            <i class="lucide lucide-download"></i> Download
+                                        </a>
+                                    </td>
+                                    <td class="validation-cell">
+                                        <button
+                                            class="validation-toggle-button"
+                                            [ngClass]="{ 'validated': attachment.validatedByCurrentUser, 'not-validated': !attachment.validatedByCurrentUser }"
+                                            (click)="attachment.validatedByCurrentUser ? invalidateAttachment(attachment.idAttachment) : validateAttachment(attachment.idAttachment)"
+                                            [title]="attachment.validatedByCurrentUser ? 'Cancel validation for this attachment' : (isValidationDisabled(attachment) ? 'View the file for at least 2 minutes to validate' : 'Validate this attachment')"
+                                            [disabled]="isValidationDisabled(attachment) && !attachment.validatedByCurrentUser">
+                                            <i *ngIf="!attachment.validatedByCurrentUser" class="lucide lucide-circle"></i>
+                                            <i *ngIf="attachment.validatedByCurrentUser" class="lucide lucide-check-circle-2"></i>
+                                            </button>
+                                    </td>
+                                    <td>
+                                        <button *ngIf="viewedAttachmentId !== attachment.idAttachment" class="view-button" (click)="viewPDF(attachment)">
+                                            <i class="lucide lucide-eye"></i> View
+                                        </button>
+                                        <button *ngIf="viewedAttachmentId === attachment.idAttachment" class="view-button close-button" (click)="closePDF()">
+                                            <i class="lucide lucide-x-circle"></i> Close
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                            <div class="toast-container .corses-compleat-toast" *ngIf="showCompletionToast">       
+                                <div class="toast-message">
+                                Congratulations! You have completed the course.
+                            </div>
+                        </div>
+                        <div class="toast-container quiz-unlock-toast" *ngIf="showQuizUnlockToast">
+                            <div class="toast-message">
+                                <h4>Certification Quiz Unlocked!</h4>
+                                Congratulations! Your progress of <b>{{ courseScore | number:'1.0-0' }}%</b> now allows you to take the certification quiz: <br><b>{{ certifiedQuiz?.titleQuiz }}</b>
+                            </div>
+                        </div>
+                    </div>
+                    <ng-template #noAttachments>
+                        <p class="no-attachments-text">No attachments found for this course.</p>
+                    </ng-template>
+                    <div *ngIf="pdfUrl" class="pdf-preview">
+                        <button class="close-pdf-preview-button" (click)="closePDF()">
+                            <i class="lucide lucide-x"></i> Close preview
+                        </button>
+                        <iframe [src]="pdfUrl" width="100%" height="600px" title="PDF Preview"></iframe>
+                    </div>
+                </div>
+
+                <div class="reviews-section">
+                    <h3 class="section-title"><i class="lucide lucide-message-square-text"></i> User Reviews</h3>
+                    <div class="course-details-grid">
+
+                    <div class="average-rating" *ngIf="averageRating > 0 || reviews.length > 0; else noReviewsTemplate">
+                        <p class="course-details-item" *ngIf="averageRating > 0">
+                            <i class="lucide lucide-star icon-average-rating"></i>
+                            <strong>Average Rating:</strong>
+                            <span class="star-rating-display">
+                                <i *ngFor="let star of [1, 2, 3, 4, 5]; let i = index"
+                                   class="fa"
+                                   [ngClass]="i < averageRating ? 'fa-star' : (i < averageRating + 0.5 && averageRating % 1 !== 0 ? 'fa-star-half-o' : 'fa-star-o')"></i>
+                            </span>
+                            ({{ averageRating.toFixed(1) }} / 5) - {{ reviews.length }} reviews
+                        </p>
+                         <p *ngIf="averageRating === 0 && reviews.length > 0" class="average-rating text-muted">
+                            No average rating yet (but {{ reviews.length }} reviews).
+                        </p>
+                    </div>
+                    </div>
+                    <ng-template #noReviewsTemplate>
+                        <p class="no-reviews-text">No reviews for this course yet.</p>
+                    </ng-template>
+
+                    <div class="reviews-list" *ngIf="reviews.length > 0">
+                        <div *ngFor="let review of reviews" class="review-card">
+                            <div class="review-author-info" *ngIf="review.author">
+                                <img [src]="review.author.picture || 'assets/default-user.png'"
+                                     alt="Photo of {{review.author.name || 'User'}}"
+                                     class="author-picture">
+                                <span class="author-name">{{ review.author.name || 'Anonymous' }} {{ review.author.surname || '' }}</span>
+                            </div>
+                             <div class="review-author-info" *ngIf="!review.author">
+                                <img src="assets/default-user.png" alt="Anonymous User" class="author-picture">
+                                <span class="author-name">Anonymous User</span>
+                            </div>
+                            <div class="review-content">
+                                <p class="review-rating"><strong>Rating:</strong>
+                                    <span class="star-rating">
+                                        <i *ngFor="let star of [1, 2, 3, 4, 5]; let i = index"
+                                           class="fa"
+                                           [ngClass]="i < review.rating ? 'fa-star' : 'fa-star-o'"></i>
+                                    </span>
+                                    ({{review.rating}}/5)
+                                </p>
+                                <p class="review-comment"><strong>Comment:</strong> {{ review.comment }}</p>
+                                <div *ngIf="review.sentiment" class="review-ai-analysis mt-1">
+                                    <small class="text-muted">
+                                        AI Sentiment:
+                                        <span class="badge"
+                                              [ngClass]="{
+                                                  'bg-success': review.sentiment === 'Positif',
+                                                  'bg-danger': review.sentiment === 'Négatif',
+                                                  'bg-secondary': review.sentiment === 'Neutre' || review.sentiment === 'Indéterminé',
+                                                  'bg-warning text-dark': review.sentiment === 'Erreur'
+                                              }">
+                                            {{ review.sentiment === 'Positif' ? 'Positive' :
+                                               review.sentiment === 'Négatif' ? 'Negative' :
+                                               review.sentiment === 'Neutre' ? 'Neutral' :
+                                               review.sentiment === 'Indéterminé' ? 'Undetermined' :
+                                               review.sentiment === 'Erreur' ? 'Error' : review.sentiment }}
+                                        </span>
+                                    </small>
+                                </div>
+                                <div *ngIf="review.reviewSummary" class="review-ai-analysis mt-1">
+                                    <small class="text-muted fst-italic">AI Summary: {{ review.reviewSummary }}</small>
+                                </div>
+                            </div>
+                            <button class="delete-review-button"
+                                    (click)="deleteReview(review.idReview)"
+                                    *ngIf="(userRole$ | async) === 'ADMIN'"
+                                    title="Delete this review (Admin)">
+                                <i class="lucide lucide-trash-2"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="add-review-section" *ngIf="(userRole$ | async) === 'STUDENT'">                    <h3 class="section-title"><i class="lucide lucide-edit-3"></i> Leave your review</h3>
+                    <form (ngSubmit)="submitReview()" #reviewForm="ngForm" class="review-form">
+                        <div class="form-group rating-group">
+                            <label for="rating" class="form-label">Your rating:</label>
+                            <div class="rating">
+                                <i *ngFor="let star of [1, 2, 3, 4, 5]; let i = index"
+                                   class="fa rating-star"
+                                   [ngClass]="{
+                                        'fa-star': i < newReview.rating || i < hoveredStar,
+                                        'fa-star-o': i >= newReview.rating && i >= hoveredStar,
+                                        'hovered': i < hoveredStar
+                                   }"
+                                   (mouseenter)="hoverStar(i + 1)"
+                                   (mouseleave)="hoverStar(0)"
+                                   (click)="setRating(star)"></i>
+                            </div>
+                            <input type="hidden" id="rating" [(ngModel)]="newReview.rating" name="rating" required min="1">
+                             <div *ngIf="reviewForm.submitted && reviewForm.controls['rating']?.errors?.['min']" class="text-danger small mt-1">
+                                Please provide a rating.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="comment" class="form-label">Your comment:</label>
+                            <textarea id="comment" class="form-control" [(ngModel)]="newReview.comment" name="comment" required rows="4" placeholder="Describe your experience with this course..." #commentCtrl="ngModel"></textarea>
+                            <div *ngIf="commentCtrl.invalid && (commentCtrl.dirty || commentCtrl.touched || reviewForm.submitted)" class="text-danger small mt-1">
+                                <span *ngIf="commentCtrl.errors?.['required']">Comment is required.</span>
+                            </div>
+                        </div>
+                        <button type="submit" class="submit-review-button" [disabled]="reviewForm.invalid || newReview.rating === 0">
+                            <i class="lucide lucide-send"></i> Send review
+                        </button>
+                    </form>
+                </div>
+
+            </div> <div class="back-button-container">
+                <button class="back-button" [routerLink]="['/allcourses']"> <i class="lucide lucide-arrow-left"></i> Back to course list
+                </button>
+            </div>
+
+        </div> <div *ngIf="!course" class="loading-indicator">
+            <p>Loading course details...</p>
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div> </div> 
+    <br><br>
+  </div>
+
+  <app-front-footer></app-front-footer>
+</body>

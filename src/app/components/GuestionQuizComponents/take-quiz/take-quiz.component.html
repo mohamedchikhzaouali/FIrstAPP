@@ -1,0 +1,117 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<body>
+
+<div class="quiz-container">
+  <div *ngIf="score !== null" class="score-display">
+    <div class="circle-container">
+      <svg width="120" height="120" viewBox="0 0 120 120" class="score-circle">
+        <circle cx="60" cy="60" r="50" stroke="#e6e6e6" stroke-width="10" fill="none"/>
+        <circle cx="60" cy="60" r="50" stroke-width="10" fill="none"
+        [attr.stroke]="getScoreColor()"
+        [attr.stroke-dasharray]="score !== null ? score * 3.14 : 0" stroke-linecap="round"/>
+        <text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="white" font-size="24">{{ score }}%</text>
+      </svg>
+    </div>
+    <p *ngIf="score >= 50"><strong><h3>Congratulations, you passed!</h3></strong></p>
+    <p *ngIf="score < 50">
+      <strong><h3>Sorry, you didn't pass this time.</h3></strong><br>
+      <strong><h5>Good luck next time!</h5></strong>
+    </p>
+    <div *ngIf="score !== null">
+      <div *ngIf="score >= 50">
+        <button class="download-button modern-button" (click)="downloadCertificate()">
+          <i class="fas fa-download"></i> Download Certificate
+        </button>
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-modern-back" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+      
+  </div>
+
+  <div *ngIf="score !== null" class="quiz-details">
+    <h6>Quiz Details</h6>
+    Title : {{ quizDetails?.titleQuiz }}<br>
+    Duration : {{ quizDetails?.duration }}
+  </div>
+
+  <div *ngIf="!showQuizQuestions && score === null" class="quiz-details">
+    <h2>Quiz Details</h2>
+    <br>
+    <p><strong>Title :</strong> {{ quizDetails?.titleQuiz }}</p>
+    <p><strong>Duration :</strong> {{ quizDetails?.duration }}</p>
+    <p><strong>Start Date :</strong> {{ quizDetails?.startDate | date:'dd/MM/yyyy HH:mm' }}</p>
+    <p><strong>End Date :</strong> {{ quizDetails?.endDate | date:'dd/MM/yyyy HH:mm' }}</p>
+    
+    <div *ngIf="payed === true">
+      <button class="start-button" (click)="loadQuestions(false)">Take the quiz</button>
+    </div>
+    <div *ngIf="payed === false">
+      <button class="start-button" (click)="goToPayment()">Take the quiz</button>
+    </div>
+
+  </div>
+
+  <div *ngIf="showQuizQuestions" class="quiz-questions">
+    <div *ngIf="questions.length > 0">
+      <h3 class="question-header">
+        Question {{ currentQuestionIndex + 1 }} / {{ questions.length }}
+        <span class="timer">
+            {{ formatTimeWithSeconds(timerSeconds) }}
+            <span *ngIf="timerSeconds <= 120" class="clock-container">
+              <i *ngIf="timerSeconds % 2 === 0" class="fas fa-clock blink"></i>
+              <span *ngIf="timerSeconds % 2 !== 0" class="clock-placeholder"></span>
+            </span>
+        </span>
+      </h3>
+      <p class="question-text">{{ questions[currentQuestionIndex].question }}</p>
+      <img *ngIf="questions[currentQuestionIndex]?.questionPictureUrl"
+           [src]="questions[currentQuestionIndex].questionPictureUrl"
+           alt="Illustration de la question" class="question-image">
+
+      <div *ngIf="questions[currentQuestionIndex].type === 'DRAG_AND_DROP'">
+         <div class="drag-and-drop-container">
+             <div class="target-items">
+                 <div *ngFor="let pair of dragAndDropPairs[questions[currentQuestionIndex].idQuestion]; trackBy: trackByPair" class="target-item">
+                     <div class="target-text">{{ pair.targetText }}</div>
+                     <div class="drop-area"
+                         (dragover)="onDragOver($event)"
+                         (drop)="onDrop($event, questions[currentQuestionIndex].idQuestion, pair.idDragAndDrop)"
+                         (dblclick)="resetDrop(questions[currentQuestionIndex].idQuestion, pair.idDragAndDrop)">
+                         <span *ngIf="droppedItems[questions[currentQuestionIndex].idQuestion + '-' + pair.idDragAndDrop]">
+                             {{ droppedItems[questions[currentQuestionIndex].idQuestion + '-' + pair.idDragAndDrop].sourceText }}
+                         </span>
+                     </div>
+                 </div>
+             </div>
+             <div class="source-items">
+                 <div *ngFor="let pair of shuffledDragAndDropPairs[questions[currentQuestionIndex].idQuestion]; trackBy: trackByPair"
+                         class="drag-item"
+                         draggable="true"
+                         (dragstart)="onDragStart($event, pair)">
+                     {{ pair.sourceText }}
+                 </div>
+             </div>
+         </div>
+      </div>
+      <div *ngIf="questions[currentQuestionIndex].type === 'MULTIPLE_CHOICE'">
+        <div class="answer-options"
+             *ngFor="let response of questions[currentQuestionIndex].responses"
+             (click)="onResponseSelect(questions[currentQuestionIndex].idQuestion, response.idResponse)"
+             [class.selected]="selectedResponses[questions[currentQuestionIndex].idQuestion] === response.idResponse">
+          <span class="answer-label">{{ response.response }}</span> </div>
+      </div>
+      <div class="navigation-buttons">
+        <button *ngIf="currentQuestionIndex > 0" class="nav-button prev-button"
+                (click)="prevQuestion()">Previous</button>
+        <button *ngIf="currentQuestionIndex < questions.length - 1"
+                class="nav-button next-button" (click)="nextQuestion()">Next</button>
+      </div>
+
+      <button class="submit-button" (click)="submitQuiz()">Submit</button>
+    </div>
+  </div>
+</div>
+</body>

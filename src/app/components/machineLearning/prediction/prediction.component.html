@@ -1,0 +1,82 @@
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Corona Admin</title>
+        <link rel="stylesheet" href="/assets/templateback/vendors/mdi/css/materialdesignicons.min.css">
+        <link rel="stylesheet" href="/assets/templateback/vendors/css/vendor.bundle.base.css">
+        <link rel="stylesheet" href="/assets/templateback/vendors/jvectormap/jquery-jvectormap.css">
+        <link rel="stylesheet" href="/assets/templateback/vendors/flag-icon-css/css/flag-icon.min.css">
+        <link rel="stylesheet" href="/assets/templateback/vendors/owl-carousel-2/owl.carousel.min.css">
+        <link rel="stylesheet" href="/assets/templateback/vendors/owl-carousel-2/owl.theme.default.min.css">
+        <link rel="stylesheet" href="/assets/templateback/css/style.css">
+        <link rel="shortcut icon" href="/assets/templateback/images/favicon.png" />
+    </head>
+
+    <body>
+                    <div class="content-wrapper">
+                        <div class="row ">
+                            <div class="col-12 grid-margin">
+                                <div class="card">
+                                    <div class="card-body">
+<h2 style="color: aliceblue;">User Data and Predictions</h2>
+
+<div *ngIf="displayedUsers && displayedUsers.length > 0">
+    <table border="1" class="table">
+        <thead>
+            <tr>
+                <th>Time Spent</th>
+                <th>Quizzes Taken</th>
+                <th>Engagement</th>
+                <th>Quiz Perf</th>
+                <th>Action</th>
+                <th>IsLikelyToFinish</th> </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let user of displayedUsers">
+                <td>{{ user.TimeSpentOnCourse | number: '1.2-2'}}</td>
+                <td>{{ user.NumberOfQuizzesTaken }}</td>
+                <td>{{ user.QuizScores | number: '1.2-2'}}</td>
+                <td>{{ user.EngagementRatio | number: '1.2-2'}}</td>
+                <td><button class="btn btn-outline-info" (click)="predictForUser(user)">Predict</button></td>
+                
+                <td>
+                    <span *ngIf="user.prediction !== undefined"
+                          [ngClass]="user.prediction === 1 ? 'text-success' : 'text-danger'">
+                      {{ user.prediction === 1 ? 'Yes' : 'No' }}
+                    </span>
+                  </td> </tr>
+        </tbody>
+    </table>
+</div>
+<div *ngIf="displayedUsers && displayedUsers.length === 0">
+    <p>No users found.</p>
+</div>
+
+<div *ngIf="prediction">
+    <p>Prediction: {{ prediction }}</p>
+</div>
+</div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+        <script src="/assets/templateback/vendors/js/vendor.bundle.base.js"></script>
+        <script src="/assets/templateback/vendors/chart.js/Chart.min.js"></script>
+        <script src="/assets/templateback/vendors/progressbar.js/progressbar.min.js"></script>
+        <script src="/assets/templateback/vendors/jvectormap/jquery-jvectormap.min.js"></script>
+        <script src="/assets/templateback/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+        <script src="/assets/templateback/vendors/owl-carousel-2/owl.carousel.min.js"></script>
+        <script src="/assets/templateback/js/off-canvas.js"></script>
+        <script src="/assets/templateback/js/hoverable-collapse.js"></script>
+        <script src="/assets/templateback/js/misc.js"></script>
+        <script src="/assets/templateback/js/settings.js"></script>
+        <script src="/assets/templateback/js/todolist.js"></script>
+        <script src="/assets/templateback/js/dashboard.js"></script>
+    </body>
+
+    </html>

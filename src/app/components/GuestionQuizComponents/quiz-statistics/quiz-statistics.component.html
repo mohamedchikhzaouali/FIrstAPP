@@ -1,0 +1,28 @@
+    <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Titre du Quiz</th>
+          <th>Pourcentage de Succès</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let quiz of quizStatistics">
+          <td>{{ quiz.title }}</td>
+          <td>
+            <div class="chart-container">
+              <canvas baseChart
+                      [data]="quiz.pieChartData"
+                      [labels]="quiz.pieChartData.labels"
+                      [type]="pieChartType">
+              </canvas>
+              <div class="percentage-labels">
+                <span class="success-label">{{ quiz.successRate | number:'1.0-2' }}% <span class="label-title">Succès</span></span>
+                <span class="failure-label">{{ quiz.failureRate | number:'1.0-2' }}% <span class="label-title">Échec</span></span>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+</div>

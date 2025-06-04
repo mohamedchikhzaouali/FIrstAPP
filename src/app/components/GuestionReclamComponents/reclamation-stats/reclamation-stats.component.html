@@ -1,0 +1,45 @@
+<div class="container">
+  <h2 class="text-center text-white">Reclamation Statistics</h2>
+
+  <div class="mt-4 mb-4">
+    <!-- Pie Chart: Status Distribution -->
+    <div class="row d-flex justify-content-center align-items-center">
+      <div class="col-md-4">
+        <h5 class="text-center text-white">Status Distribution</h5>
+        <canvas baseChart [data]="pieChartData" [type]="pieChartType"></canvas>
+      </div>
+
+      <!-- Bar Chart: Priority Distribution -->
+      <div class="col-md-6">
+        <h5 class="text-center text-white">Priority Levels</h5>
+        <canvas baseChart [data]="priorityChartData" [type]="priorityChartType"></canvas>
+      </div>
+    </div>
+
+    <!-- Doughnut Chart + List: Types -->
+    <div class="row mb-4 mt-4" style="margin-top: 2rem;">
+  <!-- Doughnut Chart -->
+  <div class="col-md-6">
+    <h5 class="text-center text-white">Reclamation Types</h5>
+    <div class="chart-container">
+      <canvas baseChart
+              [data]="typeChartData"
+              [type]="typeChartType">
+      </canvas>
+    </div>
+  </div>
+
+  <!-- Type List -->
+  <div class="col-md-6">
+    <h5 class="text-center text-white">Reclamations Breakdown</h5>
+    <ul class="list-group">
+      <li *ngFor="let type of typeChartLabels; let i = index"
+          class="list-group-item d-flex justify-content-between align-items-center bg-dark text-white">
+        {{ formatReclamationType(type) }}
+        <span class="badge bg-primary">{{ typeChartData.datasets[0].data[i] }}</span>
+      </li>
+    </ul>
+  </div>
+</div>
+  </div>
+</div>

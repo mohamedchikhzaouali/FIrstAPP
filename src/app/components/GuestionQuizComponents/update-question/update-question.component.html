@@ -1,0 +1,41 @@
+<body>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <div class="page-content">
+    
+    <div class="container">
+      <br><br>
+      <h2 class="styled-titre">Update Question</h2>
+      <br>
+  
+      <button type="button" class="btn btn-modern-back" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+  
+      <form [formGroup]="updateQuestionForm" (ngSubmit)="updateQuestion()" enctype="multipart/form-data" class="response-container">
+        <div class="mb-3">
+          <label for="question" class="styled-titres-label">Question Text</label>
+          <input id="question" formControlName="question" class="form-control" required />
+          <div *ngIf="updateQuestionForm.get('question')?.invalid && (updateQuestionForm.get('question')?.dirty || updateQuestionForm.get('question')?.touched)" class="alert alert-danger">
+            Question Text is required.
+          </div>
+        </div>
+  
+        <div class="mb-3">
+          <label for="image" class="styled-titres-label">Question Image</label>
+          <input type="file" id="image" class="form-control" (change)="onFileSelected($event)" />
+          <div *ngIf="currentImageUrl" class="mt-2">
+            <img [src]="currentImageUrl" alt="Image actuelle" class="img-thumbnail" style="max-width: 100px;">
+          </div>
+        </div>
+  
+        <button type="submit" class="btn btn-primary" [disabled]="updateQuestionForm.invalid">Update</button>
+      </form>
+    </div>
+</div>
+
+<!-- ***** Footer Area Start ***** -->
+<app-front-footer></app-front-footer>
+<!-- ***** Footer Area End ***** -->
+
+</body>

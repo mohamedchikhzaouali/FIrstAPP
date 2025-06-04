@@ -1,0 +1,76 @@
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 15px; /* Coins arrondis */
+  border: 3px solid black; /* Bordure unique */
+  overflow: hidden; /* Pour s'assurer que le contenu respecte les coins arrondis */
+}
+
+th, td {
+  padding: 16px;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  color: #333;
+  border: 2px solid rgb(114, 114, 114); /* Bordures internes */
+}
+
+th {
+  background-color: #007BFF;
+  color: white;
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+.chart-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.percentage-labels {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 50%;
+  left: 130%;
+  transform: translateY(-50%);
+  text-align: left;
+  font-family: 'Arial', sans-serif;
+}
+
+.success-label, .failure-label {
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.success-label {
+  color: green;
+}
+
+.failure-label {
+  color: red;
+  margin-top: 5px;
+}
+
+.label-title {
+  margin-left: 5px;
+  font-size: 12px;
+}

@@ -1,0 +1,90 @@
+<app-back-header></app-back-header>
+
+<section class="back-article-page">
+  <div class="container mt-4">
+    <h2>Top 5 Articles les Plus Vus</h2>
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-primary text-white">
+        <h5>📰 Top 5 Articles les Plus Vus</h5>
+      </div>
+      <div class="card-body">
+        <table class="table table-bordered table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Titre</th>
+              <th>Vues</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let article of topViewedArticles; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ article.title }}</td>
+              <td><i class="fa fa-eye"></i> {{ article.views }}</td>
+              <td>{{ article.date | date }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h2>Tous les Articles pour Validation</h2>
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-primary text-white">
+        <h5>📰 Tous les Articles</h5>
+      </div>
+      <div class="card-body">
+        <table class="table table-bordered table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Titre</th>
+              <th>Date</th>
+              <th>Statut de Publication</th>
+              <th>Actions</th>
+              <th>Changer le Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let article of allArticles; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ article.title }}</td>
+              <td>{{ article.date | date }}</td>
+              <td>
+                <span *ngIf="article.publicationStatus === 'DRAFT'">Brouillon</span>
+                <span *ngIf="article.publicationStatus === 'PENDING_REVIEW'">En Revue</span>
+                <span *ngIf="article.publicationStatus === 'PENDING_APPROVAL'">En Attente d'Approbation</span>
+                <span *ngIf="article.publicationStatus === 'PUBLISHED'">Publié</span>
+                <span *ngIf="article.publicationStatus === 'ARCHIVED'">Archivé</span>
+              </td>
+              <td>
+                <button
+                  (click)="approveArticle(article.id)"
+                  class="btn btn-success btn-sm"
+                  *ngIf="article.publicationStatus === 'PENDING_APPROVAL'"
+                >
+                  Approuver
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="deleteArticle(article.id)">Supprimer</button>
+              </td>
+              <td>
+                <select
+                [(ngModel)]="article.publicationStatus"
+                (change)="updateArticleStatus(article.id, article.publicationStatus ?? '')"
+                class="form-control form-control-sm"
+              >
+                <option value="DRAFT">Brouillon</option>
+                <option value="PENDING_REVIEW">En Revue</option>
+                <option value="PENDING_APPROVAL">En Attente d'Approbation</option>
+                <option value="PUBLISHED">Publié</option>
+                <option value="ARCHIVED">Archivé</option>
+              </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

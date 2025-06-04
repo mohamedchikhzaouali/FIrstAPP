@@ -1,0 +1,65 @@
+<body>
+  <app-front-header-teacher *ngIf="(userRole$ | async) === 'TEACHER'"></app-front-header-teacher>
+  <app-front-header-student *ngIf="(userRole$ | async) === 'STUDENT'"></app-front-header-student>
+  <div class="page-content">
+    <br><br><br>
+
+    <head>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    </head>
+
+    <div class="container">
+      <h2>Quizs List</h2> <br>
+
+      <div class="mb-3 input-group">
+        <input type="text" class="form-control" placeholder="Rechercher un quiz..." [(ngModel)]="searchTerm"
+          (input)="filterQuizzes()" />
+        <span class="input-group-text">
+          <i class="fas fa-search"></i>
+        </span>
+      </div>
+
+      <div class="button-container">
+        <button class="add-quiz-button" [routerLink]="['/add-quiz', courseId]">Add a Quiz<i class="fas fa-plus"></i></button>
+        <button class="ai-button" [routerLink]="['/quiz-generator', courseId]">Generate Training Quiz with AI<i class="fas fa-brain ai-icon"></i> </button>
+      </div>
+
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Duration</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Price</th>
+            <th>Type</th>
+            <th class="actions-column">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let quiz of filteredQuizzes">
+            <td>{{ quiz.titleQuiz }}</td>
+            <td>{{ quiz.duration }}</td>
+            <td>{{ quiz.startDate | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ quiz.endDate | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ quiz.price }}$</td>
+            <td [ngClass]="{'certified-quiz': quiz.type === 'CERTIFIED_QUIZ', 'training-quiz': quiz.type === 'TRAINING_QUIZ'}">{{ quiz.type }}</td>
+            <td class="actions-column">
+              <button class="btn btn-warning" [routerLink]="['/update-quiz', quiz.idQuiz]">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button (click)="deleteQuiz(quiz.idQuiz)" class="btn btn-danger">
+                <i class="fas fa-trash"></i>
+              </button>
+              <button class="btn btn-primary" [routerLink]="['/questions', quiz.idQuiz,'course', courseId]">View Questions</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <br><br><br>
+  </div>
+
+  <app-front-footer></app-front-footer>
+</body>

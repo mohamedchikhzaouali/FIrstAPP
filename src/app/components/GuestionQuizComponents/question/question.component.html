@@ -1,0 +1,57 @@
+  <body>
+  <!-- ***** Header Area Start ***** -->
+  <app-front-header-teacher *ngIf="(userRole$ | async) === 'TEACHER'"></app-front-header-teacher>
+  <app-front-header-student *ngIf="(userRole$ | async) === 'STUDENT'"></app-front-header-student>
+  <!-- ***** Header Area End ***** -->
+
+  <div class="page-content">
+  <br><br><br>
+
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<div class="container">
+  <h2 class="text-center">Questions List</h2>
+  <button type="button" class="btn btn-modern-back" (click)="goBack()"><i class="fas fa-arrow-left"></i> Back</button>
+  <br><br>
+  
+  <button class="btn btn-success" [routerLink]="['/add-question', quizId]">Add a Question <i class="fas fa-plus"></i></button>
+
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Question</th>
+        <th>Type</th>
+        <th>Image</th>
+        <th class="actions-column">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let question of questions">
+        <td class="align-middle">{{ question?.question }}</td>
+        <td class="align-middle" [ngClass]="{'drag_and_drop_question': question.type === 'DRAG_AND_DROP', 'multiple_choice_question': question.type === 'MULTIPLE_CHOICE'}">{{ question.type }}</td>
+        <td class="align-middle">
+          <img *ngIf="question.imageUrl" [src]="question.imageUrl" alt="Question Image">
+          <span *ngIf="!question.imageUrl" class="no-image-text">No image</span>
+        </td>
+        <td class="align-middle text-start">
+          <button class="btn btn-warning" [routerLink]="['/update-question', quizId, question.idQuestion]">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button (click)="deleteQuestion(question.idQuestion)" class="btn btn-danger">
+            <i class="fas fa-trash"></i>
+          </button>
+          <button class="btn btn-primary" [routerLink]="['/responses', quizId, question.idQuestion, courseId]">View Responses</button>
+        </td>
+      </tr>          
+    </tbody>
+  </table>
+</div>
+<br><br><br>
+  </div>
+
+   <!-- ***** Footer Area Start ***** -->
+   <app-front-footer></app-front-footer>
+   <!-- ***** Footer Area End ***** -->
+  </body>

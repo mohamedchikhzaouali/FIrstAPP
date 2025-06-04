@@ -1,0 +1,82 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<body>
+
+<div class="quiz-container">
+  <button type="button" class="btn btn-modern-back" (click)="goBack()">
+    <i class="fas fa-arrow-left"></i> Back
+  </button>
+
+  <div *ngIf="!showQuizQuestions" class="quiz-details">
+    <h2>Training Quiz Details</h2>
+    <p><strong>Title :</strong> {{ quizDetails?.titleQuiz }}</p>
+
+    <div>
+      <button class="start-button" (click)="loadQuestions()">Take the training quiz</button>
+    </div>
+  </div>
+
+  <div *ngIf="showQuizQuestions" class="quiz-questions">
+    <div *ngIf="questions.length > 0">
+      <h3 class="question-header">
+        Question {{ currentQuestionIndex + 1 }} / {{ questions.length }}
+      </h3>
+      <p class="question-text">{{ questions[currentQuestionIndex].question }}</p>
+      <img *ngIf="questions[currentQuestionIndex]?.questionPictureUrl"
+           [src]="questions[currentQuestionIndex].questionPictureUrl"
+           alt="Illustration de la question" class="question-image">
+
+      <div *ngIf="questions[currentQuestionIndex].type === 'DRAG_AND_DROP'">
+        <div class="drag-and-drop-container">
+          <div class="target-items">
+            <div *ngFor="let pair of dragAndDropPairs[questions[currentQuestionIndex].idQuestion]; trackBy: trackByPair" class="target-item">
+              <div class="target-text">{{ pair.targetText }}</div>
+              <div class="drop-area"
+     [class.correct]="questionStatuses[questions[currentQuestionIndex].idQuestion] === 'correct'"
+     [class.incorrect]="questionStatuses[questions[currentQuestionIndex].idQuestion] === 'incorrect' && droppedItems[questions[currentQuestionIndex].idQuestion + '-' + pair.idDragAndDrop] && droppedItems[questions[currentQuestionIndex].idQuestion + '-' + pair.idDragAndDrop]?.targetText !== pair.targetText"
+     (dragover)="onDragOver($event)"
+     (drop)="onDrop($event, questions[currentQuestionIndex].idQuestion, pair.idDragAndDrop)"
+     (dblclick)="resetDrop(questions[currentQuestionIndex].idQuestion, pair.idDragAndDrop)">
+  <span *ngIf="droppedItems[questions[currentQuestionIndex].idQuestion + '-' + pair.idDragAndDrop]">
+    {{ droppedItems[questions[currentQuestionIndex].idQuestion + '-' + pair.idDragAndDrop].sourceText }}
+  </span>
+</div>
+              <div *ngIf="questionStatuses[questions[currentQuestionIndex].idQuestion] === 'incorrect' && droppedItems[questions[currentQuestionIndex].idQuestion + '-' + pair.idDragAndDrop]?.targetText !== pair.targetText" class="correct-answer">
+                Correct: {{ pair.sourceText }}
+              </div>
+            </div>
+          </div>
+          <div class="source-items">
+            <div *ngFor="let pair of shuffledDragAndDropPairs[questions[currentQuestionIndex].idQuestion]; trackBy: trackByPair"
+                 class="drag-item"
+                 draggable="true"
+                 (dragstart)="onDragStart($event, pair)">
+              {{ pair.sourceText }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="questions[currentQuestionIndex].type !== 'DRAG_AND_DROP'">
+        <div class="answer-options" *ngFor="let response of questions[currentQuestionIndex].responses"
+             (click)="selectedResponses[questions[currentQuestionIndex].idQuestion] = response.idResponse"
+             [class.selected]="selectedResponses[questions[currentQuestionIndex].idQuestion] === response.idResponse"
+             [class.correct]="questionStatuses[questions[currentQuestionIndex].idQuestion] === 'correct' && response.idResponse === correctAnswers[questions[currentQuestionIndex].idQuestion]"
+             [class.incorrect]="questionStatuses[questions[currentQuestionIndex].idQuestion] === 'incorrect' && selectedResponses[questions[currentQuestionIndex].idQuestion] === response.idResponse && response.idResponse !== correctAnswers[questions[currentQuestionIndex].idQuestion]"
+             [class.is-correct-option]="questionStatuses[questions[currentQuestionIndex].idQuestion] === 'incorrect' && response.responseCorrect">
+          <span class="answer-label">{{ response.response }}</span>
+          <span *ngIf="questionStatuses[questions[currentQuestionIndex].idQuestion] === 'incorrect' && response.idResponse === correctAnswers[questions[currentQuestionIndex].idQuestion]" class="correct-indicator"><i class="fas fa-check"></i></span>
+        </div>
+      </div>
+
+
+      <div class="navigation-buttons">
+        <button *ngIf="currentQuestionIndex > 0" class="nav-button prev-button"
+                (click)="prevQuestion()">Previous</button>
+        <button class="submit-button" (click)="submitSingleQuestion(questions[currentQuestionIndex])">Submit</button>
+        <button *ngIf="currentQuestionIndex < questions.length - 1"
+                class="nav-button next-button" (click)="nextQuestion()">Next</button>
+      </div>
+
+      </div>
+  </div>
+</div>
+</body>

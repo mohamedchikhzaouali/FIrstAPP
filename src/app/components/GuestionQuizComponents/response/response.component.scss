@@ -1,0 +1,95 @@
+    body {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+          margin: 0;
+          background-image: url('/assets/response-background.jpg');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-attachment: fixed;
+        }
+
+        .page-content {
+          flex: 1; /* Permet au contenu de prendre tout l'espace disponible */
+        }
+
+    .actions-column {
+      width: 115px; /* Largeur ajustée de la colonne des actions */
+      text-align: center; /* Centrer les boutons */
+    }
+
+    .correct-column {
+      width: 115px; /* Largeur ajustée de la colonne des réponses correctes */
+      text-align: center; /* Centrer le texte */
+      vertical-align: middle; /* Centrer verticalement */
+    }
+
+    .btn {
+      padding: 6px 16px; /* Ajuster la taille des boutons */
+    }
+
+    /* Couleur de fond et texte pour les th */
+    th {
+      background-color: #007bff!important; /* Bleu de fond */
+      color: white!important; /* Texte en blanc */
+      padding: 10px!important; /* Espacement autour du texte */
+      text-align: center!important; /* Centrer le texte */
+    }
+
+    tbody tr {
+      background-color: rgba(255, 255, 255, 0.866)!important;
+    }
+
+    /* Table avec bords arrondis et bordure externe */
+    table {
+      border-radius: 10px; /* Coins arrondis de la table */
+      overflow: hidden; /* Pour éviter que les bords arrondis ne soient masqués */
+    }
+
+    /* Bords externes de la table */
+    .container table {
+      border: 3px solid #007bff; /* Bordure externe épaisse et bleue */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre légère autour de la table */
+    }
+
+    /* Bords internes de la table */
+    table, th, td {
+      border: 1px solid #000000; /* Bordure légère autour des cellules de la table */
+    }
+
+    /* Style du titre */
+    h2 {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 2.5rem;
+      color: #333;
+      text-align: center;
+      padding: 4px 0;
+      background: linear-gradient(to right, #56CCF2, #2F80ED); /* Dégradé bleu */
+      color: white;
+      border-radius: 10px;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-modern-back {
+        background: linear-gradient(135deg, #64B5F6, #1E88E5);
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9em;
+        color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        margin-top: 4px;
+    }
+
+    .btn-modern-back:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-modern-back i {
+        margin-right: 5px;
+        color: white;
+    }

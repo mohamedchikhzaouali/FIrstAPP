@@ -1,0 +1,1566 @@
+<body>
+<app-front-header-teacher *ngIf="(userRole$ | async) === 'TEACHER'"></app-front-header-teacher>
+<app-front-header-student *ngIf="(userRole$ | async) === 'STUDENT'"></app-front-header-student>
+
+<div class="page-content">
+
+<section class="article-page py-5">
+  <div class="container">
+    <!-- Header Section - Enhanced with decorative elements -->
+    <div class="section-header text-center mb-5">
+      <h2 class="display-4 fw-bold text-gradient">Articles</h2>
+      <p class="lead text-muted">Explore our collection of thoughtful articles and stories</p>
+      <!-- Added decorative line elements -->
+      <div class="header-decoration">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+    <!-- Notifications Panel - Updated to show email notifications -->
+    <div class="notifications-container">
+      <button class="notifications-button" (click)="toggleNotificationsPanel()">
+        <i class="fa fa-bell"></i>
+        <span class="notification-badge" *ngIf="notifications.length > 0">{{ notifications.length }}</span>
+      </button>
+     
+      <div class="notifications-panel" *ngIf="showNotifications">
+        <div class="notifications-header">
+          <h3><i class="fa fa-envelope mr-2"></i> Email Reminders</h3>
+          <button class="close-button" (click)="toggleNotificationsPanel()">
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+       
+        <div class="notifications-body">
+          <div *ngIf="notifications.length === 0" class="no-notifications">
+            <div class="empty-notification-icon">
+              <i class="fa fa-check-circle"></i>
+            </div>
+            <p>You're all caught up!</p>
+            <p class="text-muted small">No reading reminders at this time.</p>
+          </div>
+         
+          <div *ngFor="let notification of notifications" class="notification-item">
+            <div class="notification-icon">
+              <i class="fa fa-envelope"></i>
+            </div>
+            <div class="notification-content">
+              <h4>{{ notification.article?.title }}</h4>
+              <p class="notification-message">Email reminder sent! Time to read this article.</p>
+              <div class="notification-actions">
+                <a [routerLink]="['/articles', notification.article?.id]" class="read-button">
+                  <i class="fa fa-book"></i> Read Now
+                </a>
+                <button (click)="markNotificationAsRead(notification.id)" class="dismiss-button">
+                  <i class="fa fa-check"></i> Dismiss
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+   
+    <!-- Filters & Search Section - Enhanced with card design -->
+    <div class="filter-section mb-4 p-4 rounded-lg shadow-sm">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-5">
+          <div class="form-group">
+            <label for="categoryFilter" class="form-label fw-medium translate">Filter by Category</label>
+            <select class="form-select form-select-lg shadow-sm" id="categoryFilter" (change)="onCategorieChange($any($event.target).value)">
+              <option value="ALL" class="translate">All Categories</option>
+              <option value="NEWS" class="translate">News</option>
+              <option value="SUCCESS_STORY" class="translate">Success Stories</option>
+              <option value="BLOG" class="translate">Blog Posts</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-7">
+          <div class="form-group">
+            <label for="searchInput" class="form-label fw-medium translate-placeholder">Search Articles</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white"><i class="fa fa-search"></i></span>
+              <input type="text" class="form-control form-control-lg shadow-sm"
+                     id="searchInput"
+                     [(ngModel)]="searchText"
+                     (ngModelChange)="filterArticles()"
+                     placeholder="{{ searchPlaceholder }}">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons - Enhanced with icons and hover effects -->
+    <div class="row g-3 mb-5">
+      <div class="col-md-6">
+        <a [routerLink]="['/articles/add']" class="action-button add-button">
+          <div class="icon-container">
+            <i class="fa fa-plus-circle"></i>
+          </div>
+          <div class="content">
+            <h3>Create New Article</h3>
+            <p>Share your knowledge with the community</p>
+          </div>
+          <div class="hover-effect"></div>
+        </a>
+      </div>
+      <div class="col-md-6">
+        <a routerLink="/favorites" class="action-button favorites-button">
+          <div class="icon-container">
+            <i class="fa fa-heart"></i>
+          </div>
+          <div class="content">
+            <h3>My Favorites</h3>
+            <p>Articles you've saved for later</p>
+          </div>
+          <div class="hover-effect"></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Articles Grid - Enhanced with better cards -->
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6" *ngFor="let article of filteredArticles">
+        <div class="article-card" [routerLink]="['/articles', article.id]" (click)="onArticleClick(article)">
+          <div class="article-image">
+            <img [src]="getImageUrl(article.picture)" [alt]="article.title" class="img-fluid rounded-top" />
+            <div class="article-status">
+              <span class="category-badge translate"
+                [ngClass]="{
+                  'badge-news': article.categorie === 'NEWS',
+                  'badge-success-story': article.categorie === 'SUCCESS_STORY',
+                  'badge-blog': article.categorie === 'BLOG'
+                }">{{ article.categorie }}</span>
+              <span class="status-badge" *ngIf="article.publicationStatus"
+                [ngClass]="{
+                  'badge-draft': article.publicationStatus === 'DRAFT',
+                  'badge-pending': article.publicationStatus === 'PENDING_REVIEW',
+                  'badge-published': article.publicationStatus === 'PUBLISHED',
+                  'badge-archived': article.publicationStatus === 'ARCHIVED'
+                }">{{ article.publicationStatus }}</span>
+            </div>
+            <!-- Favorite Button -->
+            <button class="favorite-button"
+                    [ngClass]="{'favorited': article.id && isFavorite(article.id)}"
+                    (click)="toggleFavorite(article.id); $event.stopPropagation()"
+                    aria-label="Toggle favorite">
+              <i class="fa" [ngClass]="article.id && isFavorite(article.id) ? 'fa-heart' : 'fa-heart-o'"></i>
+            </button>
+           
+            <!-- Media indicators -->
+            <div class="media-indicators" *ngIf="hasAdditionalMedia(article)">
+              <span class="video-indicator" *ngIf="hasVideo(article)" title="Contains video">
+                <i class="fa fa-play-circle"></i>
+              </span>
+              <span class="pdf-indicator" *ngIf="hasPdf(article)" title="Contains PDF">
+                <i class="fa fa-file-pdf-o"></i>
+              </span>
+            </div>
+          </div>
+         
+          <div class="article-content">
+            <h3 class="article-title translate">{{ article.title }}</h3>
+            <div class="article-info">
+              <div class="article-date">
+                <i class="fa fa-calendar"></i>
+                <span>{{ article.date | date }}</span>
+              </div>
+              <div class="article-stats">
+                <div class="stat">
+                  <i class="fa fa-eye"></i>
+                  <span>{{ article.views || 0 }}</span>
+                </div>
+                <div class="stat">
+                  <i class="fa fa-share-alt"></i>
+                  <span>{{ article.numberShares || 0 }}</span>
+                </div>
+              </div>
+            </div>
+           
+            <div class="article-description mt-3">
+              <button class="tts-button"
+                      (click)="speakDescription(article.ressources?.[0]?.description || ''); $event.stopPropagation()">
+                <i class="fa fa-volume-up"></i>
+                <span>Listen</span>
+              </button>
+             
+              <!-- Read Later button moved here -->
+              <button
+                (click)="toggleReadLater(article); $event.stopPropagation()"
+                class="read-later-button"
+                [ngClass]="{'saved': article.id && isReadLater(article.id!)}"
+                *ngIf="article.id">
+                <i class="fa" [ngClass]="article.id && isReadLater(article.id!) ? 'fa-bookmark' : 'fa-bookmark-o'"></i>
+                <span>{{ article.id && isReadLater(article.id!) ? 'Saved' : 'Read Later' }}</span>
+              </button>
+            </div>
+           
+            <div class="article-actions mt-3">
+              <div class="action-row">
+                <button class="edit-button"
+                        [routerLink]="['/articles/edit', article.id]"
+                        (click)="$event.stopPropagation()">
+                  <i class="fa fa-edit"></i>
+                  <span>Edit</span>
+                </button>
+                <button class="delete-button"
+                        (click)="deleteArticle(article.id); $event.stopPropagation()">
+                  <i class="fa fa-trash"></i>
+                  <span>Delete</span>
+                </button>
+                <!-- Add Analyze button here -->
+                <button class="analyze-button"
+                        (click)="openAnalysisModal(article); $event.stopPropagation()">
+                  <i class="fa fa-brain"></i>
+                  <span>Analyze</span>
+                </button>
+              </div>
+             
+              <div class="reactions-container">
+                <button class="reaction-trigger"
+                        (click)="toggleReactionsPanel(article.id); $event.stopPropagation()">
+                  <i class="fa fa-smile-o"></i>
+                  <span>React</span>
+                </button>
+               
+                <div class="reaction-options" *ngIf="article.id && showReactionsPanel[article.id]">
+                  <div class="reaction-buttons">
+                    <button *ngFor="let reaction of availableReactions"
+                            class="reaction-emoji"
+                            [class.active]="article.id && currentUserReactions[article.id] === reaction"
+                            (click)="article.id !== undefined && react(article.id, reaction); $event.stopPropagation()"
+                            title="{{reaction}}">
+                      <span *ngIf="reaction === 'like'">👍</span>
+                      <span *ngIf="reaction === 'love'">❤️</span>
+                      <span *ngIf="reaction === 'haha'">😂</span>
+                      <span *ngIf="reaction === 'wow'">😮</span>
+                      <span *ngIf="reaction === 'sad'">😢</span>
+                      <span *ngIf="reaction === 'angry'">😠</span>
+                    </button>
+                  </div>
+                  <button *ngIf="article.id && currentUserReactions[article.id]"
+                          class="cancel-reaction-button"
+                          (click)="article.id !== undefined && unreact(article.id); $event.stopPropagation()">
+                    <span>Remove reaction</span>
+                  </button>
+                </div>
+               
+                <div *ngIf="article.id && currentUserReactions[article.id]" class="user-reaction">
+                  <span>Your reaction:</span>
+                  <span [ngClass]="currentUserReactions[article.id]" class="reaction-emoji-small">
+                    <span *ngIf="currentUserReactions[article.id] === 'like'">👍</span>
+                    <span *ngIf="currentUserReactions[article.id] === 'love'">❤️</span>
+                    <span *ngIf="currentUserReactions[article.id] === 'haha'">😂</span>
+                    <span *ngIf="currentUserReactions[article.id] === 'wow'">😮</span>
+                    <span *ngIf="currentUserReactions[article.id] === 'sad'">😢</span>
+                    <span *ngIf="currentUserReactions[article.id] === 'angry'">😠</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add subtle animated overlay effect -->
+          <div class="card-overlay"></div>
+        </div>
+      </div>
+    </div>
+   
+    <!-- Empty state section (shown when no articles are available) -->
+    <div class="empty-state" *ngIf="filteredArticles.length === 0">
+      <div class="empty-state-icon">
+        <i class="fa fa-newspaper-o"></i>
+      </div>
+      <h3>No articles found</h3>
+      <p>Try adjusting your filters or create a new article to get started.</p>
+    </div>
+   
+    <!-- Language Options - Enhanced design -->
+    <div class="language-selector mt-5 p-4 rounded-lg text-center">
+      <h3 class="mb-3 translate">Change Language</h3>
+      <div class="language-buttons">
+        <button class="language-button fr-en" (click)="onLanguageChange('fr', 'en')">
+          <span class="flag">🇫🇷</span>
+          <span class="arrow">→</span>
+          <span class="flag">🇬🇧</span>
+          <span class="label">French to English</span>
+        </button>
+        <button class="language-button en-fr" (click)="onLanguageChange('en', 'fr')">
+          <span class="flag">🇬🇧</span>
+          <span class="arrow">→</span>
+          <span class="flag">🇫🇷</span>
+          <span class="label">English to French</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back to top button -->
+  <button class="back-to-top" (click)="scrollToTop()" [class.visible]="showBackToTop">
+    <i class="fa fa-arrow-up"></i>
+  </button>
+</section>
+
+<!-- Update the Read Later modal with email reminder info -->
+<div class="modal" [class.show]="showReadLaterModal" [style.display]="showReadLaterModal ? 'block' : 'none'" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Save for Later Reading</h5>
+        <button type="button" class="close" (click)="closeReadLaterModal()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>When would you like to be reminded to read "{{ selectedArticleForReadLater?.title }}"?</p>
+        <p class="text-info"><i class="fa fa-envelope"></i> An email will be sent to your registered address at the specified time.</p>
+       
+        <div class="form-group">
+          <label for="reminderDate">Reminder Date and Time:</label>
+          <input
+            type="datetime-local"
+            class="form-control"
+            id="reminderDate"
+            [(ngModel)]="reminderDate"
+            required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeReadLaterModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="addToReadLater()">
+          <i class="fa fa-bookmark"></i> Save for Later
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Analysis Modal -->
+<div class="modal" *ngIf="showAnalysisModal" [class.show]="showAnalysisModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Article Analysis</h5>
+        <button type="button" class="close" (click)="closeAnalysisModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="analysisLoading" class="text-center p-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <p class="mt-2">Analyzing article...</p>
+        </div>
+       
+        <div *ngIf="!analysisLoading && analysisResult">
+          <div *ngIf="analysisResult.error" class="alert alert-danger">
+            {{ analysisResult.error }}
+          </div>
+         
+          <div *ngIf="!analysisResult.error">
+            <!-- Readability Analysis -->
+            <div class="card mb-3">
+              <div class="card-header bg-light">
+                <h5>Readability Analysis</h5>
+              </div>
+              <div class="card-body">
+                <p>{{ analysisResult.readability }}</p>
+              </div>
+            </div>
+           
+            <!-- Improvement Suggestions -->
+            <div class="card mb-3">
+              <div class="card-header bg-light">
+                <h5>Improvement Suggestions</h5>
+              </div>
+              <div class="card-body">
+                <p [innerHTML]="analysisResult.improvement_suggestions | lineToBr"></p>
+              </div>
+            </div>
+           
+            <!-- Suggested Tags -->
+            <div class="card mb-3" *ngIf="analysisResult.suggested_tags && analysisResult.suggested_tags.length > 0">
+              <div class="card-header bg-light">
+                <h5>Suggested Tags</h5>
+              </div>
+              <div class="card-body">
+                <div class="d-flex flex-wrap">
+                  <span class="badge badge-info m-1" *ngFor="let tag of analysisResult.suggested_tags">
+                    {{ tag }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAnalysisModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chatbot Component -->
+<div class="chatbot-container" [class.open]="showChatbot">
+  <div class="chatbot-header">
+    <h3>BrainWave Assistant</h3>
+    <button class="close-button" (click)="toggleChatbot()">
+      <i class="fa fa-times"></i>
+    </button>
+  </div>
+  <div class="chatbot-messages" #chatMessages>
+    <div *ngFor="let msg of botMessages"
+         [ngClass]="{'user-message': msg.isUser, 'bot-message': !msg.isUser}">
+      <div class="message-content">
+        <p>{{ msg.content }}</p>
+       
+        <!-- Display recommended articles if available -->
+        <div *ngIf="!msg.isUser && msg.data?.articles?.length > 0" class="recommendations">
+          <h4>Articles recommandés:</h4>
+          <ul>
+            <li *ngFor="let article of msg.data.articles">
+              <a [routerLink]="['/articles', article.id]">{{ article.title }}</a>
+            </li>
+          </ul>
+        </div>
+       
+        <!-- Display tags if available -->
+        <div *ngIf="!msg.isUser && msg.data?.tags?.length > 0" class="tags-info">
+          <h4>Tags pertinents:</h4>
+          <div class="tags-list">
+            <span *ngFor="let tag of msg.data.tags" class="tag">{{ tag.name }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="message-time">
+        {{ msg.timestamp | date:'shortTime' }}
+      </div>
+    </div>
+   
+    <div *ngIf="isChatbotTyping" class="typing-indicator">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+  <div class="chatbot-input">
+    <input
+      type="text"
+      [(ngModel)]="chatbotInput"
+      placeholder="Ask me about articles..."
+      (keyup.enter)="sendChatbotMessage()"
+    >
+    <button (click)="sendChatbotMessage()" [disabled]="isChatbotTyping">
+      <i class="fa fa-paper-plane"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Modal backdrop -->
+<div class="modal-backdrop fade show" *ngIf="showAnalysisModal || showReadLaterModal"></div>
+
+<style>
+  /* Base Styles & Variables */
+  :root {
+    --primary: #4361ee;
+    --primary-light: #4895ef;
+    --primary-dark: #3f37c9;
+    --secondary: #4cc9f0;
+    --success: #4caf50;
+    --info: #2196f3;
+    --warning: #ff9800;
+    --danger: #f44336;
+    --dark: #343a40;
+    --light: #f8f9fa;
+    --gray: #6c757d;
+    --gray-light: #e9ecef;
+  }
+
+  /* Enhanced General Styling */
+  .article-page {
+    background-color: #aaabab;
+    background-image:
+      linear-gradient(120deg, rgba(240, 240, 240, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%),
+      url('https://source.unsplash.com/random/1920x1080/?paper');
+    background-attachment: fixed;
+    background-size: cover;
+    min-height: 100vh;
+    position: relative;
+    padding-bottom: 80px;
+  }
+ 
+  /* Enhanced Header Section */
+  .section-header {
+    position: relative;
+    padding: 2rem 0;
+  }
+ 
+  .text-gradient {
+    background: linear-gradient(to right, var(--primary-dark), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    position: relative;
+    display: inline-block;
+  }
+ 
+  .header-decoration {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+  }
+ 
+  .header-decoration span {
+    display: block;
+    height: 6px;
+    border-radius: 3px;
+  }
+ 
+  .header-decoration span:nth-child(1) {
+    width: 30px;
+    background-color: var(--primary-dark);
+  }
+ 
+  .header-decoration span:nth-child(2) {
+    width: 60px;
+    background-color: var(--primary);
+  }
+ 
+  .header-decoration span:nth-child(3) {
+    width: 30px;
+    background-color: var(--secondary);
+  }
+ 
+  /* Enhanced Filter Section */
+  .filter-section {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+    transition: box-shadow 0.3s ease;
+  }
+ 
+  .filter-section:hover {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  }
+ 
+  .form-label {
+    color: var(--dark);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+ 
+  .form-select, .form-control {
+    border: 1px solid #e0e0e0;
+    padding: 12px 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+ 
+  .form-select:focus, .form-control:focus {
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+    border-color: var(--primary);
+  }
+ 
+  /* Improved Action Buttons */
+  .action-button {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    background-color: white;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--dark);
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    border: 1px solid #f0f0f0;
+  }
+ 
+  .action-button .icon-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.5rem;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+  }
+ 
+  .add-button .icon-container {
+    background-color: rgba(67, 97, 238, 0.1);
+    color: var(--primary);
+  }
+ 
+  .favorites-button .icon-container {
+    background-color: rgba(255, 77, 109, 0.1);
+    color: #ff4d6d;
+  }
+ 
+  .action-button .icon-container i {
+    font-size: 1.75rem;
+  }
+ 
+  .action-button .content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+  }
+ 
+  .action-button .content p {
+    color: var (--gray);
+    margin-bottom: 0;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+  }
+ 
+  .action-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  }
+ 
+  .add-button:hover {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+ 
+  .add-button:hover .icon-container {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+ 
+  .add-button:hover .content p {
+    color: rgba(255, 255, 255, 0.8);
+  }
+ 
+  .favorites-button:hover {
+    background-color: #ff4d6d;
+    color: white;
+    border-color: #ff4d6d;
+  }
+ 
+  .favorites-button:hover .icon-container {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+ 
+  .favorites-button:hover .content p {
+    color: rgba(255, 255, 255, 0.8);
+  }
+ 
+  .hover-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent 0%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 100%);
+    background-size: 250% 250%;
+    transition: all 0.6s ease;
+    pointer-events: none;
+  }
+ 
+  .action-button:hover .hover-effect {
+    background-position: 100% 100%;
+  }
+ 
+  /* Enhanced Article Cards */
+  .article-card {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    height: 100%;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #f0f0f0;
+  }
+ 
+  .article-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+ 
+  .article-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+  }
+ 
+  .article-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s ease;
+  }
+ 
+  .article-card:hover .article-image img {
+    transform: scale(1.1);
+  }
+ 
+  .article-status {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 3;
+  }
+ 
+  .category-badge, .status-badge {
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+ 
+  .badge-news {
+    background: linear-gradient(to right, #2962ff, #2979ff);
+    color: white;
+  }
+ 
+  .badge-success-story {
+    background: linear-gradient(to right, #00c853, #00e676);
+    color: white;
+  }
+ 
+  .badge-blog {
+    background: linear-gradient(to right, #ff6d00, #ff9100);
+    color: white;
+  }
+ 
+  /* Status badges */
+  .badge-draft {
+    background-color: #9e9e9e;
+    color: white;
+  }
+ 
+  .badge-pending {
+    background-color: #ffc107;
+    color: #212121;
+  }
+ 
+  .badge-published {
+    background-color: #4caf50;
+    color: white;
+  }
+ 
+  .badge-archived {
+    background-color: #607d8b;
+    color: white;
+  }
+ 
+  .article-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    position: relative;
+    z-index: 2;
+  }
+ 
+  .article-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    color: var(--dark);
+  }
+ 
+  .article-info {
+    display: flex;
+    justify-content: space-between;
+    color: var(--gray);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+ 
+  .article-date, .article-stats {
+    display: flex;
+    align-items: center;
+  }
+ 
+  .article-stats {
+    display: flex;
+    gap: 12px;
+  }
+ 
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+ 
+  .article-date i, .stat i {
+    color: var(--primary-light);
+    margin-right: 5px;
+  }
+ 
+  /* Enhanced buttons within article */
+  .article-description {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+ 
+  .tts-button, .read-later-button {
+    flex: 1;
+    border: none;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: rgb(94, 92, 92);
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+ 
+  .tts-button {
+    background: linear-gradient(to right, var(--primary), var(--primary-light));
+  }
+ 
+  .read-later-button {
+    background: linear-gradient(to right, var(--info), var(--secondary));
+  }
+ 
+  .read-later-button.saved {
+    background: linear-gradient(to right, var(--success), #7cb342);
+  }
+ 
+  .tts-button:hover, .read-later-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  }
+ 
+  /* Enhanced action buttons */
+  .action-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+ 
+  .edit-button, .delete-button, .analyze-button {
+    flex: 1;
+    border: none;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: white;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+ 
+  .edit-button {
+    background: linear-gradient(to right, #fb8c00, #ff9800);
+  }
+ 
+  .delete-button {
+    background: linear-gradient(to right, #e53935, #f44336);
+  }
+ 
+  .analyze-button {
+    background: linear-gradient(to right, #0097a7, #00bcd4);
+  }
+ 
+  .edit-button:hover, .delete-button:hover, .analyze-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  }
+ 
+  /* Reactions section */
+  .reactions-container {
+    position: relative;
+  }
+ 
+  .reaction-trigger {
+    width: 100%;
+    border: none;
+    background-color: #f5f5f5;
+    color: var(--dark);
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+  }
+ 
+  .reaction-trigger:hover {
+    background-color: #e0e0e0;
+  }
+ 
+  .reaction-trigger i {
+    color: #ff9800;
+  }
+ 
+  .reaction-options {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    padding: 15px;
+    margin-bottom: 10px;
+    z-index: 10;
+    min-width: 250px;
+    animation: fadeIn 0.3s ease;
+  }
+ 
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, 10px);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+  }
+ 
+  .reaction-options::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-top: 8px solid white;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+  }
+ 
+  .reaction-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+ 
+  .reaction-emoji {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background-color: #f5f5f5;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+ 
+  .reaction-emoji:hover {
+    transform: scale(1.2) translateY(-3px);
+  }
+ 
+  .reaction-emoji.active {
+    background-color: #e3f2fd;
+    box-shadow: 0 0 0 2px var(--primary);
+  }
+ 
+  .cancel-reaction-button {
+    width: 100%;
+    border: none;
+    background-color: #f5f5f5;
+    color: var(--gray);
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+  }
+ 
+  .cancel-reaction-button:hover {
+    background-color: #e0e0e0;
+  }
+ 
+  .user-reaction {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    padding: 8px;
+    margin-top: 10px;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: var (--gray);
+  }
+ 
+  .reaction-emoji-small {
+    font-size: 1.125rem;
+  }
+ 
+  /* Card overlay for enhanced hover effect */
+  .card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+ 
+  .article-card:hover .card-overlay {
+    opacity: 1;
+  }
+ 
+  /* Enhanced Favorite Button */
+  .favorite-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background-color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 3;
+  }
+ 
+  .favorite-button i {
+    font-size: 20px;
+    color: #9e9e9e;
+    transition: all 0.3s ease;
+  }
+ 
+  .favorite-button:hover {
+    transform: scale(1.1);
+    background-color: #fff8f8;
+  }
+ 
+  .favorite-button:hover i {
+    color: #ff4d6d;
+  }
+ 
+  .favorite-button.favorited {
+    background-color: #ff4d6d;
+  }
+ 
+  .favorite-button.favorited i {
+    color: white;
+    animation: heartBeat 0.6s ease;
+  }
+ 
+  @keyframes heartBeat {
+    0% { transform: scale(1); }
+    15% { transform: scale(1.3); }
+    30% { transform: scale(0.95); }
+    45% { transform: scale(1.2); }
+    60% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+ 
+  /* Enhanced Language Section */
+  .language-selector {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+    margin-top: 3rem;
+  }
+ 
+  .language-selector h3 {
+    font-weight: 600;
+    color: var (--dark);
+  }
+ 
+  .language-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+  }
+ 
+  .language-button {
+    border: none;
+    padding: 15px 25px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+ 
+  .language-button.fr-en {
+    background-color: #e7f5ff;
+    color: #1c7ed6;
+  }
+ 
+  .language-button.en-fr {
+    background-color: #f1f8e9;
+    color: #689f38;
+  }
+ 
+  .language-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+ 
+  .language-button .flag {
+    font-size: 1.5rem;
+  }
+ 
+  .language-button .arrow {
+    font-size: 1rem;
+    opacity: 0.7;
+  }
+ 
+  /* Empty state styling */
+  .empty-state {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+    padding: 3rem;
+    text-align: center;
+    margin: 2rem 0;
+  }
+ 
+  .empty-state-icon {
+    width: 80px;
+    height: 80px;
+    background-color: #f5f5f5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    color: var(--gray);
+  }
+ 
+  .empty-state h3 {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--dark);
+  }
+ 
+  .empty-state p {
+    color: var(--gray);
+    max-width: 350px;
+    margin: 0 auto;
+  }
+ 
+  /* Back to top button */
+  .back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 100px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    z-index: 900;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+  }
+ 
+  .back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+ 
+  .back-to-top:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-5px);
+  }
+ 
+  /* Modal Enhancements */
+  .modal-content {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+  }
+ 
+  .modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 1.25rem 1.5rem;
+  }
+ 
+  .modal-body {
+    padding: 1.5rem;
+  }
+ 
+  .modal-footer {
+    border-top: 1px solid #f0f0f0;
+    padding: 1.25rem 1.5rem;
+  }
+ 
+  .modal-title {
+    font-weight: 600;
+    color: var(--dark);
+  }
+ 
+  .modal .close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--gray);
+    transition: color 0.3s ease;
+  }
+ 
+  .modal .close:hover {
+    color: var(--dark);
+  }
+ 
+  .modal .btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+ 
+  .modal .btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+  }
+ 
+  .modal .btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+  }
+ 
+  .modal .btn-secondary {
+    background-color: #e9ecef;
+    border-color: #e9ecef;
+    color: var(--dark);
+  }
+ 
+  .modal .btn-secondary:hover {
+    background-color: #dee2e6;
+    border-color: #dee2e6;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+ 
+  /* Enhanced Notifications Styling */
+  .notifications-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+ 
+  .notifications-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color:  #4895ef;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+ 
+  .notifications-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  }
+ 
+  .notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(to right, #ff4d6d, #f44336);
+    color:  #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+    animation: pulse 2s infinite;
+  }
+ 
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(244, 67, 54, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
+    }
+  }
+ 
+  .notifications-panel {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    width: 350px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    animation: slideIn 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+  }
+ 
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+ 
+  .notifications-header {
+    background: linear-gradient(to right, #4361ee, #4895ef);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+ 
+  .notifications-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+ 
+  .notifications-header .close-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+ 
+  .notifications-header .close-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+  }
+ 
+  .notifications-body {
+    padding: 0;
+    overflow-y: auto;
+    max-height: 60vh;
+  }
+ 
+  .no-notifications {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--gray);
+  }
+ 
+  .empty-notification-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #e3f2fd;
+    color: #2196f3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 15px;
+  }
+ 
+  .notification-item {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    gap: 15px;
+    transition: background-color 0.2s ease;
+    animation: fadeIn 0.5s ease;
+  }
+ 
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+ 
+  .notification-item:hover {
+    background-color: #f5f9ff;
+  }
+ 
+  .notification-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+ 
+  .notification-content {
+    flex: 1;
+  }
+ 
+  .notification-content h4 {
+    margin: 0 0 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--dark);
+    line-height: 1.4;
+  }
+ 
+  .notification-message {
+    margin: 0 0 10px;
+    color: var(--gray);
+    font-size: 0.875rem;
+  }
+ 
+  .notification-actions {
+    display: flex;
+    gap: 10px;
+  }
+ 
+  .read-button, .dismiss-button {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+ 
+  .read-button {
+    background: linear-gradient(to right, #4361ee, #4895ef);
+    color: white;
+    border: none;
+    flex: 1;
+  }
+ 
+  .read-button:hover {
+    box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+    transform: translateY(-2px);
+  }
+ 
+  .dismiss-button {
+    background-color: #f8f9fa;
+    color: var(--gray);
+    border: 1px solid #e9ecef;
+  }
+ 
+  .dismiss-button:hover {
+    background-color: #e9ecef;
+  }
+ 
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .language-buttons {
+      flex-direction: column;
+    }
+   
+    .action-row {
+      flex-wrap: wrap;
+    }
+   
+    .edit-button, .delete-button, .analyze-button {
+      flex: 1 0 calc(50% - 5px);
+    }
+   
+    .back-to-top {
+      bottom: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+  }
+ 
+  @media (max-width: 576px) {
+    .article-image {
+      height: 180px;
+    }
+   
+    .article-content {
+      padding: 1rem;
+    }
+   
+    .article-title {
+      font-size: 1.125rem;
+    }
+  }
+</style></div>
+  <app-front-footer></app-front-footer>
+</body>

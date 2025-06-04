@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Corona Admin</title>
+    <link rel="stylesheet" href="/assets/templateback/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="/assets/templateback/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="/assets/templateback/vendors/jvectormap/jquery-jvectormap.css">
+    <link rel="stylesheet" href="/assets/templateback/vendors/flag-icon-css/css/flag-icon.min.css">
+    <link rel="stylesheet" href="/assets/templateback/vendors/owl-carousel-2/owl.carousel.min.css">
+    <link rel="stylesheet" href="/assets/templateback/vendors/owl-carousel-2/owl.theme.default.min.css">
+    <link rel="stylesheet" href="/assets/templateback/css/style.css">
+    <link rel="shortcut icon" href="/assets/templateback/images/favicon.png" />
+</head>
+
+<body>
+
+                <div class="content-wrapper">
+                    <div class="row ">
+                        <div class="col-12 grid-margin">
+                            <div class="card">
+                                <div class="card-body">
+
+                                    <div>
+                                        <label class="table" for="userId">User ID:</label>
+                                        <input type="number" [(ngModel)]="selectedUserId" placeholder="Enter User ID" />
+                                        <button style="margin-left: 10px; margin-bottom: 3px;" class="btn btn-primary" (click)="getCourseRecommendation(selectedUserId)">Get Recommendation</button>
+                                    </div>
+
+                                    <div *ngIf="recommendation" class="table">
+                                        <p><strong>Recommendation:</strong> {{ recommendation }}</p>
+                                        <p style="margin-top: 2px;"><strong>Score Per Category:</strong> {{ quizScore | number: '1.2-2' }}</p>
+                                    </div>
+
+                                    <div *ngIf="recommendedCourses.length > 0" class="table">
+                                        <h3>Recommended Courses</h3>
+                                        <div class="row"> 
+                                            <div *ngFor="let course of recommendedCourses" class="col-md-4 mb-4"> 
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title" style="color: black;">{{ course.title }}</h5>
+                                                        <p class="card-text">{{ course.description }}</p>
+                                                        <p class="card-text"><small class="text-muted">Level: {{ course.level }}</small></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+    <script src="/assets/templateback/vendors/js/vendor.bundle.base.js"></script>
+    <script src="/assets/templateback/vendors/chart.js/Chart.min.js"></script>
+    <script src="/assets/templateback/vendors/progressbar.js/progressbar.min.js"></script>
+    <script src="/assets/templateback/vendors/jvectormap/jquery-jvectormap.min.js"></script>
+    <script src="/assets/templateback/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+    <script src="/assets/templateback/vendors/owl-carousel-2/owl.carousel.min.js"></script>
+    <script src="/assets/templateback/js/off-canvas.js"></script>
+    <script src="/assets/templateback/js/hoverable-collapse.js"></script>
+    <script src="/assets/templateback/js/misc.js"></script>
+    <script src="/assets/templateback/js/settings.js"></script>
+    <script src="/assets/templateback/js/todolist.js"></script>
+    <script src="/assets/templateback/js/dashboard.js"></script>
+</body>
+
+</html>

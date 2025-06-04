@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-9">
+                      <div class="d-flex align-items-center align-self-start">
+                        <h3 class="mb-0" style="color: white;">{{ totalUsers }}</h3>
+                      </div>
+                    </div>
+                    <div class="col-3">
+                      <div class="icon icon-box-success ">
+                        <span class="mdi mdi-arrow-top-right icon-item"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <h6 class="text-muted font-weight-normal">Total Users</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-9">
+                      <div class="d-flex align-items-center align-self-start">
+                        <h3 class="mb-0" style="color: white;">{{ activeUsers }}</h3>
+                        <p class="text-success ml-2 mb-0 font-weight-medium">
+                          <ng-container *ngIf="activeUsersChange !== null && activeUsersChange >= 0">+{{ activeUsersChange }}%</ng-container>
+                          <ng-container *ngIf="activeUsersChange !== null && activeUsersChange < 0">{{ activeUsersChange }}%</ng-container>
+                        </p>
+                      </div>
+                    </div>
+                    <div class="col-3">
+                      <div class="icon icon-box-success">
+                        <span class="mdi mdi-account-check icon-item"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <h6 class="text-muted font-weight-normal">Active Users</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-9">
+                      <div class="d-flex align-items-center align-self-start">
+                        <h3 class="mb-0" style="color: white;">{{ newUsersToday }}</h3>
+                      </div>
+                    </div>
+                    <div class="col-3">
+                      <div class="icon icon-box-success">
+                        <span class="mdi mdi-arrow-top-right icon-item"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <h6 class="text-muted font-weight-normal">New Users Today</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-9">
+                      <div class="d-flex align-items-center align-self-start">
+                        <h3 class="mb-0" style="color: white;">{{ bannedUsers }}</h3>
+                      </div>
+                    </div>
+                    <div class="col-3">
+                      <div class="icon icon-box-danger ">
+                        <span class="mdi mdi-cancel icon-item"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <h6 class="text-muted font-weight-normal">Banned Users</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-sm-12 grid-margin" style="text-align: center;">
+              <div class="card">
+                <div class="card-body" >
+                  <h5 style="color: white;">New Users</h5>
+                  <div class="row">
+                    <div class="col-8 col-sm-12 col-xl-8 my-auto">
+                      <div class="d-flex d-sm-block d-md-flex align-items-center">
+                        <h2 class="mb-0" style="color: white;margin-left: 75%;">{{ newUsersToday }}</h2>
+                      </div>
+                      <h6 class="text-muted font-weight-normal" style="margin-left: 55%;">Registered today</h6>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Number Of Users by role</h4>
+                  <canvas #barChartCanvasNewUsers></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex flex-row justify-content-between">
+                    <h4 class="card-title mb-1">Users by Status</h4>
+                    <p class="text-muted mb-1">Approved</p><p class="text-muted mb-1">Pending</p>
+                  </div>
+                  <div class="row">
+                    <div class="col-12">
+                      <canvas #pieChartCanvasRole width="50" height="50"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+
+            </div>
+          
+          <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+              <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © PIBrainWave.com 2025</span>
+              <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Created By DeltaDev</span>
+            </div>
+          </footer>
+        </div>
+
+    </body>
+
+</html>

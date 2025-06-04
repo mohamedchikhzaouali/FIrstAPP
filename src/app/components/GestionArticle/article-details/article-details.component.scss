@@ -1,0 +1,129 @@
+.meetings-page {
+  padding-top: 120px;
+  padding-bottom: 120px;
+
+  .meeting-single-item {
+    border-radius: 25px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    
+    .thumb {
+      position: relative;
+      
+      img {
+        width: 100%;
+        border-top-right-radius: 25px;
+        border-top-left-radius: 25px;
+        height: 400px;
+        object-fit: cover;
+      }
+      
+      .price {
+        position: absolute;
+        left: 20px;
+        top: 20px;
+        
+        span {
+          background-color: #ff3b2c;
+          color: #fff;
+          padding: 8px 12px;
+          border-radius: 5px;
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+      
+      .date {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        
+        h6 {
+          background-color: #fff;
+          color: #1f272b;
+          padding: 8px 12px;
+          border-radius: 5px;
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+    }
+    
+    .down-content {
+      padding: 30px;
+      
+      h4 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      
+      .info-item {
+        .stats {
+          text-align: center;
+          background-color: #f7f7f7;
+          padding: 15px;
+          border-radius: 10px;
+          
+          i {
+            color: #ff3b2c;
+            margin-right: 5px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.resource-card {
+  .card {
+    height: 100%;
+    
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+      overflow: hidden;
+      
+      iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+    }
+    
+    .resource-content {
+      img {
+        max-height: 300px;
+        object-fit: contain;
+      }
+    }
+    
+    .resource-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      
+      .btn {
+        i {
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+}
+
+.gradient-button {
+  background: linear-gradient(105deg, #3ac3ff 0%, #ff3b2c 100%);
+  color: #fff;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all .3s;
+  
+  &:hover {
+    background: linear-gradient(105deg, #ff3b2c 0%, #3ac3ff 100%);
+  }
+} 

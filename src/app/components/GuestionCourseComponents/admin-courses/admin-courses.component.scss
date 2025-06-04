@@ -1,0 +1,97 @@
+body {
+    background-color: #121212; /* Noir profond */
+    color: #ffffff; /* Texte blanc */
+  }
+  
+  .container {
+    max-width: 1200px;
+    padding: 20px;
+  }
+  
+  .search-input {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 10px;
+  }
+  
+  .search-input::placeholder {
+    color: #bbb;
+  }
+  
+  .btn-outline-light,
+  .btn-outline-info,
+  .btn-outline-secondary {
+    color: white;
+    border-color: #444;
+  }
+  
+  .btn-outline-light:hover,
+  .btn-outline-info:hover,
+  .btn-outline-secondary:hover {
+    background-color: #17a2b8;
+    color: #fff;
+  }
+  
+  .course-card {
+    background-color: #1e1e1e;
+    color: #fff;
+    border: 1px solid #333;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(255, 255, 255, 0.3);
+  }
+  
+  .course-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+  
+  .card-body .btn {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+  }
+  
+  .card-footer .btn {
+    width: 48%;
+  }
+  
+  .alert-warning {
+    background-color: #ffcc00;
+    color: #222;
+    border-radius: 5px;
+  }
+  
+  .modal-content {
+    border-radius: 8px;
+  }
+  
+  .modal-header {
+    background-color: #333;
+    color: #fff;
+  }
+  
+  .modal-body {
+    background-color: #222;
+  }
+  
+  input, select, textarea {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 8px;
+  }
+  
+  input:focus, select:focus, textarea:focus {
+    border-color: #17a2b8;
+  }
+  #editCourseModal {
+    display: block !important;
+    opacity: 1 !important;
+  }
+  

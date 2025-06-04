@@ -1,0 +1,75 @@
+/* Style de base pour le menu déroulant */
+ul.nav li.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+ul.nav li.dropdown a {
+    text-decoration: none;
+    display: block;
+    font-weight: 450;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Changer de couleur au survol du lien "Courses" */
+ul.nav li.dropdown a:hover {
+    color: #007bff; /* Couleur bleu vif pour le survol */
+    background-color: rgba(0, 123, 255, 0.1); /* Fond léger pour l'effet hover */
+    border-radius: 4px;
+}
+
+/* Style pour le contenu du menu déroulant */
+ul.nav li.dropdown .dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #ffffff;
+    min-width: 250px; /* Largeur minimale */
+    box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.1); /* Ombre douce */
+    border-radius: 6px; /* Coins arrondis */
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s 0.3s, transform 0.3s ease;
+    transform: translateY(10px);
+}
+
+/* Affichage du menu déroulant lorsque le parent est survolé */
+ul.nav li.dropdown:hover .dropdown-content {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, visibility 0s, transform 0.3s ease;
+}
+
+/* Style des liens dans le menu déroulant */
+ul.nav li.dropdown .dropdown-content a {
+    padding: 12px 20px;
+    color: #333;
+    text-decoration: none;
+    display: block;
+    font-size: 15px;
+    font-weight: 400;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Effet de survol des éléments du menu */
+ul.nav li.dropdown .dropdown-content a:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+    border-radius: 4px;
+}
+
+/* Option active dans le menu */
+ul.nav li.dropdown .dropdown-content a.active {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Cacher le menu par défaut */
+ul.nav li.dropdown:hover .dropdown-content {
+    display: block;
+}

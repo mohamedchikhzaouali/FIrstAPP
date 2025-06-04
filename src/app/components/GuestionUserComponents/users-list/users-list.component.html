@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Corona Admin</title>
+    <link rel="stylesheet" href="/assets/templateback/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="/assets/templateback/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="/assets/templateback/vendors/jvectormap/jquery-jvectormap.css">
+    <link rel="stylesheet" href="/assets/templateback/vendors/flag-icon-css/css/flag-icon.min.css">
+    <link rel="stylesheet" href="/assets/templateback/vendors/owl-carousel-2/owl.carousel.min.css">
+    <link rel="stylesheet" href="/assets/templateback/vendors/owl-carousel-2/owl.theme.default.min.css">
+    <link rel="stylesheet" href="/assets/templateback/css/style.css">
+    <link rel="shortcut icon" href="/assets/templateback/images/favicon.png" />
+</head>
+
+<body>
+                <div class="content-wrapper">
+                    <div class="row ">
+                        <div class="col-12 grid-margin">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">List Of Users</h4>
+                                    <div class="buttons-wrapper">
+                                        <button type="button" class="btn btn-outline-info" (click)="filterContent('all')" style="margin-left: 35px;">
+                                            <i class="fa fa-globe text-blue"></i>ALL
+                                        </button>
+                                        <button type="button" class="btn btn-outline-info" (click)="filterContent('teacher')" style="margin-left: 10px;">
+                                            <i class="fa fa-chalkboard-teacher"></i>Teachers
+                                        </button>
+                                        <button type="button" class="btn btn-outline-info" (click)="filterContent('student')" style="margin-left: 10px;">
+                                            <i class="fa fa-user-graduate"></i>Students
+                                        </button>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>
+                                                        <div class="form-check form-check-muted m-0">
+                                                            <label class="form-check-label">
+                                                                <input type="checkbox" class="form-check-input">
+                                                            </label>
+                                                        </div>
+                                                    </th>
+                                                    <th> User </th>
+                                                    <th> Status </th>
+                                                    <th> Email </th>
+                                                    <th> Actions </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let user of pagedUsers">
+                                                    <td>
+                                                        <div class="form-check form-check-muted m-0">
+                                                            <label class="form-check-label">
+                                                                <input type="checkbox" class="form-check-input">
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <img [src]="user?.picture" alt="" />
+                                                        <span class="pl-2">{{ user?.name }} {{ user?.surname }}</span>
+                                                        <span class="user-subhead">{{ user?.role }}</span>
+                                                    </td>
+                                                    <td [ngClass]="getStatusClass(user?.status)"> {{ user?.status }} </td>
+                                                    <td> {{ user?.email }}</td>
+                                                    <td style="width: 20%;">
+                                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                                            <a href="javascript:void(0)" class="table-link text-warning" (click)="loadusercv(user)">
+                                                                <span class="fa-stack">
+                                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                                    <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
+                                                                </span>
+                                                            </a>
+                                                            <button *ngIf="!user.banned" class="btn btn-primary" (click)="confirmBan(user)">
+                                                                <span class="user-icon">
+                                                                    <i class="fa fa-user"></i>
+                                                                    <i class="fa fa-minus red-icon"></i>Ban
+                                                                </span>
+                                                            </button>
+                                                            <button *ngIf="user.banned" class="btn btn-primary" (click)="confirmUnBan(user)">
+                                                                <span class="user-icon">
+                                                                    <i class="fa fa-user"></i>
+                                                                    <i class="fa fa-plus green-icon"></i>Unban
+                                                                </span>
+                                                            </button>
+                                                        </div>
+                                                        <div *ngIf="userCvUrl">
+                                                            <iframe [src]="userCvUrl" width="600" height="400"></iframe>
+                                                        </div>
+                                                        <ng-container *ngIf="selectedRole === 'teacher' && user?.role.toLowerCase() === 'teacher'">
+                                                            <ng-container *ngIf="user?.status === 'PENDING'">
+                                                                <button (click)="approveUser(user)" class="btn btn-success btn-sm" data-bs-toggle="tooltip" title="Approve teacher">
+                                                                    <i class="fa fa-check fa-sm"></i>
+                                                                </button>
+                                                                <button (click)="declineUser(user)" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Reject teacher">
+                                                                    <i class="fa fa-times fa-sm"></i>
+                                                                </button>
+                                                            </ng-container>
+                                                        </ng-container>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="pagination-controls" style="">
+                                        <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+                                        <span style="color: greenyellow;">Page {{ currentPage }} of {{ totalPages }}</span>
+                                        <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+    </div>
+    <script src="/assets/templateback/vendors/js/vendor.bundle.base.js"></script>
+    <script src="/assets/templateback/vendors/chart.js/Chart.min.js"></script>
+    <script src="/assets/templateback/vendors/progressbar.js/progressbar.min.js"></script>
+    <script src="/assets/templateback/vendors/jvectormap/jquery-jvectormap.min.js"></script>
+    <script src="/assets/templateback/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+    <script src="/assets/templateback/vendors/owl-carousel-2/owl.carousel.min.js"></script>
+    <script src="/assets/templateback/js/off-canvas.js"></script>
+    <script src="/assets/templateback/js/hoverable-collapse.js"></script>
+    <script src="/assets/templateback/js/misc.js"></script>
+    <script src="/assets/templateback/js/settings.js"></script>
+    <script src="/assets/templateback/js/todolist.js"></script>
+    <script src="/assets/templateback/js/dashboard.js"></script>
+</body>
+
+</html>

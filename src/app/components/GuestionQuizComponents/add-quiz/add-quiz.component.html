@@ -1,0 +1,118 @@
+<body>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <div class="page-content">
+
+    <div class="container">
+      <br><br>
+      <h2 class="styled-titre">Add Quizzes</h2>
+      <br>
+
+      <button type="button" class="btn btn-modern-back" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+
+      <form [formGroup]="quizForm" (ngSubmit)="addQuizzes()">
+        <div formArrayName="quizzesArray">
+          <div *ngFor="let quizGroup of quizzesArray.controls; let i = index" [formGroupName]="i" class="response-container">
+            <div class="response-header">
+              <h3 class="styled-response">Quiz {{ i + 1 }}</h3>
+              <button type="button" class="delete-response-button" (click)="removeQuiz(i)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+
+            <div class="mb-3">
+              <label for="type{{i}}" class="styled-titres-label">Type of Quiz</label>
+              <select
+                id="type{{i}}"
+                class="form-control"
+                formControlName="type"
+                (change)="onQuizTypeChange(i)"
+                [ngClass]="{'certified-quiz-text': quizGroup.get('type')?.value === 'CERTIFIED_QUIZ', 'training-quiz-text': quizGroup.get('type')?.value === 'TRAINING_QUIZ'}"
+              >
+                <option *ngFor="let type of quizTypes" [value]="type">{{ type }}</option>
+              </select>
+              <div *ngIf="quizGroup.get('type')?.invalid && (quizGroup.get('type')?.dirty || quizGroup.get('type')?.touched)" class="alert alert-danger">
+                Type of Quiz is required.
+              </div>
+            </div>
+
+            <ng-container *ngIf="quizGroup.get('type')?.value === 'CERTIFIED_QUIZ'">
+              <div class="form-group">
+                <label for="titleQuiz{{i}}" class="styled-titres-label">Quiz Title</label>
+                <input type="text" id="titleQuiz{{i}}" formControlName="titleQuiz" class="form-control">
+                <div *ngIf="quizGroup.get('titleQuiz')?.invalid && (quizGroup.get('titleQuiz')?.dirty || quizGroup.get('titleQuiz')?.touched)" class="alert alert-danger">
+                  The title is required.
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="duration{{i}}" class="styled-titres-label">Duration (HH:mm)</label>
+                <input id="duration{{i}}" formControlName="duration" type="time" class="form-control" required />
+                <div *ngIf="quizGroup.get('duration')?.invalid && (quizGroup.get('duration')?.dirty || quizGroup.get('duration')?.touched)" class="alert alert-danger">
+                  <div *ngIf="quizGroup.get('duration')?.errors?.['required']">
+                    The duration is required.
+                  </div>
+                  <div *ngIf="quizGroup.get('duration')?.errors?.['minDuration']">
+                    The duration must be at least 1 minute.
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="startDate{{i}}" class="styled-titres-label">Start Date</label>
+                <input type="datetime-local" id="startDate{{i}}" formControlName="startDate" class="form-control">
+                <div *ngIf="quizGroup.get('startDate')?.invalid && (quizGroup.get('startDate')?.dirty || quizGroup.get('startDate')?.touched)" class="alert alert-danger">
+                  The start date is required.
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="endDate{{i}}" class="styled-titres-label">End Date</label>
+                <input type="datetime-local" id="endDate{{i}}" formControlName="endDate" class="form-control">
+                <div *ngIf="quizGroup.get('endDate')?.invalid && (quizGroup.get('endDate')?.dirty || quizGroup.get('endDate')?.touched)" class="alert alert-danger">
+                  The end date is required.
+                </div>
+              </div>
+
+              <div *ngIf="quizGroup.errors?.['dateRange']" class="alert alert-danger">
+                {{ quizGroup.errors?.['dateRange'].message }}
+              </div>
+
+              <div class="form-group">
+                <label for="price{{i}}" class="styled-titres-label">Price</label>
+                <input type="text" id="price{{i}}" formControlName="price" class="form-control" (input)="onPriceInput($event)" />
+                <div *ngIf="quizGroup.get('price')?.invalid && (quizGroup.get('price')?.dirty || quizGroup.get('price')?.touched)" class="alert alert-danger">
+                  <div *ngIf="quizGroup.get('price')?.errors?.['required']">
+                    The price is required.
+                  </div>
+                  <div *ngIf="quizGroup.get('price')?.errors?.['invalidPrice']">
+                    The price must be a valid number (e.g., 10 or 10.50).
+                  </div>
+                  <div *ngIf="quizGroup.get('price')?.errors?.['min']">
+                    The price must be at least $1.
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="quizGroup.get('type')?.value === 'TRAINING_QUIZ'">
+              <div class="form-group">
+                <label for="titleQuiz{{i}}" class="styled-titres-label">Quiz Title</label>
+                <input type="text" id="titleQuiz{{i}}" formControlName="titleQuiz" class="form-control">
+                <div *ngIf="quizGroup.get('titleQuiz')?.invalid && (quizGroup.get('titleQuiz')?.dirty || quizGroup.get('titleQuiz')?.touched)" class="alert alert-danger">
+                  The title is required.
+                </div>
+              </div>
+            </ng-container>
+
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-secondary" (click)="addAnotherQuiz()">Add other Quiz +</button>
+        <button type="submit" class="btn btn-primary" [disabled]="quizForm.invalid">Add Quizzes</button>
+      </form>
+    </div>
+  </div>
+  <app-front-footer></app-front-footer>
+</body>

@@ -1,0 +1,35 @@
+.back-article-page {
+    padding: 20px; // Add padding around the section
+  
+    h2 {
+      margin-bottom: 20px; // Add margin below the title
+      font-size: 24px; // Font size for the title
+      font-weight: bold; // Make the title bold
+    }
+  
+    .card {
+      border-radius: 10px; // Round the corners of the card
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Add a shadow
+    }
+  
+    .table {
+      margin-top: 20px; // Add margin above the table
+      width: 100%; // Ensure the table takes the full width
+      border-collapse: collapse; // Avoid spaces between cells
+  
+      th, td {
+        text-align: center; // Center text in cells
+        padding: 12px; // Add padding to cells
+        border: 1px solid #dee2e6; // Border for cells
+      }
+  
+      th {
+        background-color: #f8f9fa; // Background color for the header
+        font-weight: bold; // Make the header bold
+      }
+  
+      tr:hover {
+        background-color: #f1f1f1; // Background color on hover
+      }
+    }
+  }

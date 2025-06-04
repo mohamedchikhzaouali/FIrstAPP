@@ -1,0 +1,160 @@
+// Variables (optional, but good practice)
+$primary-color: #007bff;
+$danger-color: #dc3545;
+$success-color: #198754; // Bootstrap 5 success color
+$info-color: #0dcaf0; // Bootstrap 5 info color
+$secondary-color: #6c757d;
+$light-gray: #f8f9fa;
+$white: #ffffff;
+$table-hover-bg: rgba(0, 123, 255, 0.075); // Lighter hover
+$border-radius: 0.375rem; // Bootstrap 5 default border-radius
+
+// Container style for centering the content
+.container {
+  max-width: 1200px; // Or your preferred max width
+  margin: 2rem auto; // Added top/bottom margin
+  padding: 1.5rem;   // Standard padding
+}
+
+// Edit form specific styling
+.edit-form {
+  background-color: $light-gray;
+  padding: 1.5rem;
+  border-radius: $border-radius;
+  border: 1px solid #dee2e6; // Light border
+  margin-bottom: 2rem !important; // Ensure spacing below form
+}
+
+h2.text-primary {
+  color: $primary-color !important;
+  margin-bottom: 1.5rem; // Consistent spacing
+}
+
+h3.text-primary {
+  color: $primary-color !important;
+  margin-bottom: 1rem;
+}
+
+// Table specific styles
+.table-responsive {
+  overflow-x: auto; // Ensure table scrolls horizontally on small screens
+}
+
+.table {
+  width: 100%;
+  background: $white;
+  border-radius: $border-radius;
+  overflow: hidden; // Keeps rounded corners effect
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); // Subtle shadow
+  margin-bottom: 0; // Remove default table margin if container provides padding
+  border-collapse: separate; // Needed for border-radius on thead/tbody
+  border-spacing: 0;
+}
+
+.table thead th {
+  background-color: $primary-color;
+  color: $white;
+  padding: 0.9rem 1rem; // Adjust padding
+  vertical-align: middle;
+  border-bottom: 2px solid darken($primary-color, 10%);
+  white-space: nowrap; // Prevent header text wrapping
+}
+
+.table td {
+  padding: 0.9rem 1rem; // Match header padding
+  vertical-align: middle; // Ensure vertical alignment
+  border-top: 1px solid #dee2e6; // Standard Bootstrap table border color
+}
+
+.table tbody tr:hover {
+  background-color: $table-hover-bg;
+}
+
+// Consistent button styling within table cells
+.table td .btn {
+  margin-right: 0.3rem; // Space between buttons
+  margin-bottom: 0.3rem; // Space if buttons wrap
+  padding: 0.25rem 0.5rem; // Smaller padding for btn-sm
+  font-size: 0.875rem; // Standard btn-sm font size
+  white-space: nowrap; // Prevent button text wrapping
+
+  // Ensure icons align well with text
+  .bi {
+    vertical-align: text-bottom; // Adjust if necessary for your icon font
+    margin-right: 0.25rem; // Space between icon and text
+    line-height: 1; // Prevent icon from affecting line height too much
+  }
+}
+
+// Specific hover effects for outline buttons
+.btn-outline-danger:hover {
+  background-color: $danger-color;
+  color: $white;
+}
+
+.btn-outline-info:hover {
+  background-color: $info-color;
+  color: $white; // Ensure text is readable on hover
+}
+
+.btn-outline-success:hover {
+  background-color: $success-color;
+  color: $white;
+}
+
+
+// Search bar and action buttons row
+.d-flex.justify-content-between {
+  margin-bottom: 1.5rem; // Consistent spacing
+  flex-wrap: wrap; // Allow wrapping on smaller screens
+  gap: 1rem; // Add gap between items when wrapping
+}
+
+.form-control.w-50 {
+  min-width: 250px; // Ensure search bar doesn't get too small
+  flex-grow: 1; // Allow search bar to take available space
+  max-width: 450px; // Optional max width
+}
+
+.d-flex.align-items-center {
+    // Styles for the container holding Refresh and Add Claim buttons
+    flex-wrap: nowrap; // Keep these buttons together if possible
+}
+
+// General adjustments
+// body styling is usually better placed in a global stylesheet (e.g., src/styles.scss)
+// Avoid styling body directly within a component's SCSS unless absolutely necessary.
+/*
+body {
+  margin: 0;
+  font-family: Arial, sans-serif; // Consider using Bootstrap's font stack
+  background-color: #f8f9fa; // Light background for the page
+}
+*/
+
+// Header/Footer styles also typically belong in their respective components or global styles
+// app-front-header { ... }
+// app-front-footer { ... }
+
+
+// Host styling (scoped to the component)
+:host {
+  display: block; // Ensures component takes block-level space
+  width: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    background-image: url('/assets/quiz-background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .page-content {
+    flex: 1; /* Permet au contenu de prendre tout l'espace disponible */
+  }

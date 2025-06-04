@@ -1,0 +1,24 @@
+<div class="container">
+    <h2>Liste des Avis</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Note</th>
+          <th>Commentaire</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let review of reviews; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ review.rating }}/5</td>
+          <td>{{ review.comment }}</td>
+          <td>
+            <button class="btn btn-danger btn-sm" (click)="deleteReview(review.idReview!)">Supprimer</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

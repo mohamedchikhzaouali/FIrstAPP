@@ -1,0 +1,223 @@
+// Dans home.component.scss (ou un fichier SCSS importé)
+
+// Variables pour faciliter la maintenance (optionnel mais recommandé)
+$card-background: #ffffff;
+$card-shadow: rgba(0, 0, 0, 0.08);
+$card-hover-shadow: rgba(0, 0, 0, 0.15);
+$primary-text-color: #333;
+$secondary-text-color: #667;
+$accent-color: #f5a623; // Couleur pour les étoiles (jaune/or)
+$border-color: #eee;
+$card-border-radius: 10px;
+$transition-speed: 0.3s;
+
+// Conteneur global du carrousel
+.course-carousel-wrapper {
+  position: relative; // Pour positionner les boutons
+  width: 100%;
+  overflow: hidden; // Masque les éléments qui dépassent
+  margin-top: 30px;
+  padding: 0 50px; // Espace pour les boutons sur les côtés
+  box-sizing: border-box;
+}
+
+// Conteneur interne qui défile
+.course-carousel {
+  display: flex; // Aligne les éléments horizontalement
+  // Pas de flex-wrap ici, on veut que ça dépasse pour scroller
+  transition: transform $transition-speed ease-in-out; // Animation fluide
+  will-change: transform; // Indication pour la performance
+  margin: 0 -15px; // Compense le padding des items pour aligner les bords
+}
+
+// Chaque élément/carte dans le carrousel
+.course-item {
+  flex: 0 0 100%; // Base: 1 élément visible sur mobile
+  padding: 0 15px; // Espacement entre les cartes
+  box-sizing: border-box;
+  cursor: pointer; // Indique que l'élément est cliquable
+
+  // Media queries pour afficher plus d'éléments sur écrans larges
+  @media (min-width: 768px) {
+    flex: 0 0 50%; // 2 éléments
+  }
+  @media (min-width: 992px) {
+    flex: 0 0 33.333%; // 3 éléments
+  }
+  @media (min-width: 1200px) {
+    flex: 0 0 25%; // 4 éléments
+  }
+}
+
+// La carte individuelle
+.course-card {
+  background-color: $card-background;
+  border-radius: $card-border-radius;
+  box-shadow: 0 2px 8px $card-shadow;
+  border: 1px solid $border-color; // Bordure subtile
+  overflow: hidden; // Assure que l'image arrondie ne dépasse pas
+  display: flex;
+  flex-direction: column;
+  height: 100%; // Pour que toutes les cartes aient la même hauteur si wrapper utilise flex
+  transition: transform $transition-speed ease, box-shadow $transition-speed ease;
+
+  &:hover {
+    transform: translateY(-6px); // Remontée plus marquée
+    box-shadow: 0 8px 16px $card-hover-shadow; // Ombre plus prononcée
+  }
+}
+
+// Image du cours
+.course-image {
+  display: block; // Évite les espaces indésirables
+  width: 100%;
+  aspect-ratio: 16 / 10; // Ratio d'aspect pour une hauteur cohérente (ajustez si besoin)
+  object-fit: cover; // Recadre l'image pour remplir l'espace sans déformation
+  border-bottom: 1px solid $border-color; // Séparation nette avec le contenu
+  transition: transform $transition-speed ease;
+
+  .course-card:hover & { // Zoom sur l'image seulement quand la carte est survolée
+    transform: scale(1.05);
+  }
+}
+
+// Contenu textuel de la carte
+.course-content {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; // Permet au contenu de prendre l'espace vertical restant
+
+  h4 { // Titre du cours
+    font-size: 1.1rem; // Légèrement plus grand
+    font-weight: 600; // Semi-bold
+    color: $primary-text-color;
+    margin: 0 0 8px 0; // Espacement ajusté
+    line-height: 1.3;
+    // Optionnel : Limiter le titre à 2 lignes avec ellipsis
+    // display: -webkit-box;
+    // -webkit-line-clamp: 2;
+    // -webkit-box-orient: vertical;
+    // overflow: hidden;
+    // text-overflow: ellipsis;
+  }
+
+  .course-description {
+    font-size: 0.85rem;
+    color: $secondary-text-color;
+    line-height: 1.5;
+    margin-bottom: 15px; // Espace avant les infos du bas
+    flex-grow: 1; // Pousse les infos vers le bas
+    // Optionnel : Limiter la description à 3 lignes
+    // display: -webkit-box;
+    // -webkit-line-clamp: 3;
+    // -webkit-box-orient: vertical;
+    // overflow: hidden;
+    // text-overflow: ellipsis;
+  }
+}
+
+// Section inférieure de la carte (note, prix)
+.course-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto; // Pousse cette section en bas si description est courte
+  padding-top: 10px; // Espace au-dessus
+  border-top: 1px solid $border-color; // Ligne de séparation
+}
+
+// Style de la note (étoiles)
+.course-rating {
+  font-size: 0.9rem;
+  color: $primary-text-color;
+  display: flex;
+  align-items: center;
+
+  i.fa-star {
+    color: $accent-color; // Couleur or/jaune pour l'étoile
+    margin-right: 4px; // Espace entre étoile et nombre
+    font-size: 0.9em; // Taille relative de l'étoile
+  }
+
+  &.text-muted { // Style pour note 0 ou non définie
+    color: $secondary-text-color;
+    i.fa-star {
+      color: #ccc; // Étoile grise
+    }
+  }
+}
+
+// Style du prix
+.course-price {
+  font-size: 1.05rem;
+  font-weight: 700; // Bold
+  color: $primary-text-color; // Ou une couleur accentuée si vous préférez
+}
+
+// Boutons de défilement (Gauche/Droite)
+.scroll-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(255, 255, 255, 0.8); // Fond blanc semi-transparent
+  color: $primary-text-color; // Couleur du texte/icône
+  border: 1px solid $border-color; // Bordure légère
+  width: 45px; // Taille fixe
+  height: 45px;
+  border-radius: 50%; // Rond
+  font-size: 1.5rem; // Taille de l'icône flèche
+  cursor: pointer;
+  z-index: 10; // Au-dessus du contenu
+  display: flex; // Pour centrer l'icône
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color $transition-speed ease, box-shadow $transition-speed ease, color $transition-speed ease;
+
+  &:hover {
+    background-color: $card-background; // Fond blanc opaque
+    color: $accent-color; // Change couleur flèche au survol
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  &.left {
+    left: 0px; // Position ajustée (prend en compte le padding du wrapper)
+  }
+
+  &.right {
+    right: 0px; // Position ajustée
+  }
+
+  // Cacher les boutons sur très petits écrans si le carrousel affiche 1 seul item
+  @media (max-width: 575px) {
+     // display: none; // Décommentez si vous voulez les cacher complètement
+     // Ou réduisez leur taille / opacité
+     width: 35px;
+     height: 35px;
+     font-size: 1.2rem;
+  }
+}
+
+// Ajustements responsifs supplémentaires si nécessaire
+// Par exemple, réduire les paddings sur mobile
+@media (max-width: 767px) {
+  .course-content {
+    padding: 15px;
+    h4 {
+      font-size: 1rem;
+    }
+    .course-description {
+      font-size: 0.8rem;
+    }
+  }
+  .course-info {
+     padding-top: 8px;
+  }
+   .course-price {
+     font-size: 1rem;
+   }
+   .course-rating {
+       font-size: 0.85rem;
+   }
+}

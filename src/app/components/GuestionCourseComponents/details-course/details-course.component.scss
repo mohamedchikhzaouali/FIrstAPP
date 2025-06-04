@@ -1,0 +1,731 @@
+// Variables
+$primary-color: #007bff;
+$secondary-color: #6c757d;
+$success-color: #28a745;  // Vert pour Disponible, Validé & Score
+$danger-color: #dc3545;   // Rouge pour Indisponible & action Invalider
+$warning-color: #ffc107;  // Jaune/Orangé pour étoiles & bouton Consulter
+$info-color: #17a2b8;     // Ajouté pour les messages d'information/pending
+$light-gray: #f8f9fa;
+$medium-light-gray: #e9ecef; // Gris pour fond inactif score & bouton
+$dark-gray: #343a40;      // Gris foncé pour texte & icône non validée
+$font-family: 'Arial', sans-serif;
+$empty-star-color: #adb5bd; // Couleur pour les étoiles vides
+
+// Réinitialisation globale (Basique)
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: $font-family; }
+
+// --- Styles Conteneur Principal ---
+.course-detail-container {
+    background-size: cover; background-position: center; background-attachment: fixed;
+    display: flex; justify-content: center;
+    align-items: flex-start; min-height: 100vh;
+
+    .course-card-wrapper {
+        width: 100%; padding: 0;
+
+        .course-card {
+            background-color: rgba(255, 255, 255, 0.4); border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); padding: 0;
+            width: 100%; display: flex; flex-direction: column; overflow: hidden;
+        }
+    }
+}
+
+// --- Styles Image + Titre Overlay ---
+.course-image-container {
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 150px;
+    background-color: $medium-light-gray;
+
+    .course-image {
+        display: block; width: 100%; height: auto;
+        max-height: 400px; object-fit: cover;
+    }
+    .image-title-overlay {
+      position: absolute; bottom: 0; left: 0; width: 100%;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 10%, rgba(0, 0, 0, 0) 80%);
+      padding: 2rem 1.5rem 1.5rem 1.5rem; box-sizing: border-box;
+      .overlay-course-title {
+        color: #ffffff; font-size: 2.5rem; font-weight: bold; margin: 0;
+        line-height: 1.2; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+        @media (max-width: 768px) { font-size: 1.8rem; padding: 1.5rem 1rem 1rem 1rem; }
+      }
+    }
+}
+
+// --- Styles Contenu Info ---
+.course-info {
+    .course-description-container {
+      margin-bottom: 1.5rem;
+      .course-description {
+          font-size: 1rem; color: #ffffff; line-height: 1.6; text-align: left; margin: 0;
+          .detail-label { font-weight: bold; color: #ffe900; margin-right: 0.5rem; }
+      }
+    }
+}
+
+// --- Styles Grille Détails ---
+.course-details-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem; margin-bottom: 2rem; padding: 0 2rem; // Appliqué le padding ici plutôt que sur .course-info pour cet élément
+
+    .course-details-item {
+        display: flex; align-items: center; padding: 0.8rem 1rem; border-radius: 8px;
+        background-color: #ffffffa1; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden;
+
+        .detail-icon { margin-right: 0.8rem; color: $primary-color; font-size: 1.3rem; flex-shrink: 0; }
+        .detail-label { font-weight: bold; margin-right: 0.5rem; color: $dark-gray; flex-shrink: 0; }
+        span:not(.detail-label), span.status-text, div:not(.progress-circle) {
+            color: $secondary-color; word-break: break-word; line-height: 1.4;
+        }
+        .status-text { font-weight: bold;
+            &.status-available { color: $success-color; }
+            &.status-unavailable { color: $danger-color; }
+        }
+
+        .progress-circle {
+          position: relative; width: 45px; height: 45px; border-radius: 50%;
+          display: grid; place-items: center; margin-left: auto;
+          background: $medium-light-gray;
+          @property --progress-percent { syntax: '<number>'; inherits: false; initial-value: 0; }
+          transition: --progress-percent 0.3s ease-out;
+          background: conic-gradient( $success-color 0% calc(var(--progress-percent, 0) * 1%), $medium-light-gray calc(var(--progress-percent, 0) * 1%) 100% );
+          &::before { content: ""; position: absolute; width: calc(100% - 8px); height: calc(100% - 8px); background: $light-gray; border-radius: 50%; }
+          .progress-value { position: relative; z-index: 1; font-size: 0.75rem; font-weight: bold; color: $dark-gray; }
+        }
+    }
+}
+
+
+// --- Sections Attachments & Avis ---
+.attachments-section, .reviews-section, .add-review-section {
+    margin-top: 2.5rem; padding: 0 2rem; // Consistance du padding avec .course-info
+    .section-title {
+        font-size: 1.6rem; font-weight: bold; margin-bottom: 1.5rem; color: $dark-gray;
+        border-bottom: 2px solid $primary-color; padding-bottom: 0.5rem;
+        display: inline-flex; align-items: center; gap: 0.6rem;
+        i.lucide { font-size: 1.4rem; color: $primary-color;}
+    }
+}
+
+// --- Styles Table Attachments ---
+.attachments-table {
+    background-color: #ffffffa1;
+    width: 100%; border-collapse: collapse; margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden;
+    th, td { padding: 1rem; text-align: left; border-bottom: 1px solid $medium-light-gray; vertical-align: middle; }
+    th { background-color: $primary-color; color: white; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    tr { transition: background-color 0.2s ease; &:hover { background-color: #0000006e; } &:last-child td { border-bottom: none; } }
+
+    .download-button, .view-button, .close-button {
+        padding: 0.5rem 1rem; border: none; border-radius: 20px; cursor: pointer;
+        transition: all 0.2s ease; font-weight: 500; letter-spacing: 0.3px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); display: inline-flex; align-items: center;
+        gap: 0.4rem; font-size: 0.85rem;
+        i.lucide { font-size: 1rem; }
+        &:hover { transform: translateY(-2px); box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15); }
+        &:focus { outline: none; box-shadow: 0 0 0 3px rgba($primary-color, 0.4); }
+    }
+    .download-button { background-color: $primary-color; color: white; text-decoration: none; &:hover { background-color: darken($primary-color, 10%); } }
+    .view-button { background-color: $warning-color; color: $dark-gray; &:hover { background-color: darken($warning-color, 10%); } }
+    .close-button { background-color: $danger-color; color: white; &:hover { background-color: darken($danger-color, 10%); } }
+
+    td.validation-cell { text-align: center; }
+    td .validation-toggle-button {
+        border: 1px solid transparent; padding: 0; // Réduit le padding pour mieux centrer l'icône
+        margin: 0; cursor: pointer; border-radius: 50%;
+        display: inline-flex; align-items: center; justify-content: center;
+        transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        width: 36px; height: 36px; opacity: 1 !important;
+        i.lucide { font-size: 1.6rem; line-height: 1; } // Icône plus grande
+        &.not-validated {
+            background-color: $medium-light-gray; border-color: darken($medium-light-gray, 10%);
+            color: $dark-gray;
+            &:hover { background-color: rgb(0 181 41 / 69%); border-color: rgba($success-color, 0.4); color: $success-color; }
+        }
+        &.validated {
+            background-color: rgb(0 181 41 / 69%); border-color: rgba($success-color, 0.3);
+            color: $success-color;
+            &:hover { background-color: rgba(181, 0, 0, 0.69); border-color: rgba($danger-color, 0.3); color: $danger-color; }
+        }
+        &:focus { outline: none; box-shadow: 0 0 0 3px rgba($primary-color, 0.4); }
+    }
+}
+
+.no-attachments-text, .no-reviews-text { color: white; font-style: italic; padding: 1rem 0; }
+
+// --- PDF Preview ---
+.pdf-preview {
+    margin-top: 1.5rem; border: 1px solid #dee2e6; border-radius: 8px;
+    overflow: hidden; position: relative;
+    .close-pdf-preview-button {
+      position: absolute; top: 8px; right: 8px; background-color: rgba(0, 0, 0, 0.6);
+      color: white; border: none; border-radius: 50%; width: 32px; height: 32px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      z-index: 10; transition: background-color 0.2s ease;
+      i.lucide { font-size: 1.1rem; line-height: 1; }
+      &:hover { background-color: $danger-color; }
+    }
+    iframe { display: block; width: 100%; height: 600px; border: none; }
+}
+
+// --- Section Avis ---
+.reviews-section {
+    .average-rating {
+        font-size: 1.1rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; color: #000000;
+        i.icon-average-rating { color: $warning-color; font-size: 1.3rem;}
+        .star-rating-display {
+            display: inline-flex; gap: 1px;
+            i.fa { font-size: 1.1rem; line-height: 1; }
+            .fa-star { color: $warning-color; }
+            .fa-star-o { color: $empty-star-color; }
+            .fa-star-half-o {
+                position: relative; color: $empty-star-color;
+                &::after { content: '\f089'; /* Code unicode pour font-awesome fa-star-half-empty */ position: absolute; top: 0; left: 0; width: 50%; overflow: hidden; color: $warning-color; }
+            }
+        }
+    }
+
+    .reviews-list {
+        max-height: 400px; overflow-y: auto; border: 1px solid $medium-light-gray;
+        border-radius: 8px; padding: 0.5rem; margin-top: 1rem;
+
+        .review-card {
+            background-color: #fff; border: 1px solid $medium-light-gray;
+            border-radius: 8px;
+            padding: 1rem 1.5rem; margin: 0.5rem; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            position: relative;
+
+            p { margin-bottom: 0.5rem; line-height: 1.5; }
+            strong { color: $dark-gray; }
+
+            .star-rating {
+                i.fa { color: $warning-color; font-size: 1rem; margin-right: 1px; }
+                .fa-star-o { color: $empty-star-color; }
+            }
+
+            .review-author-info {
+                display: flex;
+                align-items: center;
+                margin-bottom: 0.75rem;
+
+                .author-picture {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    margin-right: 10px;
+                    border: 1px solid $medium-light-gray;
+                }
+
+                .author-name {
+                    font-weight: 600;
+                    color: $dark-gray;
+                }
+            }
+
+            .review-ai-analysis {
+                font-size: 0.85em;
+                margin-top: 0.25rem;
+                .badge {
+                    font-size: 0.9em;
+                    padding: 0.3em 0.5em;
+                }
+            }
+
+            .delete-review-button {
+                position: absolute; top: 0.5rem; right: 0.5rem; padding: 0.3rem 0.5rem;
+                background-color: transparent; color: $danger-color; border: none;
+                border-radius: 50%; cursor: pointer; transition: all 0.2s ease; opacity: 0.6;
+                i.lucide { font-size: 1.1rem; }
+                &:hover { background-color: $danger-color; color: white; opacity: 1; }
+            }
+        }
+    }
+}
+
+// --- Section Ajouter Avis ---
+.add-review-section {
+    .review-form {
+      background-color: $light-gray; padding: 1.5rem; border-radius: 8px; margin-top: 1rem;
+      .form-group {
+          margin-bottom: 1.5rem;
+          .form-label { display: block; margin-bottom: 0.6rem; font-weight: 600; color: $dark-gray; font-size: 0.9rem; }
+          .rating {
+              display: flex; align-items: center; gap: 3px;
+              i.rating-star {
+                  cursor: pointer; font-size: 1.5rem; transition: transform 0.1s ease-in-out, color 0.2s ease;
+                  &.fa-star { color: $warning-color; }
+                  &.fa-star-o { color: $empty-star-color; }
+                  &.hovered, &:hover { transform: scale(1.2); color: $warning-color !important; }
+              }
+          }
+          .form-control {
+              width: 100%; padding: 0.8rem 1rem; font-size: 1rem; border: 1px solid #ced4da;
+              border-radius: 5px; transition: border-color 0.2s ease, box-shadow 0.2s ease; line-height: 1.5;
+              &:focus { border-color: $primary-color; outline: none; box-shadow: 0 0 0 3px rgba($primary-color, 0.25); }
+          }
+      }
+      .submit-review-button {
+          padding: 0.8rem 1.5rem; background-color: $success-color; color: white; border: none;
+          border-radius: 25px; cursor: pointer; transition: all 0.2s ease; font-weight: 600;
+          font-size: 1rem; display: inline-flex; align-items: center; gap: 0.5rem;
+          i.lucide { font-size: 1.1rem; }
+          &:hover { background-color: darken($success-color, 10%); transform: translateY(-2px); box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
+          &:disabled { background-color: $secondary-color; opacity: 0.65; cursor: not-allowed; transform: none; box-shadow: none;}
+      }
+    }
+}
+
+// --- Bouton Retour ---
+.back-button-container {
+    text-align: center; margin-top: 3rem; padding: 2rem 0; border-top: 1px solid $medium-light-gray;
+    .back-button {
+      padding: 0.8rem 2rem; background-color: $secondary-color; color: white; border: none;
+      border-radius: 25px; cursor: pointer; transition: all 0.2s ease; text-decoration: none;
+      font-weight: 600; font-size: 1rem; display: inline-flex; align-items: center; gap: 0.6rem;
+      i.lucide { font-size: 1.1rem; }
+      &:hover { background-color: darken($secondary-color, 10%); transform: translateY(-2px); box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
+    }
+}
+
+// --- Indicateur de chargement ---
+.loading-indicator {
+    text-align: center; padding: 4rem; font-size: 1.2rem; color: $secondary-color; font-style: italic;
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+}
+
+// --- Section CTA pour le Quiz de Certification (Styles Ajoutés/Modifiés) ---
+.quiz-cta-section {
+  // S'assurer qu'elle prend la largeur dans .course-info ou ajuster si elle est en dehors.
+  // Si elle est un enfant direct de .course-info, elle héritera de son padding.
+  // Si elle est en dehors, par ex. au même niveau que .attachments-section :
+  margin: 2.5rem 2rem; // Correspond au padding de .course-info pour alignement
+  padding: 1.5rem;
+  background-color: #0000006e; // Fond blanc pour la section
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .quiz-cta-item {
+    display: flex;
+    align-items: flex-start; // Mieux pour textes plus longs
+    padding: 1.25rem;
+    border-radius: 6px;
+    border: 1px solid $medium-light-gray;
+
+    .quiz-cta-icon {
+      margin-right: 1.25rem;
+      flex-shrink: 0;
+      i.lucide {
+        font-size: 2.2rem;
+        line-height: 1;
+      }
+    }
+
+    .quiz-cta-content {
+      h4 {
+        margin-top: 0;
+        margin-bottom: 0.4rem;
+        font-size: 1.3rem;
+        font-weight: 600;
+      }
+      p {
+        margin-bottom: 0.8rem;
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #495057;
+      }
+      &:last-child p {
+        margin-bottom: 0;
+      }
+    }
+
+    // Styles spécifiques par état
+    &.quiz-cta-available {
+      background-color: lighten($success-color, 48%);
+      border-left: 5px solid $success-color;
+      .quiz-cta-icon i.lucide { color: $success-color; }
+      .quiz-cta-content h4 { color: darken($success-color, 15%);}
+      .quiz-cta-content p { color: darken($success-color, 25%);}
+    }
+
+    &.quiz-cta-passed {
+      background-color: lighten($primary-color, 48%);
+      border-left: 5px solid $primary-color;
+      .quiz-cta-icon i.lucide { color: $primary-color; }
+      .quiz-cta-content h4 { color: darken($primary-color, 15%);}
+      .quiz-cta-content p { color: darken($primary-color, 25%);}
+    }
+
+    &.quiz-cta-pending {
+      background-color: lighten($info-color, 45%);
+      border-left: 5px solid $info-color;
+      .quiz-cta-icon i.lucide { color: $info-color; }
+      .quiz-cta-content h4 { color: darken($info-color, 15%);}
+      .quiz-cta-content p { color: darken($info-color, 25%);}
+    }
+    
+    &.quiz-cta-unavailable {
+      background-color: lighten($secondary-color, 40%); // Gris plus clair pour le fond
+      border-left: 5px solid $secondary-color;
+      .quiz-cta-icon i.lucide { color: $secondary-color; }
+      .quiz-cta-content h4 { color: darken($secondary-color, 30%);}
+      .quiz-cta-content p { color: darken($secondary-color, 40%);}
+    }
+  }
+
+  .take-quiz-button-cta { // Renommé pour éviter conflit avec .take-quiz-button si utilisé ailleurs
+    margin-top: 0.8rem;
+    padding: 0.75rem 1.75rem;
+    background-color: $success-color; // Utiliser la couleur succès
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    font-weight: 600;
+    font-size: 1.05rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    i.lucide { font-size: 1.2rem; }
+    &:hover {
+      background-color: darken($success-color, 8%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    &:active {
+        transform: translateY(0px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    &:disabled {
+      background-color: $secondary-color;
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+.loading-quiz-status {
+    text-align: center;
+    padding: 1.5rem 2rem; // Match padding des autres sections
+    font-style: italic;
+    color: $secondary-color;
+    .lucide.animate-spin {
+        animation: spin 1.5s linear infinite;
+        margin-right: 0.5rem;
+        vertical-align: middle;
+    }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Styles pour SweetAlert2 (optionnel, pour l'alerte de déblocage du quiz)
+.swal-title-custom {
+  font-size: 1.6em !important; // Un peu plus grand
+  color: $dark-gray !important;
+  font-weight: 600 !important;
+}
+.swal-html-custom {
+  font-size: 1.05em !important;
+  line-height: 1.6 !important;
+  color: $secondary-color !important;
+  b { // Pour mettre en gras le titre du quiz et le score
+    color: $primary-color; 
+  }
+}
+.swal-confirm-button-custom {
+  background-color: $primary-color !important;
+  color: white !important;
+  border-radius: 5px !important;
+  padding: 0.6em 1.2em !important;
+  font-size: 1em !important;
+  &:hover {
+    background-color: darken($primary-color, 10%) !important;
+  }
+}
+
+
+// --- Styles spécifiques pour les petits écrans ---
+@media (max-width: 768px) {
+    .course-detail-container { padding: 2rem 0.5rem; }
+    .course-info, .attachments-section, .reviews-section, .add-review-section, .quiz-cta-section, .loading-quiz-status {
+      padding-left: 1rem; // Réduire le padding horizontal pour les sections principales
+      padding-right: 1rem;
+      margin-left: 0.5rem; // Réduire les marges latérales
+      margin-right: 0.5rem;
+      width: calc(100% - 1rem); // Ajuster la largeur
+    }
+    .course-details-grid {
+      grid-template-columns: 1fr;
+      padding: 0 1rem; // Ajuster le padding pour la grille
+      gap: 1rem;
+    }
+    .attachments-table {
+        td.validation-cell { text-align: center; }
+        td .validation-toggle-button { width: 34px; height: 34px; i.lucide { font-size: 1.4rem; } }
+        display: block; overflow-x: auto; white-space: nowrap; th, td { padding: 0.8rem; } th { font-size: 0.8rem; }
+        .download-button, .view-button, .close-button { padding: 0.4rem 0.8rem; font-size: 0.8rem; i.lucide { font-size: 0.9rem; } }
+    }
+    .pdf-preview iframe { height: 450px; }
+    .back-button-container { margin-top: 2rem; padding: 1.5rem 0;}
+    .back-button { padding: 0.7rem 1.5rem; font-size: 0.9rem;}
+    .course-image-container .image-title-overlay .overlay-course-title { font-size: 1.8rem; padding: 1.5rem 1rem 1rem 1rem; }
+
+    .quiz-cta-section {
+        .quiz-cta-item {
+          flex-direction: column;
+          text-align: center;
+          .quiz-cta-icon {
+            margin-right: 0;
+            margin-bottom: 0.75rem;
+            i.lucide { font-size: 2rem; }
+          }
+          .quiz-cta-content h4 { font-size: 1.15rem;}
+          .quiz-cta-content p { font-size: 0.9rem;}
+        }
+        .take-quiz-button-cta {
+            font-size: 0.95rem;
+            padding: 0.7rem 1.4rem;
+        }
+    }
+}
+
+// Fallback pour l'image par défaut de l'auteur si elle n'est pas chargée ou est spécifiquement default-user.png
+.review-author-info img.author-picture[src$="default-user.png"] {
+  // Vous pouvez ajouter un style spécifique si l'image est celle par défaut,
+  // par exemple, une couleur de fond ou une icône différente à l'intérieur si l'image est transparente.
+  // background-color: $medium-light-gray; // Exemple
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  background-image: url('/assets/quiz-background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.page-content {
+  flex: 1; /* Permet au contenu de prendre tout l'espace disponible */
+}
+
+// --- Sections Quiz (Certification et Entraînement) ---
+.quiz-cta-section, .training-quizzes-section {
+  margin: 2.5rem 0;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  &.quiz-cta-section {
+    background-color: #0000006e; // Fond sombre pour CTA certif
+    .quiz-cta-item {
+      border-color: rgba(255,255,255,0.2);
+      .quiz-cta-content {
+        h4 { color: lighten($light-gray, 15%); }
+        p { color: lighten($light-gray, 5%); }
+      }
+      // Variantes .quiz-cta-available etc. adaptées pour fond sombre (cf. réponse précédente)
+        &.quiz-cta-available {
+            background-color: rgba(lighten($success-color, 20%), 0.35); // Un peu plus visible
+            border-left: 5px solid $success-color;
+            .quiz-cta-icon i.lucide { color: $success-color; }
+            .quiz-cta-content h4 { color: lighten($success-color, 30%);}
+            .quiz-cta-content p { color: lighten($success-color, 45%);}
+        }
+        &.quiz-cta-passed {
+            background-color: rgba(lighten($primary-color, 20%), 0.35);
+            border-left: 5px solid $primary-color;
+            .quiz-cta-icon i.lucide { color: $primary-color; }
+            .quiz-cta-content h4 { color: lighten($primary-color, 30%);}
+            .quiz-cta-content p { color: lighten($primary-color, 45%);}
+        }
+        &.quiz-cta-pending {
+            background-color: rgba(lighten($warning-color, 15%), 0.45);
+            border-left: 5px solid $warning-color;
+            .quiz-cta-icon i.lucide { color: $warning-color; }
+            .quiz-cta-content h4 { color: lighten($warning-color, 15%);}
+.quiz-cta-content p { color: black; }        }
+        &.quiz-cta-unavailable {
+            background-color: rgba(lighten($secondary-color, 15%), 0.35);
+            border-left: 5px solid $secondary-color;
+            .quiz-cta-icon i.lucide { color: $secondary-color; }
+            .quiz-cta-content h4 { color: lighten($secondary-color, 45%);}
+            .quiz-cta-content p { color: lighten($secondary-color, 55%);}
+        }
+    }
+    .take-quiz-button-cta { /* Vos styles pour ce bouton */ }
+  }
+
+  &.training-quizzes-section {
+    background-color: rgba(0, 0, 0, 0.431372549); // Fond clair pour quiz entraînement
+    .section-title.training-quiz-title {
+      font-size: 1.4rem; color: darken($info-color, 10%);
+      border-bottom: 2px solid $info-color; margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem; display: inline-flex; align-items: center; gap: 0.6rem;
+      i.lucide { font-size: 1.2rem; color: $info-color; }
+    }
+    .training-quiz-cta {
+        text-align: center;
+        .view-training-quizzes-btn {
+            padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: 600;
+            background-color: $info-color; border-color: $info-color; color: white;
+            width: auto; display: inline-block; margin-bottom: 0.5rem;
+            border-radius: 6px; transition: all 0.2s ease-in-out;
+            i.lucide { margin-right: 0.6rem; }
+            &:hover {
+                background-color: darken($info-color, 10%);
+                border-color: darken($info-color, 10%);
+                transform: translateY(-1px);
+            }
+        }
+        p.small { color: white !important; }
+    }
+     // Message si aucun quiz d'entraînement (sur fond clair)
+    .quiz-cta-item.quiz-cta-unavailable {
+        background-color: lighten($secondary-color, 45%); // Très clair
+        border-left: 5px solid $secondary-color;
+        .quiz-cta-icon i.lucide { color: $secondary-color; }
+        .quiz-cta-content h4 { color: darken($secondary-color, 30%);}
+        .quiz-cta-content p { color: darken($secondary-color, 20%);} // Texte un peu plus sombre pour lisibilité
+    }
+  }
+
+  .quiz-cta-item { /* Styles communs aux items CTA */ }
+}
+
+// --- Styles pour la Modale des Quiz d'Entraînement ---
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); // Légèrement plus sombre pour plus de focus
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1050; padding: 1rem;
+}
+
+.modal-content {
+  background-color: #ebebeb;
+  padding: 1.5rem 2rem;
+  border-radius: 10px;
+  border: 4px solid #a10000;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  width: 100%; max-width: 550px; max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  animation: fadeInModal 0.3s ease-out;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid $medium-light-gray;
+  padding-bottom: 1rem; margin-bottom: 1rem;
+  h3 {
+    margin: 0; font-size: 1.6rem; color: $dark-gray;
+    display: flex; align-items: center;
+    i.lucide { margin-right: 0.75rem; color: $info-color; }
+  }
+}
+
+.modal-close-button {
+  background: none; border: none; font-size: 2.2rem; font-weight: 300;
+  color: $secondary-color; cursor: pointer; padding: 0; line-height: 1;
+  transition: color 0.2s ease, transform 0.2s ease;
+  &:hover { color: $danger-color; transform: scale(1.1); }
+}
+
+.modal-body {
+  overflow-y: auto; flex-grow: 1; margin-bottom: 1rem;
+  padding-right: 0.5rem; // Pour la barre de scroll si elle apparaît
+}
+
+.quiz-list-modal {
+  list-style: none; padding: 0; margin: 0;
+  .quiz-list-item-modal {
+    display: flex; align-items: center;
+    padding: 0.9rem 0.75rem; // Un peu moins de padding horizontal
+    border-bottom: 1px solid $light-gray;
+    cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease;
+    font-size: 1.05rem; color: $dark-gray; border-radius: 4px;
+    margin-bottom: 0.5rem; // Espace entre items
+    &:last-child { border-bottom: none; margin-bottom: 0; }
+    &:hover {
+      background-color: lighten($info-color, 45%);
+      color: darken($info-color, 10%);
+      .quiz-list-icon, .quiz-list-arrow { color: darken($info-color, 10%); }
+    }
+    .quiz-list-icon { margin-right: 0.8rem; color: $secondary-color; transition: color 0.2s ease; }
+    span { flex-grow: 1; }
+    .quiz-list-arrow { margin-left: 0.8rem; color: $secondary-color; transition: color 0.2s ease, transform 0.2s ease; }
+    &:hover .quiz-list-arrow { transform: translateX(3px); }
+  }
+  .no-quiz-modal-message { /* Styles existants */ }
+}
+.modal-footer {
+    border-top: 1px solid $medium-light-gray;
+    padding-top: 1rem; margin-top: 0.5rem;
+    text-align: right;
+    .btn-secondary { /* Styles Bootstrap par défaut ou vos customs */ }
+}
+
+// --- Toast Message ---
+.toast-container {
+    position: fixed;
+    top: 11rem;
+    left: 0rem;
+    z-index: 1050;
+    .toast-message { 
+      background-color: $success-color;
+      color: white; padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      font-size: 1rem; 
+    }
+}
+
+// Styles for the quiz unlock toast (similar to existing toast-container, but potentially different color)
+.toast-container.quiz-unlock-toast {
+    .toast-message {
+      position: fixed;
+      top: 4rem; // Propriété à modifier
+      left: 0rem; // Propriété à modifier
+      z-index: 1050;
+        background-color: #007bff; /* Primary color for the quiz unlock toast */
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        font-size: 1rem;
+        h4 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+            color: #ffe900; /* A contrasting color for the heading */
+        }
+        b {
+            color: #ffe900; /* Highlight the percentage and quiz title */
+        }
+    }
+  }

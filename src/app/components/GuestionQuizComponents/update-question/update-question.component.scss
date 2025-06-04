@@ -1,0 +1,63 @@
+.btn-modern-back {
+        background: linear-gradient(135deg, #64B5F6, #1E88E5);
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9em;
+        color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        margin-top: 4px;
+    }
+
+    .btn-modern-back:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-modern-back i {
+        margin-right: 5px;
+        color: white;
+    }
+    .response-container {
+      background-color: rgba(255, 255, 255, 48%);
+      border: 2px solid #000000;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      position: relative;
+      margin-top: 4px;
+      margin-bottom: 164px;
+    }
+
+    .styled-titre {
+      color: rgb(255, 255, 255);
+      font-family: 'Arial', sans-serif; /* Choisissez la police que vous préférez */
+      font-size: 2.1em; /* Ajustez la taille de la police si nécessaire */
+      font-weight: bold; /* Optionnel : pour mettre le texte en gras */
+      text-align: center;
+    }
+
+    .styled-titres-label {
+      color: black;
+      font-family: 'Arial', sans-serif; /* Choisissez la police que vous préférez */
+      font-size: 1.1em; /* Ajustez la taille de la police si nécessaire */
+      font-weight: bold; /* Optionnel : pour mettre le texte en gras */
+      margin-bottom: 1px;
+    }
+
+    body {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+          margin: 0;
+          background-image: url('/assets/background_take_quiz.png');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-attachment: fixed;
+        }
+        .page-content {
+          flex: 1; /* Permet au contenu de prendre tout l'espace disponible */
+        }

@@ -1,0 +1,208 @@
+/* src/app/dashboard-statistics/dashboard-statistics.component.scss */
+
+// Variables CSS pour thémage facile
+:host {
+  --chart-card-bg: #ffffff;
+  --chart-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); // Ombre plus subtile
+  --chart-card-radius: 8px;
+  --text-color-primary: #212529; // Noir doux
+  --text-color-secondary: #495057; // Gris foncé
+  --border-color: #dee2e6;      // Bordure standard
+  --error-color: #dc3545;      // Rouge Bootstrap pour erreur
+  --loading-color: #0dcaf0;     // Cyan Bootstrap pour info/chargement
+  --positive-color: #198754;    // Vert Bootstrap pour succès/positif
+  --negative-color: #dc3545;    // Rouge Bootstrap
+  --neutral-color: #6c757d;     // Gris Bootstrap secondaire
+  --warning-color: #ffc107;     // Jaune Bootstrap pour avertissement/indéterminé
+  --light-gray-bg: #f8f9fa;     // Fond très clair
+  --primary-accent-color: #0d6efd; // Bleu Bootstrap standard pour accents (utilisé pour le titre Avis Reçus)
+}
+
+.dashboard-statistics {
+  padding: 30px; // Augmenter padding global
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; // Stack police système
+  background-color: #f4f7fc; // Fond de page
+  min-height: calc(100vh - 100px); // Assurer une hauteur minimale (ajuster selon header/footer)
+}
+
+// Organisation en grille
+.dashboard-grid {
+  display: grid;
+  // 2 colonnes égales par défaut, taille minimale plus grande
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+  gap: 30px; // Augmenter l'espace
+}
+
+// Style de base pour TOUTES les cartes (y compris celle des avis maintenant)
+.chart-card {
+  background-color: var(--chart-card-bg);
+  border-radius: var(--chart-card-radius);
+  box-shadow: var(--chart-card-shadow);
+  border: 1px solid var(--border-color); 
+  padding: 30px; 
+  display: flex; 
+  flex-direction: column; 
+  transition: box-shadow 0.3s ease-in-out; 
+
+  &:hover {
+     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); 
+  }
+
+  // Règle générale pour les titres h2 DANS les cartes .chart-card
+  h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center; // Par défaut centré pour les graphiques
+    font-weight: 600;
+    font-size: 1.25rem; 
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    // Couleur par défaut (foncée) pour les titres des graphiques
+    color: var(--text-color-primary); 
+  }
+}
+
+// Conteneurs Graphiques
+.chart-container, 
+.category-distribution-container, 
+.sentiment-chart-container {
+  position: relative; margin: 10px auto; width: 100%;   
+  flex-grow: 1; display: flex; align-items: center; justify-content: center;
+  min-height: 150px; 
+}
+.overall-chart .chart-container { height: 280px; max-width: 280px; }
+.category-distribution-chart .category-distribution-container { height: 300px; max-width: 400px; }
+.sentiment-chart-card .sentiment-chart-container { height: 280px; } 
+
+// Texte au centre (Donut)
+.overall-chart .chart-center-text {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  text-align: center; pointer-events: none;
+  .center-text-line1 { display: block; font-size: 2.1em; font-weight: bold; color: var(--text-color-primary); line-height: 1.1; }
+  .center-text-line2 { display: block; font-size: 0.9em; color: var(--text-color-secondary); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px;}
+}
+
+// Styles spécifiques carte liste des avis
+// La carte a maintenant aussi la classe .chart-card, ces styles s'ajoutent ou surchargent
+.reviews-list-card {
+  grid-column: 1 / -1; // Prend toute la largeur
+
+  // Règle SPÉCIFIQUE pour surcharger le style du titre h2 UNIQUEMENT dans cette carte
+  h2 {
+     text-align: left; // Surcharge l'alignement centré
+     border-bottom: none; 
+     padding-bottom: 0;
+     margin-bottom: 15px;
+     // Surcharge la couleur par défaut de .chart-card h2
+     color: var(--primary-accent-color); // Applique la couleur d'accentuation
+  }
+
+  .reviews-table-container {
+    max-height: 480px; overflow-y: auto; border: 1px solid var(--border-color);
+    border-radius: var(--chart-card-radius); margin-top: 10px; background-color: var(--chart-card-bg);
+  }
+
+  .reviews-table {
+    width: 100%; border-collapse: collapse;
+
+    thead {
+      background-color: var(--light-gray-bg); position: sticky; top: 0; z-index: 1;
+      box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); 
+      th { border-bottom-width: 2px; } 
+    }
+
+    th, td {
+      padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color);
+      font-size: 0.88rem; vertical-align: middle; line-height: 1.45;
+      color: var(--text-color-primary); // Texte plus foncé par défaut pour lisibilité
+    }
+
+    th {
+      font-weight: 700; // En-tête plus gras
+      color: var(--text-color-primary); white-space: nowrap;
+      text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px;
+    }
+
+    // Optionnel: Retirer ou éclaircir l'alternance si le contraste n'est pas bon
+    // tbody tr:nth-child(even) { background-color: #fdfdfd; } 
+    tbody tr:hover { background-color: #eef2f7; } 
+
+    // Colonnes avec retour à la ligne
+    .comment-cell, .summary-cell {
+        white-space: normal; // Permet le retour à la ligne
+        vertical-align: top; // Aligner en haut
+        // Retrait des propriétés de troncature (overflow, text-overflow, nowrap)
+    }
+     td:nth-child(2), td:nth-child(4) { text-align: center; white-space: nowrap; }
+     td:nth-child(1) { min-width: 130px; font-weight: 500; } 
+
+    .rating-stars {
+        color: #d8dcde; letter-spacing: 1.5px; font-size: 0.9em;
+        .filled { color: var(--warning-color); } 
+    }
+
+    .sentiment-badge {
+        display: inline-block; padding: 5px 12px; border-radius: 15px; 
+        font-size: 0.78rem; font-weight: 600; color: #fff; line-height: 1;
+        text-transform: capitalize; text-align: center; min-width: 80px; 
+
+        &.sentiment-positif { background-color: var(--positive-color); }
+        &.sentiment-négatif { background-color: var(--negative-color); }
+        &.sentiment-neutre { background-color: var(--neutral-color); }
+        &.sentiment-indéterminé { background-color: var(--warning-color); color: var(--text-color-primary); } 
+        &.sentiment-erreur { background-color: #adb5bd; }
+    }
+  } // Fin .reviews-table
+
+  .more-reviews-link { // N'est plus affiché si on scrolle tout
+      display: none; 
+      // text-align: right; padding: 12px 15px; font-size: 0.85rem; color: var(--text-color-secondary);
+      // border-top: 1px solid var(--border-color); 
+  }
+} // Fin .reviews-list-card
+
+// Messages état
+.loading-message, .error-message, .no-data-message {
+  text-align: center; padding: 25px; margin: 20px auto;
+  border-radius: var(--chart-card-radius); max-width: 600px;
+  background-color: var(--light-gray-bg); 
+  border: 1px solid var(--border-color);
+}
+.loading-message { color: var(--text-color-secondary); border-color: #cfe2ff; background-color: #e7f1ff;} 
+.error-message {
+  color: #842029; background-color: #f8d7da; border-color: #f5c2c7; 
+  button { /* ... styles bouton réessayer ... */ }
+}
+.no-data-message { color: var(--text-color-secondary); font-style: italic; padding: 40px; } 
+
+// Style global canvas
+canvas { display: block; max-width: 100%; max-height: 100%; }
+
+// --- Responsivité ---
+@media (max-width: 1199px) { 
+    .dashboard-grid { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+    // Pas de max-width sur les cellules si white-space: normal
+}
+@media (max-width: 991px) { 
+    .dashboard-grid { grid-template-columns: 1fr; } 
+}
+@media (max-width: 767px) { 
+    .dashboard-statistics { padding: 15px; }
+    .dashboard-grid { gap: 20px; }
+    .chart-card { padding: 20px; }
+    .chart-card h2 { font-size: 1.1rem; margin-bottom: 15px; padding-bottom: 10px; }
+    .overall-chart .chart-container { height: 240px; max-width: 240px;}
+    .category-distribution-chart .category-distribution-container { height: 240px; max-width: 320px; }
+    .sentiment-chart-card .sentiment-chart-container { height: 200px; }
+    .reviews-list-card .reviews-table th, 
+    .reviews-list-card .reviews-table td { padding: 9px 8px; font-size: 0.8rem; } 
+    // Pas de max-width sur les cellules si white-space: normal
+     .reviews-list-card .sentiment-badge { padding: 3px 8px; font-size: 0.7rem;}
+     /* Optionnel: Cacher colonnes moins importantes sur très petits écrans */
+     /*
+     .reviews-table th:nth-child(5), .reviews-table td:nth-child(5), // Cacher Résumé
+     .reviews-table th:nth-child(6), .reviews-table td:nth-child(6) { // Cacher Date Analyse
+         display: none;
+     }
+     */
+}

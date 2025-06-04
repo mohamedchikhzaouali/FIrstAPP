@@ -1,0 +1,77 @@
+<body>
+  <!-- ***** Header Area Start ***** -->
+  <app-front-header-teacher *ngIf="(userRole$ | async) === 'TEACHER'"></app-front-header-teacher>
+  <app-front-header-student *ngIf="(userRole$ | async) === 'STUDENT'"></app-front-header-student>
+  <!-- ***** Header Area End ***** -->
+
+  <div class="page-content">
+  <br><br><br>
+
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<div class="container">
+  <h2 class="text-center">Responses List</h2>
+  <button type="button" class="btn btn-modern-back" (click)="goBack()"><i class="fas fa-arrow-left"></i> Back</button>
+  <br><br>
+  
+  <button class="btn btn-success" [routerLink]="['/add-response', this.questionId]">Add a Response <i class="fas fa-plus"></i></button>
+
+  <!-- Table pour les questions MULTIPLE_CHOICE -->
+  <table class="table table-bordered" *ngIf="questionType === 'MULTIPLE_CHOICE'">
+    <thead>
+      <tr>
+        <th>Response</th>
+        <th class="correct-column">Correct</th>
+        <th class="actions-column">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let response of responses">
+        <td class="align-middle">{{ response.response }}</td>
+        <td class="correct-column">{{ response.responseCorrect ? 'Yes' : 'No' }}</td>
+        <td>
+          <button class="btn btn-warning" [routerLink]="['/update-response', questionId, response.idResponse]">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button (click)="deleteResponse(response.idResponse)" class="btn btn-danger">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Table pour les questions DRAG_AND_DROP -->
+  <table class="table table-bordered" *ngIf="questionType === 'DRAG_AND_DROP'">
+    <thead>
+      <tr>
+        <th>Source Text</th>
+        <th>Target Text</th>
+        <th class="actions-column">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let dragAndDropPair of dragAndDropPairs">
+        <td class="align-middle">{{ dragAndDropPair.sourceText }}</td>
+        <td class="align-middle">{{ dragAndDropPair.targetText }}</td>
+        <td>
+          <button class="btn btn-warning" [routerLink]="['/update-response', questionId, dragAndDropPair.idDragAndDrop]">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button (click)="deleteResponse(dragAndDropPair.idDragAndDrop)" class="btn btn-danger">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<br><br><br>
+  </div>
+
+   <!-- ***** Footer Area Start ***** -->
+   <app-front-footer></app-front-footer>
+   <!-- ***** Footer Area End ***** -->
+</body>

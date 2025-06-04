@@ -1,0 +1,156 @@
+<body>
+<app-front-header-teacher *ngIf="(userRole$ | async) === 'TEACHER'"></app-front-header-teacher>
+<app-front-header-student *ngIf="(userRole$ | async) === 'STUDENT'"></app-front-header-student>
+
+<div class="page-content">
+
+<div class="main-content">
+  <div class="d-flex justify-content-between align-items-center mb-3 top-controls-section">
+    <div class="input-group search-container w-75">
+      <input type="text" class="form-control search-input" placeholder="Search for a course by title, description, category, level..." [(ngModel)]="searchQuery"
+             (input)="searchCourses()" aria-label="Search for a course" />
+      <button class="btn btn-outline-secondary search-button" (click)="startSpeechRecognition()" title="Voice search">
+        <i class="fas fa-microphone"></i>
+      </button>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-success" (click)="openModal('addCourseModal')">
+        <i class="fa fa-plus"></i> Add Course
+      </button>
+      <button type="button" class="btn btn-primary" (click)="openModal('addCourseWithDateModal')">
+        <i class="far fa-calendar-alt"></i> Schedule Course
+      </button>
+    </div>
+  </div>
+
+  <div class="courses-area-background">
+    <div *ngIf="filteredCourses.length > 0; else noCoursesBlock" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 course-grid-container">
+      <div *ngFor="let course of pagedCourses()" class="col d-flex align-items-stretch">
+
+        <div class="card course-card" (click)="navigateToDetails(course)">
+          <div class="image-container">
+            <img [src]="course.picture ? 'http://localhost:8087/courses/images/' + course.picture : 'assets/default-image.jpg'"
+                 class="card-img-top course-image" alt="Course image {{ course.title }}">
+            <span class="status-badge" [ngClass]="{'available': course.status, 'unavailable': !course.status}">
+              {{ course.status ? 'Available' : 'Unavailable' }}
+            </span>
+          </div>
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ course.title }}</h5>
+            <div class="course-header">
+               <span class="course-price">{{ course.price | currency:'USD':'symbol':'1.2-2' }}</span>
+              <span class="course-category">{{ course.category }}</span>
+            </div>
+            <p class="card-text text-muted course-description">{{ course.description || 'No description available' }}</p>
+            <div class="course-info mt-auto">
+               <div class="course-date-formatted" *ngIf="course.formattedDay">
+                 <span class="course-date-month">{{ course.formattedMonth }}</span>
+                 <span class="course-date-day">{{ course.formattedDay }}</span>
+               </div>
+              <div class="course-details-list">
+                <ul class="list-unstyled course-details m-0">
+                    <li><strong>Level:</strong> {{ course.level || 'Not defined' }}</li>
+                 </ul>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="button-group">
+              <button class="btn btn-read-ai" (click)="$event.stopPropagation(); textToSpeech(course)" [title]="isSpeaking ? 'Stop reading' : 'Read description'">
+                <i class="fas" [ngClass]="isSpeaking ? 'fa-stop-circle' : 'fa-volume-up'"></i>
+              </button>
+              <a [routerLink]="['/Admindetailcourses', course.idCourse]" class="btn btn-details" title="View details" (click)="$event.stopPropagation()">
+                <i class="fas fa-eye"></i><span class="ms-1">Details</span>
+              </a>
+              <button class="btn btn-delete" (click)="$event.stopPropagation(); openDeleteConfirmationModal(course)" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+              <button class="btn btn-edit" (click)="$event.stopPropagation(); openEditModal(course)" title="Edit">
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+              <button [routerLink]="['/quizzes', course.idCourse] "class="btn btn-add-quiz" (click)="$event.stopPropagation()" title="Add a Quiz to the course">
+                <i class="fas fa-tasks"></i><span class="ms-1">Quiz</span>
+              </button>
+              <button class="btn btn-visibility" (click)="$event.stopPropagation(); toggleCourseStatusAlternative(course)" [title]="course.status ? 'Make Unavailable' : 'Make Available'">
+                <i class="fas" [ngClass]="{'fa-eye': course.status, 'fa-eye-slash': !course.status}"></i>
+              </button>
+              <button class="btn btn-fav" (click)="$event.stopPropagation(); toggleFavorite(course)" [title]="course.liked ? 'Remove from favorites' : 'Add to favorites'">
+                <i class="fa-heart" [ngClass]="{'fas text-danger': course.liked, 'far': !course.liked}"></i>
+              </button>
+            </div>
+          </div>
+        </div>      </div>    </div>    <ng-template #noCoursesBlock>
+      <div class="no-courses-container">
+        <img src="assets/no-data.svg" alt="No courses found" />
+        <p class="mt-3 text-muted">
+          {{ searchQuery ? 'No courses match your search.' : 'No courses available at the moment.' }}
+        </p>
+      </div>
+    </ng-template>
+
+    <div class="d-flex justify-content-center mt-4 pagination-container" *ngIf="filteredCourses.length > itemsPerPage">
+      <button class="btn btn-outline-primary me-2" (click)="prevPage()" [disabled]="currentPage === 1">
+        <i class="fas fa-chevron-left"></i> Previous
+      </button>
+      <span class="align-self-center page-info">Page {{ currentPage }} of {{ totalPages() }}</span>
+      <button class="btn btn-outline-primary ms-2" (click)="nextPage()" [disabled]="currentPage === totalPages()">
+        Next <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div></div><div class="modal fade" id="addCourseModal" tabindex="-1" aria-labelledby="addCourseModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-lg"> <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="addCourseModalLabel">Add a New Course</h5>
+      <button type="button" class="btn-close" (click)="closeModal('addCourseModal')" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <form #courseForm="ngForm" (ngSubmit)="handleAddCourseSubmit(courseForm)">
+        <div class="mb-3"> <label for="title" class="form-label">Title <span class="text-danger">*</span></label> <input type="text" id="title" class="form-control" name="title" [(ngModel)]="newCourseData.title" required #title="ngModel" [class.is-invalid]="title.invalid && (title.dirty || title.touched || courseForm.submitted)"> <div *ngIf="title.invalid && (title.dirty || title.touched || courseForm.submitted)" class="invalid-feedback"> Title is required. </div> </div>
+        <div class="mb-3"> <label for="description" class="form-label">Description <span class="text-danger">*</span></label> <textarea id="description" class="form-control" name="description" [(ngModel)]="newCourseData.description" required #description="ngModel" rows="3" [class.is-invalid]="description.invalid && (description.dirty || description.touched || courseForm.submitted)"></textarea> <div *ngIf="description.invalid && (description.dirty || description.touched || courseForm.submitted)" class="invalid-feedback"> Description is required. </div> </div>
+        <div class="row"> <div class="col-md-6 mb-3"> <label for="category" class="form-label">Category <span class="text-danger">*</span></label> <select id="category" class="form-select" name="category" [(ngModel)]="newCourseData.category" required #category="ngModel" [class.is-invalid]="category.invalid && (category.dirty || category.touched || courseForm.submitted)"> <option value="" disabled selected>Choose a category...</option> <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option> </select> <div *ngIf="category.invalid && (category.dirty || category.touched || courseForm.submitted)" class="invalid-feedback"> Category is required. </div> </div> <div class="col-md-6 mb-3"> <label for="level" class="form-label">Level <span class="text-danger">*</span></label> <select id="level" class="form-select" name="level" [(ngModel)]="newCourseData.level" required #level="ngModel" [class.is-invalid]="level.invalid && (level.dirty || level.touched || courseForm.submitted)"> <option value="" disabled selected>Choose a level...</option> <option *ngFor="let lvl of levels" [value]="lvl">{{ lvl }}</option> </select> <div *ngIf="level.invalid && (level.dirty || level.touched || courseForm.submitted)" class="invalid-feedback"> Level is required. </div> </div> </div>
+        <div class="row"> <div class="col-md-6 mb-3"> <label for="price" class="form-label">Price ($) <span class="text-danger">*</span></label> <input type="number" id="price" class="form-control" name="price" [(ngModel)]="newCourseData.price" required min="0" #price="ngModel" [class.is-invalid]="price.invalid && (price.dirty || price.touched || courseForm.submitted)"> <div *ngIf="price.errors?.['required'] && (price.dirty || price.touched || courseForm.submitted)" class="invalid-feedback"> Price is required. </div> <div *ngIf="price.errors?.['min'] && (price.dirty || price.touched || courseForm.submitted)" class="invalid-feedback"> Price cannot be negative. </div> </div> <div class="col-md-6 mb-3"> <label for="date" class="form-label">Start Date (Optional)</label> <input type="date" id="date" name="date" class="form-control" [(ngModel)]="newCourseData.date" #date="ngModel" [min]="getTodayDate()" [class.is-invalid]="date.invalid && (date.dirty || date.touched || courseForm.submitted)"> <div *ngIf="date.errors?.['min'] && (date.dirty || date.touched || courseForm.submitted)" class="invalid-feedback"> Date cannot be in the past. </div> </div> </div>
+        <div class="mb-3"> <label for="file" class="form-label">Image (Optional)</label> <input type="file" id="file" class="form-control" (change)="onFileSelected($event, 'add')" accept="image/png, image/jpeg, image/gif"> </div>
+        <div class="d-flex gap-4 mb-3"> <div class="form-check"> <input type="checkbox" id="status" name="status" class="form-check-input" [(ngModel)]="newCourseData.status"> <label for="status" class="form-check-label">Make Available</label> </div> <div class="form-check"> <input type="checkbox" id="liked" name="liked" class="form-check-input" [(ngModel)]="newCourseData.liked"> <label for="liked" class="form-check-label">Mark as Favorite</label> </div> </div>
+        <div class="modal-footer"> <button type="button" class="btn btn-secondary" (click)="closeModal('addCourseModal')">Cancel</button> <button type="submit" class="btn btn-primary" [disabled]="courseForm.invalid"> <i class="fas fa-plus-circle"></i> Add Course </button> </div>
+      </form>
+    </div>
+  </div></div>
+</div>
+<div class="modal fade" id="addCourseWithDateModal" tabindex="-1" aria-labelledby="addCourseWithDateModalTitle" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-lg"> <div class="modal-content">
+    <div class="modal-header modal-header-schedule"> <h5 class="modal-title" id="addCourseWithDateModalTitle">Schedule Course Publication</h5> <button type="button" class="btn-close btn-close-white" (click)="closeModal('addCourseWithDateModal')" aria-label="Close"></button> </div>
+    <div class="modal-body">
+      <form #scheduledCourseForm="ngForm" (ngSubmit)="handleScheduleCourseSubmit(scheduledCourseForm)">
+        <div class="mb-3"> <label for="scheduledTitle" class="form-label">Title <span class="text-danger">*</span></label> <input type="text" id="scheduledTitle" class="form-control" name="title" [(ngModel)]="scheduledCourseData.title" required #scheduledTitle="ngModel" [class.is-invalid]="scheduledTitle.invalid && (scheduledTitle.dirty || scheduledTitle.touched || scheduledCourseForm.submitted)"> <div *ngIf="scheduledTitle.invalid && (scheduledTitle.dirty || scheduledTitle.touched || scheduledCourseForm.submitted)" class="invalid-feedback"> Title is required. </div> </div>
+        <div class="mb-3"> <label for="scheduledDescription" class="form-label">Description <span class="text-danger">*</span></label> <textarea id="scheduledDescription" class="form-control" name="description" [(ngModel)]="scheduledCourseData.description" required #scheduledDescription="ngModel" rows="3" [class.is-invalid]="scheduledDescription.invalid && (scheduledDescription.dirty || scheduledDescription.touched || scheduledCourseForm.submitted)"></textarea> <div *ngIf="scheduledDescription.invalid && (scheduledDescription.dirty || scheduledDescription.touched || scheduledCourseForm.submitted)" class="invalid-feedback"> Description is required. </div> </div>
+        <div class="row"> <div class="col-md-6 mb-3"> <label for="scheduledCategory" class="form-label">Category <span class="text-danger">*</span></label> <select id="scheduledCategory" class="form-select" name="category" [(ngModel)]="scheduledCourseData.category" required #scheduledCategory="ngModel" [class.is-invalid]="scheduledCategory.invalid && (scheduledCategory.dirty || scheduledCategory.touched || scheduledCourseForm.submitted)"> <option value="" disabled selected>Choose a category...</option> <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option> </select> <div *ngIf="scheduledCategory.invalid && (scheduledCategory.dirty || scheduledCategory.touched || scheduledCourseForm.submitted)" class="invalid-feedback"> Category is required. </div> </div> <div class="col-md-6 mb-3"> <label for="scheduledLevel" class="form-label">Level <span class="text-danger">*</span></label> <select id="scheduledLevel" class="form-select" name="level" [(ngModel)]="scheduledCourseData.level" required #scheduledLevel="ngModel" [class.is-invalid]="scheduledLevel.invalid && (scheduledLevel.dirty || scheduledLevel.touched || scheduledCourseForm.submitted)"> <option value="" disabled selected>Choose a level...</option> <option *ngFor="let lvl of levels" [value]="lvl">{{ lvl }}</option> </select> <div *ngIf="scheduledLevel.invalid && (scheduledLevel.dirty || scheduledLevel.touched || scheduledCourseForm.submitted)" class="invalid-feedback"> Level is required. </div> </div> </div>
+        <div class="row"> <div class="col-md-6 mb-3"> <label for="scheduledPrice" class="form-label">Price ($) <span class="text-danger">*</span></label> <input type="number" id="scheduledPrice" class="form-control" name="price" [(ngModel)]="scheduledCourseData.price" required min="0" #scheduledPrice="ngModel" [class.is-invalid]="scheduledPrice.invalid && (scheduledPrice.dirty || scheduledPrice.touched || scheduledCourseForm.submitted)"> <div *ngIf="scheduledPrice.errors?.['required'] && (scheduledPrice.dirty || scheduledPrice.touched || scheduledCourseForm.submitted)" class="invalid-feedback"> Price is required. </div> <div *ngIf="scheduledPrice.errors?.['min'] && (scheduledPrice.dirty || scheduledPrice.touched || scheduledCourseForm.submitted)" class="invalid-feedback"> Price cannot be negative. </div> </div> <div class="col-md-6 mb-3"> <label for="scheduledPublishDate" class="form-label">Publication Date and Time <span class="text-danger">*</span></label> <input type="datetime-local" id="scheduledPublishDate" step="1" class="form-control" name="scheduledPublishDate" [(ngModel)]="scheduledCourseData.scheduledPublishDate" required #scheduledPublishDate="ngModel" [min]="getCurrentDateTimeLocal()" [class.is-invalid]="scheduledPublishDate.invalid && (scheduledPublishDate.dirty || scheduledPublishDate.touched || scheduledCourseForm.submitted)"> <div *ngIf="scheduledPublishDate.errors?.['required'] && (scheduledPublishDate.dirty || scheduledPublishDate.touched || scheduledCourseForm.submitted)" class="invalid-feedback"> Publication date and time are required. </div> <div *ngIf="scheduledPublishDate.errors?.['min'] && (scheduledPublishDate.dirty || scheduledPublishDate.touched || scheduledCourseForm.submitted)" class="invalid-feedback"> Publication date must be in the future. </div> </div> </div>
+        <div class="mb-3"> <label for="scheduledFile" class="form-label">Image (Optional)</label> <input type="file" id="scheduledFile" class="form-control" (change)="onFileSelected($event, 'schedule')" accept="image/png, image/jpeg, image/gif"> </div>
+        <div class="form-check mb-3"> <input type="checkbox" id="scheduledLiked" name="liked" class="form-check-input" [(ngModel)]="scheduledCourseData.liked"> <label for="scheduledLiked" class="form-check-label">Mark as Favorite</label> </div>
+        <div class="modal-footer"> <button type="button" class="btn btn-secondary" (click)="closeModal('addCourseWithDateModal')">Cancel</button> <button type="submit" class="btn btn-success" [disabled]="scheduledCourseForm.invalid"> <i class="far fa-clock"></i> Schedule Publication </button> </div>
+      </form>
+    </div>
+  </div></div>
+</div>
+<div class="modal fade" id="editCourseModal" tabindex="-1" aria-labelledby="editCourseModalLabel" aria-hidden="true" *ngIf="isEditModalOpen" data-bs-backdrop="static" data-bs-keyboard="false" (hidden.bs.modal)="handleEditModalClosed()">
+  <div class="modal-dialog modal-lg"> <div class="modal-content">
+    <div class="modal-header modal-header-edit"> <h5 class="modal-title" id="editCourseModalLabel">Edit Course: {{ selectedCourse.title }}</h5> <button type="button" class="btn-close btn-close-white" (click)="closeModal('editCourseModal')" aria-label="Close"></button> </div>
+    <div class="modal-body">
+      <form #editCourseForm="ngForm" (ngSubmit)="handleUpdateCourseSubmit(editCourseForm)">
+        <div class="mb-3"> <label for="editTitle" class="form-label">Title <span class="text-danger">*</span></label> <input type="text" id="editTitle" class="form-control" name="title" [(ngModel)]="selectedCourse.title" required #editTitle="ngModel" [class.is-invalid]="editTitle.invalid && (editTitle.dirty || editTitle.touched || editCourseForm.submitted)"> <div *ngIf="editTitle.invalid && (editTitle.dirty || editTitle.touched || editCourseForm.submitted)" class="invalid-feedback"> Title is required. </div> </div>
+        <div class="mb-3"> <label for="editDescription" class="form-label">Description <span class="text-danger">*</span></label> <textarea id="editDescription" class="form-control" name="description" [(ngModel)]="selectedCourse.description" required #editDescription="ngModel" rows="3" [class.is-invalid]="editDescription.invalid && (editDescription.dirty || editDescription.touched || editCourseForm.submitted)"></textarea> <div *ngIf="editDescription.invalid && (editDescription.dirty || editDescription.touched || editCourseForm.submitted)" class="invalid-feedback"> Description is required. </div> </div>
+        <div class="row"> <div class="col-md-6 mb-3"> <label for="editCategory" class="form-label">Category <span class="text-danger">*</span></label> <select id="editCategory" class="form-select" name="category" [(ngModel)]="selectedCourse.category" required #editCategory="ngModel" [class.is-invalid]="editCategory.invalid && (editCategory.dirty || editCategory.touched || editCourseForm.submitted)"> <option value="" disabled>Choose a category...</option> <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option> </select> <div *ngIf="editCategory.invalid && (editCategory.dirty || editCategory.touched || editCourseForm.submitted)" class="invalid-feedback"> Category is required. </div> </div> <div class="col-md-6 mb-3"> <label for="editLevel" class="form-label">Level <span class="text-danger">*</span></label> <select id="editLevel" class="form-select" name="level" [(ngModel)]="selectedCourse.level" required #editLevel="ngModel" [class.is-invalid]="editLevel.invalid && (editLevel.dirty || editLevel.touched || editCourseForm.submitted)"> <option value="" disabled>Choose a level...</option> <option *ngFor="let lvl of levels" [value]="lvl">{{ lvl }}</option> </select> <div *ngIf="editLevel.invalid && (editLevel.dirty || editLevel.touched || editCourseForm.submitted)" class="invalid-feedback"> Level is required. </div> </div> </div>
+        <div class="row"> <div class="col-md-6 mb-3"> <label for="editPrice" class="form-label">Price ($) <span class="text-danger">*</span></label> <input type="number" id="editPrice" class="form-control" name="price" [(ngModel)]="selectedCourse.price" required min="0" #editPrice="ngModel" [class.is-invalid]="editPrice.invalid && (editPrice.dirty || editPrice.touched || editCourseForm.submitted)"> <div *ngIf="editPrice.errors?.['required'] && (editPrice.dirty || editPrice.touched || editCourseForm.submitted)" class="invalid-feedback"> Price is required. </div> <div *ngIf="editPrice.errors?.['min'] && (editPrice.dirty || editPrice.touched || editCourseForm.submitted)" class="invalid-feedback"> Price cannot be negative. </div> </div> <div class="col-md-6 mb-3"> <label for="editDate" class="form-label">Start Date (Optional)</label> <input type="date" id="editDate" name="date" class="form-control" [(ngModel)]="selectedCourse.date" #editDate="ngModel" [min]="getTodayDate()" [class.is-invalid]="editDate.invalid && (editDate.dirty || editDate.touched || editCourseForm.submitted)"> <div *ngIf="editDate.errors?.['min'] && (editDate.dirty || editDate.touched || editCourseForm.submitted)" class="invalid-feedback"> Date cannot be in the past. </div> </div> </div>
+        <div class="mb-3"> <label for="editFile" class="form-label">Image (Optional - leave empty to keep current)</label> <input type="file" id="editFile" class="form-control" (change)="onFileSelected($event, 'edit')" accept="image/png, image/jpeg, image/gif"> </div>
+        <div class="d-flex gap-4 mb-3"> <div class="form-check"> <input type="checkbox" id="editStatus" name="status" class="form-check-input" [(ngModel)]="selectedCourse.status"> <label for="editStatus" class="form-check-label">Available</label> </div> <div class="form-check"> <input type="checkbox" id="editLiked" name="liked" class="form-check-input" [(ngModel)]="selectedCourse.liked"> <label for="editLiked" class="form-check-label">Favorite</label> </div> </div>
+        <div class="modal-footer"> <button type="button" class="btn btn-secondary" (click)="closeModal('editCourseModal')">Cancel</button> <button type="submit" class="btn btn-warning" [disabled]="editCourseForm.invalid"> <i class="fas fa-save"></i> Update </button> </div>
+      </form>
+    </div>
+  </div></div>
+</div>
+
+<br><br><br>
+  </div>
+
+  <app-front-footer></app-front-footer>
+</body>

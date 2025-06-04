@@ -1,0 +1,102 @@
+<body>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <div class="page-content">
+
+    <div class="container">
+      <br><br>
+      <h2 class="styled-titre">Update Quiz</h2>
+      <br>
+
+      <button type="button" class="btn btn-modern-back" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+
+      <form [formGroup]="updateQuizForm" (ngSubmit)="updateQuiz()" class="response-container">
+        <div class="form-group">
+          <label for="type" class="styled-titres-label">Type of Quiz</label>
+          <select id="type" class="form-control" formControlName="type" (change)="onQuizTypeChange()">
+            <option value="CERTIFIED_QUIZ">CERTIFIED_QUIZ</option>
+            <option value="TRAINING_QUIZ">TRAINING_QUIZ</option>
+          </select>
+          <div *ngIf="updateQuizForm.get('type')?.invalid && (updateQuizForm.get('type')?.dirty || updateQuizForm.get('type')?.touched)" class="alert alert-danger">
+            Type of Quiz is required.
+          </div>
+        </div>
+
+        <ng-container *ngIf="updateQuizForm.get('type')?.value === 'CERTIFIED_QUIZ'">
+          <div class="form-group">
+            <label for="titleQuiz" class="styled-titres-label">Quiz Title</label>
+            <input id="titleQuiz" formControlName="titleQuiz" class="form-control" required />
+            <div *ngIf="updateQuizForm.get('titleQuiz')?.invalid && (updateQuizForm.get('titleQuiz')?.dirty || updateQuizForm.get('titleQuiz')?.touched)" class="alert alert-danger">
+              The title is required.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="duration" class="styled-titres-label">Duration (HH:mm)</label>
+            <input id="duration" formControlName="duration" type="time" class="form-control" required />
+            <div *ngIf="updateQuizForm.get('duration')?.invalid && (updateQuizForm.get('duration')?.dirty || updateQuizForm.get('duration')?.touched)" class="alert alert-danger">
+              The duration is required.
+            </div>
+            <div *ngIf="updateQuizForm.get('duration')?.errors?.['minDuration']" class="alert alert-danger">
+              The duration must be at least 1 minute.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="startDate" class="styled-titres-label">Start Date</label>
+            <input id="startDate" formControlName="startDate" type="datetime-local" class="form-control" required />
+            <div *ngIf="updateQuizForm.get('startDate')?.invalid && (updateQuizForm.get('startDate')?.dirty || updateQuizForm.get('startDate')?.touched)" class="alert alert-danger">
+              The start date is required.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="endDate" class="styled-titres-label">End Date</label>
+            <input id="endDate" formControlName="endDate" type="datetime-local" class="form-control" required />
+            <div *ngIf="updateQuizForm.get('endDate')?.invalid && (updateQuizForm.get('endDate')?.dirty || updateQuizForm.get('endDate')?.touched)" class="alert alert-danger">
+              The end date is required.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="price" class="styled-titres-label">Price</label>
+            <input id="price" formControlName="price" class="form-control" required (input)="onPriceInput($event)" />
+            <div *ngIf="updateQuizForm.get('price')?.invalid && (updateQuizForm.get('price')?.dirty || updateQuizForm.get('price')?.touched)" class="alert alert-danger">
+              <div *ngIf="updateQuizForm.get('price')?.errors?.['required']">
+                The price is required.
+              </div>
+              <div *ngIf="updateQuizForm.get('price')?.errors?.['invalidPrice']">
+                The price must be a valid number (e.g., 10 or 10.50).
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="updateQuizForm.errors?.['dateRange']" class="alert alert-danger">
+            {{ updateQuizForm.errors?.['dateRange'].message }}
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="updateQuizForm.get('type')?.value === 'TRAINING_QUIZ'">
+          <div class="form-group">
+            <label for="titleQuiz" class="styled-titres-label">Quiz Title</label>
+            <input id="titleQuiz" formControlName="titleQuiz" class="form-control" required />
+            <div *ngIf="updateQuizForm.get('titleQuiz')?.invalid && (updateQuizForm.get('titleQuiz')?.dirty || updateQuizForm.get('titleQuiz')?.touched)" class="alert alert-danger">
+              The title is required.
+            </div>
+          </div>
+        </ng-container>
+
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary" [disabled]="updateQuizForm.invalid">Update</button>
+        </div>
+
+      </form>
+    </div>
+</div>
+
+<!-- ***** Footer Area Start ***** -->
+<app-front-footer></app-front-footer>
+<!-- ***** Footer Area End ***** -->
+
+</body>

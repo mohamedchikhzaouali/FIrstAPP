@@ -1,0 +1,240 @@
+/* courses-teachers.component.scss - Version Finale (Carte Cliquable, Hauteur Fixe) */
+
+/* --- Styles Généraux --- */
+:host {
+  background-image: url('/assets/templatefront/assets/images/meetings-bg.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  display: block;
+  min-height: 100vh;
+  color: #333;
+}
+
+.main-content {
+  /* Conteneur principal large */
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 100px 20px 60px 20px;
+  background-color: transparent;
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Section Haute : Recherche et Boutons --- */
+.top-controls-section {
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.search-container {
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: none;
+  border-radius: 30px;
+  overflow: hidden;
+  display: flex;
+  flex-grow: 1;
+  min-width: 300px;
+  max-width: 100%;
+}
+.search-input {
+  border: none; padding: 10px 20px; font-size: 1rem; flex-grow: 1; background: transparent;
+  &:focus { box-shadow: none; outline: none; }
+}
+.search-button {
+  background-color: transparent; border: none; padding: 10px 15px; color: #6c757d; cursor: pointer; transition: color 0.2s ease;
+  &:hover { color: #0d6efd; }
+}
+.top-controls-section .d-flex.gap-2 { display: flex; gap: 10px; flex-shrink: 0; }
+.top-controls-section .btn-success,
+.top-controls-section .btn-primary {
+  padding: 10px 18px; border-radius: 25px; font-weight: 600; font-size: 0.9rem; border: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: inline-flex; align-items: center; gap: 8px; color: white;
+  &:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+  &:active { transform: translateY(0); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+}
+.top-controls-section .btn-success { background-color: #198754; }
+.top-controls-section .btn-primary { background-color: #0d6efd; }
+
+/* --- Zone des Cours --- */
+.courses-area-background {
+  background-color: rgb(255 255 255 / 40%); padding: 30px; border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); margin: 0 auto;
+}
+.course-grid-container { min-height: 50vh; display: flex; flex-wrap: wrap; align-content: flex-start; }
+
+/* --- Carte de Cours --- */
+.course-card {
+  border: none; border-radius: 12px; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.07);
+  transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+  overflow: hidden; /* Important pour height fixe */
+  background-color: #fff;
+  display: flex; flex-direction: column;
+  height: 480px; /* Hauteur FIXE (ajustez cette valeur !) */
+  cursor: pointer; /* Indique cliquable */
+
+  &:hover { transform: translateY(-6px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); }
+}
+.image-container { position: relative; width: 100%; padding-bottom: 56.25%; overflow: hidden; flex-shrink: 0; }
+.course-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+.course-card:hover .course-image { transform: scale(1.05); }
+.status-badge {
+  position: absolute; top: 12px; right: 12px; padding: 6px 12px; border-radius: 20px;
+  font-size: 0.75em; font-weight: 700; color: white; z-index: 2; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  &.available { background-color: #198754; }
+  &.unavailable { background-color: #dc3545; }
+}
+.card-body {
+  padding: 1.1rem; /* Padding interne légèrement augmenté */
+  display: flex; flex-direction: column; flex-grow: 1; overflow: hidden;
+}
+.card-title {
+  font-size: 1.2rem; /* Titre légèrement plus grand */
+  font-weight: 700; margin-bottom: 0.6rem; color: #212529; flex-shrink: 0;
+}
+.course-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; gap: 10px; flex-shrink: 0; }
+.course-price { background-color: #0d6efd; color: white; padding: 0.3em 0.8em; border-radius: 15px; font-weight: 600; font-size: 0.9em; flex-shrink: 0; }
+.course-category { background-color: #6c757d; color: white; padding: 0.3em 0.8em; border-radius: 15px; font-size: 0.75em; font-weight: 600; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.course-description {
+  color: #495057; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1rem; flex-grow: 1;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;
+}
+.course-info { display: flex; align-items: center; gap: 15px; margin-top: auto; padding-top: 0.75rem; border-top: 1px solid #e9ecef; flex-shrink: 0; }
+.course-date-formatted { display: flex; flex-direction: column; align-items: center; background-color: #f8f9fa; padding: 0.4rem 0.7rem; border-radius: 6px; border: 1px solid #dee2e6; text-align: center; width: auto; }
+.course-date-month { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; color: #495057; }
+.course-date-day { font-size: 1.2rem; font-weight: 700; color: #0d6efd; }
+.course-details-list { flex-grow: 1; }
+.course-details { list-style: none; padding: 0; margin: 0; font-size: 0.9rem; color: #343a40; li { margin-bottom: 0; } }
+.card-footer { padding: 0.75rem 1rem; background-color: #f8f9fa; border-top: 1px solid #e9ecef; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+.button-group { display: flex; flex-wrap: nowrap; justify-content: center; gap: 8px; align-items: center; width: 100%; > * { margin: 0; flex-shrink: 0; } }
+
+/* --- Boutons d'Action (Carte) --- */
+.button-group .btn {
+  padding: 6px 10px; border-radius: 20px; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center;
+  transition: all 0.2s ease; border: none; cursor: pointer; line-height: 1; i { font-size: 1em; vertical-align: middle; }
+}
+.button-group .btn-details { padding: 6px 12px; /* Padding ajusté pour texte */ }
+.btn-read-ai { background-color: #6c757d; color: white; &:hover { background-color: #5a6268; } }
+.btn-details { background-color: #0dcaf0; color: white; &:hover { background-color: #0aacc4; } }
+.btn-delete { background-color: #dc3545; color: white; &:hover { background-color: #c82333; } }
+.btn-edit { background-color: #ffc107; color: #212529; &:hover { background-color: #e0a800; } }
+.btn-visibility {
+  background-color: transparent; color: #6c757d; padding: 6px 8px; &:hover { color: #343a40; }
+  i.fa-eye { color: #198754; } i.fa-eye-slash { color: #dc3545; }
+}
+.btn-fav {
+  background-color: transparent; color: #adb5bd; padding: 6px 8px; transition: color 0.2s ease, transform 0.2s ease; i { font-size: 1.1em; }
+  &:hover { color: #e53a50; transform: scale(1.1); } i.fas { color: #dc3545; }
+}
+
+/* STYLE POUR LE BOUTON AJOUTER UN QUIZ (incluant l'état :active) */
+.btn-add-quiz {
+  background-color: #6f42c1; /* Violet Bootstrap pour la distinction */
+  color: white; /* Couleur du texte normale */
+  padding: 6px 12px; /* Similaire au bouton "Détails" car il a du texte */
+
+  &:hover {
+    background-color: #59369a; /* Un violet plus foncé au survol */
+    color: #0dcaf0; /* Couleur du texte au survol */
+  }
+
+  &:active {
+    background-color: #53308d; /* Violet encore plus foncé pour l'état actif/pressé */
+    color: rgba(255, 255, 255, 0.85); /* Couleur du texte légèrement atténuée lorsque cliqué */
+    transform: scale(0.95); /* Conserve l'effet de "pression" (réduction de taille) */
+  }
+}
+/* FIN STYLE POUR LE BOUTON AJOUTER UN QUIZ */
+
+.button-group .btn:active { transform: scale(0.95); }
+
+/* --- Message "Aucun cours" --- */
+.no-courses-container {
+  text-align: center; padding: 60px 20px; border-radius: 8px; min-height: 40vh; display: flex; flex-direction: column;
+  justify-content: center; align-items: center; width: 100%;
+  img { max-width: 120px; opacity: 0.6; margin-bottom: 1rem; }
+  p { margin-top: 0.5rem; color: #6c757d; font-size: 1.1rem; font-weight: 500; }
+}
+
+/* --- Pagination --- */
+.pagination-container {
+  display: flex; justify-content: center; align-items: center; margin-top: 30px; padding-bottom: 10px;
+  .btn { margin: 0 5px; border-radius: 20px; padding: 8px 15px; font-weight: 600; transition: all 0.2s ease; border-width: 1px; }
+  .btn-outline-primary {
+    color: #0d6efd; border-color: #0d6efd; background-color: transparent;
+    &:hover { color: #fff; background-color: #0d6efd; border-color: #0d6efd; transform: translateY(-2px); box-shadow: 0 2px 4px rgba(13, 110, 253, 0.3); }
+    &:disabled { color: #adb5bd; border-color: #ced4da; background-color: transparent; opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+  }
+  .page-info { color: #495057; margin: 0 15px; font-weight: 600; font-size: 0.95rem; }
+}
+
+/* --- Styles des Modals Améliorés --- */
+.modal-content { border-radius: 15px; border: none; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15); overflow: hidden; }
+.modal-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); color: #212529; border-bottom: 1px solid #dee2e6;
+  padding: 1.25rem 1.5rem; border-top-left-radius: 14px; border-top-right-radius: 14px;
+  display: flex; justify-content: space-between; align-items: center;
+  &.modal-header-schedule { background: linear-gradient(135deg, #198754 0%, #146c43 100%); color: white; border-bottom: none; .btn-close { filter: brightness(0) invert(1); } }
+  &.modal-header-edit { background: linear-gradient(135deg, #ffca2c 0%, #ffc107 100%); color: #212529; border-bottom: none; }
+}
+.modal-title { font-weight: 600; font-size: 1.25rem; }
+.btn-close {
+  background-color: transparent; border: none; font-size: 1.1rem; color: #6c757d;
+  opacity: 0.7; transition: opacity 0.2s ease; padding: 0.5rem;
+  &:hover { opacity: 1; } &:focus { outline: none; box-shadow: none; }
+}
+.modal-body { padding: 2rem; background-color: #fff; }
+.modal-body .form-label { font-weight: 600; color: #495057; margin-bottom: 0.6rem; display: block; }
+.modal-body .form-control,
+.modal-body .form-select {
+  border-radius: 8px; border: 1px solid #ced4da; padding: 0.75rem 1rem; font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  &:focus { border-color: #86b7fe; box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); outline: none; }
+  &.ng-invalid.ng-touched, &.ng-invalid.ng-dirty, &.is-invalid {
+    border-color: #dc3545; &:focus { box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25); }
+  }
+}
+.modal-body textarea.form-control { min-height: 100px; }
+.invalid-feedback { display: block; width: 100%; margin-top: 0.25rem; font-size: 0.875em; color: #dc3545; }
+.modal-body .form-check { padding-left: 2.2em; margin-bottom: 1rem; display: flex; align-items: center; }
+.modal-body .form-check-input {
+  width: 1.3em; height: 1.3em; margin-top: 0; margin-left: -2.2em; border-radius: 4px; border-color: #adb5bd;
+  &:focus { box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); }
+  &:checked { background-color: #0d6efd; border-color: #0d6efd; }
+}
+.modal-body .form-check-label { padding-left: 0.6em; font-weight: 500; color: #495057; }
+.modal-footer {
+  background-color: #f8f9fa; border-top: 1px solid #dee2e6; padding: 1rem 1.5rem; display: flex;
+  justify-content: flex-end; gap: 0.75rem; border-bottom-left-radius: 14px; border-bottom-right-radius: 14px;
+}
+.modal-footer .btn {
+  padding: 0.7rem 1.6rem; border-radius: 25px; font-weight: 600; font-size: 0.95rem; border: none;
+  transition: all 0.25s ease-out; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  display: inline-flex; align-items: center; gap: 8px;
+  &:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15); }
+  &:active { transform: translateY(0); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+  &:disabled { opacity: 0.65; cursor: not-allowed; transform: none; box-shadow: none; }
+}
+.modal-footer .btn-primary { background-color: #0d6efd; color: white; &:hover { background-color: #0b5ed7; } }
+.modal-footer .btn-secondary { background-color: #6c757d; color: white; &:hover { background-color: #5c636a; } }
+.modal-footer .btn-success { background-color: #198754; color: white; &:hover { background-color: #157347; } }
+.modal-footer .btn-warning { background-color: #ffc107; color: #000; &:hover { background-color: #ffcd39; } }
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  background-image: url('/assets/quiz-background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.page-content {
+  flex: 1; /* Permet au contenu de prendre tout l'espace disponible */
+}

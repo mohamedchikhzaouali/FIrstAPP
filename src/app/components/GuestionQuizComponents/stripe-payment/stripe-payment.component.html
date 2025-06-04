@@ -1,0 +1,16 @@
+<script src="https://js.stripe.com/v3/"></script>
+<div class="payment-container">
+    <div class="payment-card">
+      <div class="price-container">
+        <span class="price-label">Price:</span>
+        <span class="price-value">${{ quizPrice }}</span>
+      </div>
+      <p class="description">
+        To access this quiz, you must first complete the payment.
+        Unlock your potential with our comprehensive quiz.
+        Gain valuable insights, track your progress,
+        and take the next step to success!
+      </p>
+      <button class="payment-button" (click)="payWithStripe()">Pay with Stripe</button>
+    </div>
+  </div>

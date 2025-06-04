@@ -1,0 +1,54 @@
+<div class="wrapper">
+  <app-front-header-teacher *ngIf="(userRole$ | async) === 'TEACHER'"></app-front-header-teacher>
+  <app-front-header-student *ngIf="(userRole$ | async) === 'STUDENT'"></app-front-header-student>
+
+  <main class="main-content">
+    <div class="container">
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Rechercher un cours..." [(ngModel)]="searchQuery" (input)="searchCourses()">
+            <button class="search-button" (click)="startSpeechRecognition()">
+              <i class="fa fa-microphone"></i>
+            </button>
+            <button class="search-button ai-button" (click)="textToSpeech()">
+              <i class="fas fa-robot"></i> {{ isSpeaking ? 'Arrêter' : 'Lire avec IA' }}
+            </button>
+          </div>
+
+      <div class="courses-grid" *ngIf="filteredCourses.length > 0; else noCourses">
+        <div *ngFor="let course of sortedCourses()" class="course-card">
+          <img [src]="course.picture ? 'http://localhost:8087/courses/images/' + course.picture : 'assets/default-image.jpg'"
+               class="course-image" alt="Image du cours">
+          <div class="course-details">
+            <h3 class="course-title">{{ course.title }}</h3>
+            <p class="course-description">{{ course.description || 'Aucune description disponible' }}</p>
+            <ul class="course-info">
+              <li><strong>Date :</strong> {{ course.date | date: 'shortDate' }}</li>
+              <li><strong>Catégorie :</strong> {{ course.category || 'Non spécifiée' }}</li>
+              <li><strong>Prix :</strong> {{ course.price | currency }}</li>
+              <li><strong>Niveau :</strong> {{ course.level }}</li>
+              <li><strong>Status :</strong>
+                <span [ngClass]="{'available': course.status, 'unavailable': !course.status}">
+                  {{ course.status ? 'Disponible' : 'Indisponible' }}
+                </span>
+              </li>
+            </ul>
+            <div class="course-actions">
+              <a [routerLink]="['/details', course.idCourse]" class="details-button">Voir Détails</a>
+              <button *ngIf="course.liked" class="remove-button" (click)="removeFromFavorites(course.idCourse)">
+                Retirer des favoris
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noCourses>
+        <div class="no-courses">
+          <strong>Oups !</strong> Aucun cours trouvé. Essayez avec un autre mot-clé.
+        </div>
+      </ng-template>
+    </div>
+  </main>
+
+  <app-front-footer></app-front-footer>
+</div>

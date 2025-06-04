@@ -1,0 +1,61 @@
+.container {
+    max-width: 600px; /* Limite la largeur du formulaire */
+    margin: 100px auto !important; /* Centrer le formulaire horizontalement */
+    background-color: #f8f9fa; /* Couleur de fond douce */
+    padding: 20px; /* Espace intérieur */
+    border-radius: 8px; /* Coins arrondis */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre légère */
+}
+
+h2 {
+    font-family: 'Arial', sans-serif; /* Choisir une police moderne */
+    color: #007bff; /* Couleur de texte pour le titre */
+}
+
+.form-label {
+    font-weight: bold; /* Mettre en gras les étiquettes */
+}
+
+.reclamation-form .form-control {
+    border-radius: 4px; /* Coins arrondis pour les champs de texte */
+}
+
+.btn-primary {
+    background-color: #007bff; /* Couleur de fond du bouton */
+    border: none; /* Retirer la bordure */
+    transition: background-color 0.3s ease; /* Effet de transition pour le survol */
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Couleur de fond du bouton au survol */
+}
+
+.link {
+    color: #007bff; /* Couleur du lien */
+    text-decoration: none; /* Retirer le soulignement */
+    font-weight: bold; /* Mettre en gras le lien */
+}
+
+.link:hover {
+    text-decoration: underline; /* Souligner le lien au survol */
+}
+
+.text-danger {
+    font-size: 0.9rem; /* Taille de police pour les messages d'erreur */
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    background-image: url('/assets/quiz-background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .page-content {
+    flex: 1; /* Permet au contenu de prendre tout l'espace disponible */
+  }

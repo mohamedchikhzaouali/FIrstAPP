@@ -1,0 +1,233 @@
+<body>
+<section class="h-100 gradient-form">
+    <div class="container-fluid py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-xl-10">
+                <div class="card rounded-3 text-black">
+                    <div class="row g-0">
+                        <!-- Left Side - Form -->
+                        <div class="col-lg-6">
+                            <div class="card-body p-md-5 mx-md-4">      
+
+                                <div class="text-center">
+                                    <a routerLink="/home-logout" class="logo">
+                                        <img src="/assets/templatefront/assets/images/logo.png" alt="Logo" style="width: 170px; height: auto;">
+                                    </a>
+                                </div>
+
+                                <div class="toggle-container">
+
+                                    <div class="toggle-wrapper">
+                                        <div class="toggle-switch" [class.toggled]="isToggled" (click)="toggle()">
+                                          <div class="toggle-circle"></div>
+                                        </div>
+                                      </div>
+
+                                      <button (click)="toggle()" class="toggle-btn" [ngClass]="{'teacher': isToggled, 'student': !isToggled}">
+                                        <b>{{ isToggled ? 'SignUp as a Teacher ' : 'SignUp as a Student' }}</b>
+                                    </button> 
+                                  </div>
+
+                                  <form style="margin-top: 40px;" [formGroup]="formSignUp" (ngSubmit)="onSubmit()">
+                                    
+                                
+                                    <!-- Name, Surname, and Birth Date in one row -->
+                                    <div class="row mb-4">
+                                        <div class="col-md-4">
+                                            <label class="form-label" for="name">Name</label>
+                                            <input type="text" id="name" class="form-control form-input" formControlName="name" placeholder="Name" />
+                                            <div class="alert alert-danger" *ngIf="formSignUp.controls['name'].invalid && formSignUp.controls['name'].touched">
+                                              <p *ngIf="formSignUp.controls['name'].hasError('required')">Name is mandatory</p>
+                                              <p *ngIf="formSignUp.controls['name'].hasError('pattern')">Name must be alphabetic</p>
+                                            </div>
+                                          </div>
+
+                                          <div class="col-md-4">
+                                            <label class="form-label" for="surname">Surname</label>
+                                            <input type="text" id="surname" class="form-control form-input" formControlName="surname" placeholder="Surname" />
+                                            <div class="alert alert-danger" *ngIf="formSignUp.controls['surname'].invalid && formSignUp.controls['surname'].touched">
+                                              <p *ngIf="formSignUp.controls['surname'].hasError('required')">Surname is mandatory</p>
+                                              <p *ngIf="formSignUp.controls['surname'].hasError('pattern')">Surname must be alphabetic</p>
+                                            </div>
+                                          </div>
+
+                                          <div class="col-md-4">
+                                            <label for="birthDate">Date of Birth</label>
+                                            <input type="date" id="birthDate" formControlName="birthDate">
+
+                                            <div *ngIf="formSignUp.get('birthDate')?.invalid && formSignUp.get('birthDate')?.touched" class="alert alert-danger">
+                                              <p *ngIf="formSignUp.get('birthDate')?.hasError('required')">Birth Date is required.</p>
+                                              <p *ngIf="formSignUp.get('birthDate')?.hasError('minAge')">You must be at least {{ formSignUp.get('birthDate')?.errors?.['minAge']?.requiredAge }} years old.</p>
+                                            </div>
+                                          </div>
+                                          
+                                    </div>
+                                
+                                    <div class="form-outline mb-4">
+                                        <label class="form-label" for="picture">Picture</label>
+                                        <input type="file" id="picture" (change)="onFileChange($event, 'picture')" />
+                                        <div class="alert alert-danger" *ngIf="formSignUp.controls['picture'].invalid && formSignUp.controls['picture'].touched">
+                                          <div *ngIf="formSignUp.get('picture')?.invalid && formSignUp.get('picture')?.touched">
+                                            Picture is required.
+                                          </div>
+                                          
+                                        </div>
+                                      </div>
+                                      
+                                
+                                    <div class="col-md-4">
+                                        <label class="form-label" for="phoneNumber">Phone Number</label>
+                                        <input type="text" id="phoneNumber" class="form-control form-input" formControlName="phoneNumber" placeholder="Phone Number" />
+                                        <div class="alert alert-danger" *ngIf="formSignUp.controls['phoneNumber'].invalid && formSignUp.controls['phoneNumber'].touched">
+                                          <p *ngIf="formSignUp.controls['phoneNumber'].hasError('required')">Phone number is mandatory</p>
+                                          <p *ngIf="formSignUp.controls['phoneNumber'].hasError('pattern')">Phone number must be 8 digits</p>
+                                        </div>
+                                      </div>
+                                
+                                    <div data-mdb-input-init class="form-outline mb-4">
+                                        <label class="form-label" for="address">Address</label>
+                                        <input type="text" id="address" class="form-control form-input" formControlName="address" placeholder="Enter your address"/>
+                                        <div class="alert alert-danger" *ngIf="formSignUp.controls['address'].invalid && formSignUp.controls['address'].touched">
+                                            <p *ngIf="formSignUp.controls['address'].hasError('required')">Address Is Mandatory</p>
+                                        </div>                                   
+                                    </div>
+                                
+                                    <!-- Additional inputs based on toggle state -->
+                                    <div *ngIf="isToggled" class="teacher-inputs">
+                                        <div class="col-md-4">
+                                            <label class="form-label" for="cin">CIN</label>
+                                            <input type="text" id="cin" class="form-control form-input" formControlName="cin" placeholder="CIN"  required/>
+                                            <div class="alert alert-danger" *ngIf="formSignUp.controls['cin'].invalid && formSignUp.controls['cin'].touched">
+                                              <p *ngIf="formSignUp.controls['cin'].hasError('required')">cin Is Mandatory</p>
+                                              <p *ngIf="formSignUp.controls['cin'].hasError('pattern')">CIN must be 8 digits</p>
+                                            </div>
+                                          </div>
+
+                                        <div data-mdb-input-init class="form-outline mb-4">
+                                            <label class="form-label" for="diploma">Diploma</label>
+                                            <input type="file" id="diploma" (change)="onFileChange($event, 'diploma')" />   
+                                            <div class="alert alert-danger" *ngIf="formSignUp.controls['diploma'].invalid && formSignUp.controls['diploma'].touched">
+                                                <p *ngIf="formSignUp.controls['diploma'].hasError('required')">Diploma Is Mandatory</p>
+                                                <p *ngIf="formSignUp.controls['diploma'].hasError('invalidFileType')">Diploma must be a PDF file</p>
+                                            </div>
+                                        </div>
+                                
+                                        <div data-mdb-input-init class="form-outline mb-4">
+                                            <label class="form-label" for="cv">CV</label>
+                                            <input type="file" id="cv" (change)="onFileChange($event, 'cv')" />
+                                            <div class="alert alert-danger" *ngIf="formSignUp.controls['cv'].invalid && formSignUp.controls['cv'].touched">
+                                                <p *ngIf="formSignUp.controls['cv'].hasError('required')">CV Is Mandatory</p>
+                                                <p *ngIf="formSignUp.controls['cv'].hasError('invalidFileType')">CV must be a PDF file</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                    <div *ngIf="!isToggled" class="student-input">
+                                        <div data-mdb-input-init class="form-outline mb-4">
+                                            <label class="form-label" for="level">Level</label>
+                                            <input type="text" id="level" class="form-control form-input" formControlName="level" placeholder="Enter your level"/>
+                                            <div class="alert alert-danger" *ngIf="formSignUp.controls['level'].invalid && formSignUp.controls['level'].touched">
+                                                <p *ngIf="formSignUp.controls['level'].hasError('required')">Level Is Mandatory</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="row align-items-center">
+                                    <div class="col-md-4d-flex align-items-center">
+                                        <label class="form-label" for="email">Email</label>
+                                        <input type="email" id="email" class="form-control form-input" formControlName="email" placeholder="Email" />
+                                        <div class="alert alert-danger" *ngIf="formSignUp.controls['email'].invalid && formSignUp.controls['email'].touched">
+                                          <p *ngIf="formSignUp.controls['email'].hasError('required')">Email is mandatory</p>
+                                          <p *ngIf="formSignUp.controls['email'].hasError('email')">Invalid email format</p>
+                                        </div>
+                                        <button type="button" class="verification-button" (click)="sendVerificationCode()">Send Verification Code</button>
+                                      </div>
+                                    </div>
+
+                                      <div class="col-md-4">
+                                        <label class="form-label" for="verificationCode">Verification Code</label>
+                                        <input type="text" id="verificationCode" class="form-control form-input" [(ngModel)]="verificationCode" [ngModelOptions]="{standalone: true}" placeholder="Verification Code" />
+                                        <button type="button"  class="verification-button" (click)="verifyCode()">Verify Code</button>
+                                      </div>
+                    
+                                      <p *ngIf="message">{{ message }}</p>
+                              
+                                      <div class="row">
+                                      <div class="col-md-4" >
+                                        <label class="form-label" for="password">Password</label>
+                                        <input type="password" id="password" class="form-control form-input" formControlName="password" placeholder="Password" />
+                                        <div class="alert alert-danger" *ngIf="formSignUp.controls['password'].invalid && formSignUp.controls['password'].touched">
+                                          <p *ngIf="formSignUp.controls['password'].hasError('required')">Password is mandatory</p>
+                                          <p *ngIf="formSignUp.controls['password'].hasError('minlength')">Password must be at least 6 characters</p>
+                                        </div>
+                                      </div>
+                                
+                                      <div class="col-md-4" style="margin-left: 15px;">
+                                        <label class="form-label" for="confirmPassword">Confirm Password</label>
+                                        <input type="password" id="confirmPassword" class="form-control form-input" formControlName="confirmPassword" placeholder="Confirm Password" />
+                                        <div class="alert alert-danger" *ngIf="formSignUp.controls['confirmPassword'].invalid && formSignUp.controls['confirmPassword'].touched">
+                                          <p *ngIf="formSignUp.controls['confirmPassword'].hasError('required')">Confirm password is mandatory</p>
+                                          <p *ngIf="formSignUp.controls['confirmPassword'].hasError('passwordMismatch')">Passwords do not match</p>
+                                        </div>
+                                      </div>
+                                      </div>
+
+                                    <div class="text-center pt-1 mb-4 pb-1">
+                                        <button [disabled]="!isVerified" data-mdb-button-init data-mdb-ripple-init class="btn custom-btn" type="submit">
+                                            Sign Up
+                                        </button>
+                                    </div>
+
+                                    <div class="d-flex align-items-center justify-content-center pb-4">
+                                        <p class="mb-0 me-2">Already have an account?</p>
+                                        <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-danger" [routerLink]="['/login']">
+                                            Login
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Right Side - Flow Animation Images -->
+                        <div class="col-lg-6 d-flex align-items-center gradient-custom-2 position-relative">
+                            <div class="text-center text-white px-3 py-4">
+                                <h3 class="fw-bold">🚀 Join the Learning Revolution!</h3>
+                                <h6>Sign up and start your journey toward success!</h6>
+                            </div>
+
+                            <div class="container">
+                                <div class="img-container first-animation">   
+                                    <img class="img" src="/assets/pic1.jpg" alt="Image 1">
+                                </div>
+                                <div class="img-container second-animation">    
+                                    <img class="img" src="/assets/pic2.jpg" alt="Image 2">
+                                </div>
+                                <div class="img-container third-animation">    
+                                    <img class="img" src="/assets/pic3.jpg" alt="Image 3">
+                                </div>
+                                <p class="lead mb-4" style="margin-top: 80px;">
+                                    <b>Why Sign Up? </b>
+                                    <br>
+                                    For Teachers: Unlock the opportunity to inspire and shape the future.
+                                     Upload your qualifications and CV to showcase your expertise and begin your teaching journey.
+                                    <br>For Students: Take the first step toward your educational growth. 
+                                    Share your level and interests to find the perfect courses tailored to you.
+                                </p>
+                            </div>
+                            
+
+                            <p class="small mb-0">
+                                Whether you're looking to enhance your skills as a student 
+                                or share your expertise as a teacher, our platform is designed to connect passionate 
+                                individuals with the resources they need to thrive.
+                                <br><b>Start today and unlock your potential!</b>
+                            </p>
+
+                        </div>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </div>
+</section>
+</body>

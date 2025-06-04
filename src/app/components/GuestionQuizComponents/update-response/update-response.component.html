@@ -1,0 +1,68 @@
+<body>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <div class="page-content">
+
+    <div class="container">
+      <br><br>
+      <h2 class="styled-titre">Update Response</h2>
+      <br>
+  
+      <button type="button" class="btn btn-modern-back" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+  
+      <div *ngIf="questionType === 'MULTIPLE_CHOICE'" class="response-container">
+        <form [formGroup]="updateResponseForm" (ngSubmit)="updateResponse()">
+          <div class="mb-3">
+            <label for="responseText" class="form-label">Response</label>
+            <input id="responseText" formControlName="response" class="form-control" required />
+            <div *ngIf="updateResponseForm.get('response')?.invalid && (updateResponseForm.get('response')?.dirty || updateResponseForm.get('response')?.touched)" class="alert alert-danger">
+              Response is required.
+            </div>
+          </div>
+  
+          <div class="mb-3">
+            <label for="responseCorrect" class="styled-titres-label">Correct ?</label>
+            <select id="responseCorrect" formControlName="responseCorrect" class="form-control" required>
+              <option [ngValue]="true">Oui</option>
+              <option [ngValue]="false">Non</option>
+            </select>
+          </div>
+  
+          <div *ngIf="errorMessage" class="alert alert-danger">
+            {{ errorMessage }}
+          </div>
+          <button type="submit" class="btn btn-primary" [disabled]="updateResponseForm.invalid">Update</button>
+        </form>
+      </div>
+  
+      <div *ngIf="questionType === 'DRAG_AND_DROP'" class="response-container">
+        <form [formGroup]="updateDragAndDropForm" (ngSubmit)="updateDragAndDrop()">
+          <div class="mb-3">
+            <label for="sourceText" class="styled-titres-label">Source Text</label>
+            <input id="sourceText" formControlName="sourceText" class="form-control" required />
+            <div *ngIf="updateDragAndDropForm.get('sourceText')?.invalid && (updateDragAndDropForm.get('sourceText')?.dirty || updateDragAndDropForm.get('sourceText')?.touched)" class="alert alert-danger">
+              Source Text is required.
+            </div>
+          </div>
+  
+          <div class="mb-3">
+            <label for="targetText" class="styled-titres-label">Target Text</label>
+            <input id="targetText" formControlName="targetText" class="form-control" required />
+            <div *ngIf="updateDragAndDropForm.get('targetText')?.invalid && (updateDragAndDropForm.get('targetText')?.dirty || updateDragAndDropForm.get('targetText')?.touched)" class="alert alert-danger">
+              Target Text is required.
+            </div>
+          </div>
+  
+          <button type="submit" class="btn btn-primary" [disabled]="updateDragAndDropForm.invalid">Update</button>
+        </form>
+      </div>
+    </div>
+</div>
+
+<!-- ***** Footer Area Start ***** -->
+<app-front-footer></app-front-footer>
+<!-- ***** Footer Area End ***** -->
+
+</body>

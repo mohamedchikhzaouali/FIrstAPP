@@ -1,0 +1,61 @@
+<body>
+
+<header class="header-area">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <nav class="main-nav">
+          <a routerLink="/home-login" class="logo">
+            <img src="assets/templatefront/assets/images/logo.png" alt="Logo">
+          </a>
+          <ul class="nav">
+              <li class="scroll-to-section"><a routerLink="/home-login">Home</a></li>
+                <li class="dropdown">
+                  <a class="dropbtn">Courses</a>
+                  <ul class="dropdown-content">
+                      <li><a routerLink="/courses">All Courses</a></li>
+                      <li><a routerLink="/courses-coming-soon">Coming Soon</a></li>
+                      <br>
+                  </ul>
+                </li>
+                <li><a routerLink="/list-claim">Claim</a></li>
+                <li><a routerLink="/articles">Article</a></li>
+
+                <div style="margin-left: 50px; display: flex; align-items: center;">
+
+                  <li>
+                      <img [src]="user?.picture ? user.picture : 'assets/default-user.png'" alt="avatar" class="rounded-circle img-fluid" style="width: 40px; height: 40px;">
+                  </li>
+                  <li>
+                    <a routerLink="/profile"> <i class="fa fa-cog" style="margin-top: 6px; font-size: 24px; color: #aaa; margin-right: 10px;"></i></a>
+                  </li>
+                  <li>
+                      <a (click)="logout()" style="cursor: pointer;"><i class="fas fa-sign-out-alt" style="margin-top: 6px; font-size: 28px; color: red;"></i></a>
+                  </li>
+                </div>
+
+
+            </ul>
+            <a class="menu-trigger">
+              <span>Menu</span>
+            </a>
+            </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+</body>
+
+<!-- Scripts -->
+<!-- Bootstrap core JavaScript -->
+<script src="/assets/templatefront/vendor/jquery/jquery.min.js"></script>
+<script src="/assets/templatefront/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<script src="/assets/templatefront/assets/js/isotope.min.js"></script>
+<script src="/assets/templatefront/assets/js/owl-carousel.js"></script>
+<script src="/assets/templatefront/assets/js/lightbox.js"></script>
+<script src="/assets/templatefront/assets/js/tabs.js"></script>
+<script src="/assets/templatefront/assets/js/video.js"></script>
+<script src="/assets/templatefront/assets/js/slick-slider.js"></script>
+<script src="/assets/templatefront/assets/js/custom.js"></script>

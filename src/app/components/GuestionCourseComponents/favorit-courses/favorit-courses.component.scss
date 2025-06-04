@@ -1,0 +1,209 @@
+// Variables (ajoute une variable pour l'image)
+$primary-color: #2a9d8f;
+$secondary-color: #e9c46a;
+$light-gray: #f4f4f4;
+$medium-gray: #ddd;
+$dark-gray: #333;
+$text-color: #444;
+$font-family: 'Open Sans', sans-serif;
+$bg-image: url('/assets/templatefront/assets/images/meetings-bg.jpg'); // Variable pour l'image
+
+// Reset
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: $font-family;
+  line-height: 1.6;
+  color: $text-color;
+  background-color: $light-gray; // Garde une couleur de fond au cas où l'image ne charge pas
+  background-image: $bg-image; // Ajoute l'image
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+// Header (styles de base)
+app-front-header {
+  display: block;
+}
+
+// Contenu principal
+.main-content {
+  flex: 1;
+  padding: 2rem 1rem;
+
+  @media (min-width: 768px) {
+    padding: 4rem 2rem;
+  }
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+// Barre de recherche
+.search-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+
+    .search-input {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 1px solid $medium-gray;
+        border-radius: 0.25rem;
+        font-size: 1rem;
+        outline: none;
+
+        &:focus {
+          border-color: $primary-color;
+          box-shadow: 0 0 0 3px rgba($primary-color, 0.2);
+        }
+    }
+
+    .search-button {
+        padding: 0.75rem 1rem;
+        border: none;
+        border-radius: 0.25rem;
+        background-color: $primary-color;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: darken($primary-color, 10%);
+        }
+        &.ai-button {
+            //Pour un style different de button ai
+        }
+        i {
+          width: 1.2em;
+          text-align: center;
+        }
+    }
+}
+
+// Grille des cours
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.course-card {
+  background-color: white; // Fond blanc pour les cartes
+  border: 1px solid $medium-gray;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+
+  .course-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .course-details {
+    padding: 1.5rem;
+  }
+
+  .course-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: $dark-gray;
+  }
+
+  .course-description {
+    margin-bottom: 1rem;
+  }
+
+  .course-info {
+    list-style: none;
+    margin-bottom: 1rem;
+
+    li {
+      margin-bottom: 0.25rem;
+      font-size: 0.9rem;
+
+      strong {
+        color: $dark-gray;
+      }
+    }
+  }
+
+  .available {
+      color: green;
+  }
+
+  .unavailable {
+      color: red;
+  }
+
+  .course-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .details-button,
+  .remove-button {
+    padding: 0.5rem 1rem;
+    border: 1px solid $primary-color;
+    border-radius: 0.25rem;
+    background-color: transparent;
+    color: $primary-color;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      background-color: $primary-color;
+      color: white;
+    }
+  }
+  .remove-button{
+        border: 1px solid red;
+        color: red;
+        &:hover{
+            background-color: red;
+            color: white;
+        }
+    }
+}
+
+// Message "Aucun cours trouvé"
+.no-courses {
+  padding: 2rem;
+  text-align: center;
+  background-color: $light-gray;
+  border: 1px solid $medium-gray;
+  border-radius: 0.5rem;
+}
+
+// Footer (styles de base)
+app-front-footer {
+  display: block;
+  margin-top: auto;
+}

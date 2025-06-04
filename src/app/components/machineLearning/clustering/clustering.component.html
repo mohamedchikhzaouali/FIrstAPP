@@ -1,0 +1,87 @@
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Corona Admin</title>
+        <link rel="stylesheet" href="/assets/templateback/vendors/mdi/css/materialdesignicons.min.css">
+        <link rel="stylesheet" href="/assets/templateback/vendors/css/vendor.bundle.base.css">
+        <link rel="stylesheet" href="/assets/templateback/vendors/jvectormap/jquery-jvectormap.css">
+        <link rel="stylesheet" href="/assets/templateback/vendors/flag-icon-css/css/flag-icon.min.css">
+        <link rel="stylesheet" href="/assets/templateback/vendors/owl-carousel-2/owl.carousel.min.css">
+        <link rel="stylesheet" href="/assets/templateback/vendors/owl-carousel-2/owl.theme.default.min.css">
+        <link rel="stylesheet" href="/assets/templateback/css/style.css">
+        <link rel="shortcut icon" href="/assets/templateback/images/favicon.png" />
+    </head>
+
+    <body>
+                    <div class="content-wrapper">
+                        <div class="row ">
+                            <div class="col-12 grid-margin">
+                                <div class="card">
+                                    <div class="card-body">
+                                      <button (click)="getClustersForAllUsers()" class="btn btn-primary mb-3">
+  Get Clusters for All Users
+</button>
+
+                                      
+<table class="table">
+    <thead>
+      <tr>
+        <th>User ID</th>
+        <th>Time Spent</th>
+        <th>Videos Watched</th>
+        <th>Quiz Scores</th>
+        <th>Engagement </th>
+         <th>Cluster</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of pagedUsers; let i = index"> 
+         <td>{{ user.UserID }}</td>
+        <td>{{ user.TimeSpentOnCourse | number: '1.2-2' }}</td>
+        <td>{{ user.NumberOfVideosWatched }}</td>
+
+        <td>{{ user.QuizScores | number: '1.2-2' }}</td>
+        <td>{{ user.EngagementRatio | number: '1.2-2' }}</td>
+        
+        <td [ngStyle]="{
+      'background-color': user.cluster_name === 'Active learner' ? '#7CFC00' :
+                         user.cluster_name === 'Passive achiever' ? '#FFD700' :
+                         user.cluster_name === 'Low engagement learner' ? '#FF6347' :
+                         '',  
+      'color': user.cluster_name ? 'black' : '',
+      'font-weight': user.cluster_name ? 'bold' : ''
+    }">
+  {{ user.cluster_name ?? '-' }}
+</td>
+
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; margin-top: 20px;">
+                                            <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+                                            <span style="color: greenyellow;">Page {{ currentPage }} of {{ totalPages }}</span>
+                                            <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        <script src="/assets/templateback/vendors/js/vendor.bundle.base.js"></script>
+        <script src="/assets/templateback/vendors/chart.js/Chart.min.js"></script>
+        <script src="/assets/templateback/vendors/progressbar.js/progressbar.min.js"></script>
+        <script src="/assets/templateback/vendors/jvectormap/jquery-jvectormap.min.js"></script>
+        <script src="/assets/templateback/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+        <script src="/assets/templateback/vendors/owl-carousel-2/owl.carousel.min.js"></script>
+        <script src="/assets/templateback/js/off-canvas.js"></script>
+        <script src="/assets/templateback/js/hoverable-collapse.js"></script>
+        <script src="/assets/templateback/js/misc.js"></script>
+        <script src="/assets/templateback/js/settings.js"></script>
+        <script src="/assets/templateback/js/todolist.js"></script>
+        <script src="/assets/templateback/js/dashboard.js"></script>
+    </body>
+
+    </html>

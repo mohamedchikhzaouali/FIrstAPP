@@ -1,0 +1,401 @@
+<div class="favorites-page">
+  <div class="favorites-container">
+    <div class="header-section">
+      <h2 class="page-title">Your Favorite Articles</h2>
+      <p class="subtitle">Easily access your saved articles in one place</p>
+    </div>
+
+    <div *ngIf="favoriteItems.length === 0" class="no-favorites">
+      <div class="empty-state">
+        <i class="fa fa-heart-o empty-icon"></i>
+        <h3>No favorites yet</h3>
+        <p>Start exploring articles and add them to your favorites!</p>
+        <a routerLink="/articles" class="browse-button">
+          <i class="fa fa-search"></i> Browse Articles
+        </a>
+      </div>
+    </div>
+
+    <div class="favorites-grid" *ngIf="favoriteItems.length > 0">
+      <div *ngFor="let favorite of favoriteItems" class="favorite-card">
+        <div class="favorite-image">
+          <img [src]="favorite.articles?.[0]?.picture || 'assets/images/default-article.jpg'" 
+               [alt]="favorite.articles?.[0]?.title" 
+               class="article-image"/>
+          <div class="favorite-badge">
+            <i class="fa fa-heart"></i>
+          </div>
+        </div>
+        
+        <div class="favorite-content">
+          <div class="favorite-category">
+            <span [ngClass]="{
+              'category-news': favorite.articles?.[0]?.categorie === 'NEWS',
+              'category-success': favorite.articles?.[0]?.categorie === 'SUCCESS_STORY',
+              'category-blog': favorite.articles?.[0]?.categorie === 'BLOG'
+            }">
+              <i class="fa fa-folder"></i> {{ favorite.articles?.[0]?.categorie }}
+            </span>
+          </div>
+          
+          <h3 class="favorite-title">{{ favorite.articles?.[0]?.title }}</h3>
+          
+          <div class="favorite-meta">
+            <div class="meta-item">
+              <i class="fa fa-calendar"></i>
+              <span>{{ favorite.articles?.[0]?.date | date }}</span>
+            </div>
+            <div class="meta-item">
+              <i class="fa fa-eye"></i>
+              <span>{{ favorite.articles?.[0]?.views || 0 }} Views</span>
+            </div>
+            <div class="meta-item">
+              <i class="fa fa-share-alt"></i>
+              <span>{{ favorite.articles?.[0]?.numberShares || 0 }} Shares</span>
+            </div>
+          </div>
+          
+          <div class="favorite-actions">
+            <a [routerLink]="['/articles', favorite.articles?.[0]?.id]" class="view-button">
+              <i class="fa fa-eye"></i> View Article
+            </a>
+            <button (click)="removeFavorite(favorite.id!)" class="remove-button">
+              <i class="fa fa-heart-broken"></i> Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <a routerLink="/articles" class="back-button">
+      <i class="fa fa-arrow-left"></i> Back to Articles
+    </a>
+  </div>
+</div>
+
+<style>
+  /* Variables */
+  :root {
+    --primary: #4361ee;
+    --primary-light: #4895ef;
+    --secondary: #4cc9f0;
+    --success: #4caf50;
+    --info: #2196f3;
+    --danger: #f44336;
+    --warning: #ff9800;
+    --dark: #343a40;
+    --gray: #6c757d;
+    --light: #f8f9fa;
+    --gray-light: #e9ecef;
+    --heart-color: #ff4d6d;
+    --border-radius: 0.5rem;
+    --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    --transition: all 0.3s ease;
+  }
+
+  /* Page Container */
+  .favorites-page {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    padding: 3rem 0;
+  }
+
+  .favorites-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* Header Section */
+  .header-section {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: var(--gray);
+  }
+
+  /* Empty State */
+  .no-favorites {
+    display: flex;
+    justify-content: center;
+    margin: 3rem 0;
+  }
+
+  .empty-state {
+    text-align: center;
+    background-color: white;
+    padding: 3rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    max-width: 500px;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    color: var(--gray-light);
+    display: block;
+    margin-bottom: 1.5rem;
+  }
+
+  .empty-state h3 {
+    font-size: 1.5rem;
+    color: var(--dark);
+    margin-bottom: 1rem;
+  }
+
+  .empty-state p {
+    color: var(--gray);
+    margin-bottom: 1.5rem;
+  }
+
+  .browse-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(45deg, var(--primary), var(--primary-light));
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 2rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+  }
+
+  .browse-button i {
+    margin-right: 0.5rem;
+  }
+
+  .browse-button:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+  }
+
+  /* Favorites Grid */
+  .favorites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+
+  /* Favorite Card */
+  .favorite-card {
+    background-color: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: var(--transition);
+  }
+
+  .favorite-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .favorite-image {
+    position: relative;
+    height: 200px;
+  }
+
+  .article-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .favorite-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  .favorite-badge i {
+    color: var(--heart-color);
+    font-size: 20px;
+  }
+
+  .favorite-content {
+    padding: 1.5rem;
+  }
+
+  .favorite-category {
+    margin-bottom: 0.75rem;
+  }
+
+  .favorite-category span {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.8rem;
+    border-radius: 2rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+  }
+
+  .favorite-category i {
+    margin-right: 0.4rem;
+  }
+
+  .category-news {
+    background-color: var(--primary);
+  }
+
+  .category-success {
+    background-color: var(--success);
+  }
+
+  .category-blog {
+    background-color: var(--info);
+  }
+
+  .favorite-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 1rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .favorite-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    color: var(--gray);
+    font-size: 0.9rem;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+  }
+
+  .meta-item i {
+    margin-right: 0.4rem;
+    color: var(--primary);
+  }
+
+  .favorite-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .view-button, .remove-button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    border: none;
+    font-weight: 500;
+    transition: var(--transition);
+    cursor: pointer;
+  }
+
+  .view-button {
+    background-color: var(--primary);
+    color: white;
+    text-decoration: none;
+  }
+
+  .view-button:hover {
+    background-color: var(--primary-light);
+    transform: translateY(-2px);
+  }
+
+  .remove-button {
+    background-color: #fff1f3;
+    color: var(--heart-color);
+    border: 1px solid #ffccd5;
+  }
+
+  .remove-button:hover {
+    background-color: #ffe0e5;
+    color: #ff0033;
+    transform: translateY(-2px);
+  }
+
+  .view-button i, .remove-button i {
+    margin-right: 0.5rem;
+  }
+
+  /* Back Button */
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 2rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--light);
+    color: var(--dark);
+    border-radius: 2rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+  }
+
+  .back-button i {
+    margin-right: 0.5rem;
+  }
+
+  .back-button:hover {
+    background-color: var(--gray-light);
+    transform: translateX(-5px);
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .favorites-grid {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+    
+    .page-title {
+      font-size: 2rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .favorites-container {
+      padding: 0 1rem;
+    }
+    
+    .favorites-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .favorite-actions {
+      flex-direction: column;
+    }
+    
+    .view-button, .remove-button {
+      width: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,431 @@
+/* Variables pour les couleurs (palette plus douce) */
+$primary-color: #4e89ae;  // Bleu-gris plus doux
+$secondary-color: #a9b4c2; // Gris clair pour badges ou texte secondaire
+$success-color: #71a95a;   // Vert olive doux
+$danger-color: #c75959;    // Rouge brique doux
+$warning-color: #e6b85c;   // Jaune moutarde pour étoiles
+$info-color: #59a5c7;      // Bleu clair pour badges
+$light-gray: #f5f5f5;      // Gris très clair (presque blanc) pour fonds de section
+$medium-gray: #e1e1e1;     // Gris pour bordures subtiles, fonds de hover
+$dark-gray: #333333;       // Gris foncé (pour le texte principal)
+$font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+$empty-star-color: #d0d0d0; // Gris un peu plus foncé pour les étoiles vides
+$white-color: #ffffff; // Définir une variable pour le blanc
+
+// ------------- AJOUT : Variable pour la hauteur du header -------------
+// Ajustez cette valeur pour qu'elle corresponde à la hauteur réelle de vos composants header
+$header-height: 70px; // Exemple de hauteur, à modifier si besoin
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  background-image: url('/assets/quiz-background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.page-content {
+  flex: 1; /* Permet au contenu de prendre tout l'espace disponible */
+}
+
+.container { // Normalement fourni par Bootstrap, mais ok si vous le redéfinissez
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* Styles pour l'en-tête */
+app-front-header-teacher, app-front-header-student {
+  width: 100%;
+  position: sticky; // Important pour que le header soit collant
+  top: 0;          // Le header se colle en haut
+  z-index: 1020;   // z-index élevé pour être au-dessus des autres contenus (Bootstrap utilise souvent 1030 pour les navbars fixes)
+  background-color: $white-color;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.course-details { // Le conteneur blanc principal sur la page
+  background-color: rgb(153 153 153 / 40%); 
+  border-radius: 12px;
+  padding: 25px;
+  // Le margin-top ici crée un espace *après* le padding-top du .page-content,
+  // ce qui peut être souhaité ou non. Si vous voulez que .course-details commence
+  // immédiatement après l'espace réservé pour le header, vous pourriez réduire ou enlever ce margin-top.
+  margin-top: 20px; 
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+/* Bannière du cours */
+.course-banner {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+
+  img {
+    width: 100%;
+    display: block;
+    max-height: 320px;
+    min-height: 180px;
+    aspect-ratio: 20 / 9;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    min-height: 40%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 15%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0) 100%);
+    color: $white-color;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    text-align: left;
+    padding: 20px 30px;
+    box-sizing: border-box;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 5px;
+      font-weight: 700;
+      line-height: 1.25;
+      text-shadow: 0px 1px 4px rgba(0,0,0,0.8);
+      color: $white-color;
+    }
+
+    p.course-banner-description {
+      font-size: 0.95rem;
+      max-width: 85%;
+      margin-bottom: 0;
+      line-height: 1.4;
+      color: rgba($white-color, 0.9);
+      text-shadow: 0px 1px 2px rgba(0,0,0,0.6);
+    }
+  }
+}
+
+/* Styles communs pour les cartes de section */
+.section-card {
+  background-color: $white-color;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.07);
+  padding: 25px;
+
+  h3,
+  h4 {
+    color: $dark-gray;
+    border-bottom: 2px solid $primary-color;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    display: inline-block; // Changé pour permettre au border-bottom de ne prendre que la largeur du texte
+  }
+}
+
+// Appliquer .section-card aux éléments existants
+.course-info,
+.attachments,
+.reviews-section-teacher, 
+.course-sidebar,
+.add-attachment,
+.edit-attachment-form {
+  @extend .section-card;
+}
+
+/* Styles pour la section .course-info et ses badges */
+.course-info {
+  p {
+    color: $dark-gray; 
+    margin-bottom: 0.8rem; 
+    strong {
+      color: darken($dark-gray, 10%); 
+      margin-right: 5px;
+    }
+
+    .badge { 
+      font-size: 0.85em;
+      padding: 0.4em 0.7em;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .bg-info-custom { 
+      background-color: $info-color !important; 
+      color: $white-color !important; 
+    }
+
+    .bg-secondary-custom { 
+      background-color: $secondary-color !important; 
+      color: $dark-gray !important; 
+    }
+    
+    .status-badge { // Style pour les badges de statut (qui étaient déjà des span)
+      padding: 0.4em 0.7em; // Assurer un padding similaire aux autres badges
+      border-radius: 4px;   // Assurer un border-radius similaire
+      font-weight: bold; 
+      display: inline-block; // Pour que padding et autres styles s'appliquent bien
+      &.available { background-color: $success-color !important; color: $white-color !important; }
+      &.unavailable { background-color: $danger-color !important; color: $white-color !important; }
+    }
+  }
+}
+
+
+/* Liste des Attachments */
+.attachment-list {
+  padding-left: 0;
+  list-style: none;
+
+  .list-group-item {
+    border: 1px solid $medium-gray;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    background-color: $light-gray;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    display: flex; // Ajouté pour mieux aligner info et actions
+    justify-content: space-between; // Ajouté
+    align-items: center; // Ajouté
+
+    &:hover {
+      background-color: darken($light-gray, 3%);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    }
+
+    .attachment-info {
+        display: flex;
+        flex-direction: column; // Garder la direction en colonne pour titre et badges
+        flex-grow: 1; // Permet à cette section de prendre l'espace disponible
+    }
+    .attachment-title {
+      color: $primary-color;
+      margin-bottom: 5px;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .badge { 
+      &.attachment-type-badge { background-color: $info-color !important; color: white; }
+      &.visibility-badge {
+          cursor: pointer;
+          i { margin-right: 4px;}
+          &.visible { background-color: $success-color !important; color: white; }
+          &.hidden { background-color: $secondary-color !important; color: $dark-gray; } 
+      }
+    }
+
+    .attachment-actions {
+        display: flex;
+        align-items: center;
+        margin-left: 15px; // Garder une marge si les infos sont longues
+        flex-shrink: 0; // Empêche les boutons de rétrécir
+    }
+    .btn-action {
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      border-radius: 5px;
+      margin-left: 5px; // Espace entre les boutons
+      transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+      background-color: transparent;
+      border: 1px solid $medium-gray;
+      color: $secondary-color;
+
+      &:hover { transform: translateY(-1px); color: white; }
+      &.btn-download:hover { background-color: $primary-color; border-color: $primary-color;}
+      &.btn-edit:hover { background-color: $warning-color; border-color: $warning-color; color: $dark-gray; }
+      &.btn-delete:hover { background-color: $danger-color; border-color: $danger-color;}
+      i { font-size: 0.9em; } // Ajustement possible de la taille de l'icône
+    }
+  }
+}
+
+
+/* Styles pour la section des avis dans la vue enseignant */
+.reviews-section-teacher {
+    .average-rating-teacher {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+        color: $dark-gray;
+        font-weight: 500;
+        .star-rating-display .fa {
+            font-size: 1.2em;
+            margin-right: 2px;
+            &.fa-star { color: $warning-color; }
+            &.fa-star-o, &.fa-star-half-o { color: $empty-star-color; }
+            // Pour une étoile demi-pleine correcte avec FontAwesome 4/5
+            &.fa-star-half-o { position: relative; }
+            &.fa-star-half-o::before { // La partie pleine
+                content: '\f089'; // Code pour fa-star-half ou fa-star-half-alt selon la version
+                color: $warning-color;
+                position: absolute;
+                left:0;
+                width: 50%; // Couvre la moitié de l'icône
+                overflow: hidden;
+            }
+        }
+        .review-count { color: $secondary-color; font-size: 0.9em; }
+    }
+
+    .reviews-list-teacher {
+        max-height: 400px; // Limite la hauteur pour le scroll
+        overflow-y: auto;
+        padding-right: 8px; // Espace pour la barre de scroll pour ne pas coller au texte
+        margin-top: 10px;
+        // Styles de la barre de scroll (WebKit browsers)
+        &::-webkit-scrollbar { width: 6px; }
+        &::-webkit-scrollbar-track { background: lighten($light-gray, 5%); border-radius: 3px; }
+        &::-webkit-scrollbar-thumb { background-color: $secondary-color; border-radius: 3px; &:hover{ background-color: darken($secondary-color, 10%); } }
+    }
+
+    .review-card-teacher {
+        background-color: #fff; // Fond blanc pour chaque carte d'avis
+        border: 1px solid $medium-gray;
+        border-radius: 8px;
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+
+        .review-author-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+
+            .author-picture { 
+                width: 40px;         
+                height: 40px;        
+                border-radius: 50%; 
+                object-fit: cover;   
+                margin-right: 12px;
+                border: 2px solid $primary-color; 
+                background-color: $light-gray; 
+            }
+
+            .author-name {
+                font-weight: 600;
+                color: $primary-color;
+                font-size: 0.95rem;
+            }
+        }
+
+        .review-content-teacher {
+            .review-rating-line {
+                display: flex;
+                align-items: center;
+                margin-bottom: 8px;
+                font-size: 0.9rem;
+                strong { margin-right: 5px;}
+            }
+            .star-rating .fa { 
+                font-size: 1em; 
+                margin-right: 1px;
+                &.fa-star { color: $warning-color; }
+                &.fa-star-o { color: $empty-star-color; }
+            }
+            .review-comment-text {
+                font-size: 0.9rem; color: $dark-gray; line-height: 1.5; strong { color: darken($dark-gray, 15%);}
+            }
+            .review-ai-details {
+                font-size: 0.8rem; color: $secondary-color;
+                .badge { 
+                    font-size: 0.9em; font-weight: 500; 
+                    // Utilisation des variables de couleur pour les badges AI
+                    &.bg-success-custom { background-color: $success-color !important; color: white; }
+                    &.bg-danger-custom { background-color: $danger-color !important; color: white; }
+                    &.bg-secondary-custom { background-color: $secondary-color !important; color: $dark-gray; } 
+                    &.bg-warning-custom { background-color: $warning-color !important; color: $dark-gray; } 
+                }
+            }
+        }
+    }
+}
+
+/* Sidebar */
+.course-sidebar {
+  h4.sidebar-title {
+    color: $dark-gray;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 10px; // Réduit pour un look plus compact
+    padding-bottom: 8px;
+    border-bottom: 1px solid $medium-gray;
+    display: block; // Assure que border-bottom prend toute la largeur
+  }
+  hr { display: none; } // Retiré car h4.sidebar-title a déjà une bordure
+  .sidebar-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    .sidebar-label { color: $secondary-color; font-weight: 500; }
+    .sidebar-value { color: $dark-gray; font-weight: 600;
+        &.price-value { color: $success-color; font-size: 1.3rem; }
+        &.star-rating .fa { // Style pour les étoiles dans la sidebar
+            color: $warning-color; font-size: 1em; margin-left: 2px;
+            &.fa-star-o, &.fa-star-half-o { color: $empty-star-color;}
+            // Pour une étoile demi-pleine correcte
+            &.fa-star-half-o { position: relative; }
+            &.fa-star-half-o::before { 
+                content: '\f089'; 
+                color: $warning-color;
+                position: absolute;
+                left:0;
+                width: 50%;
+                overflow: hidden;
+            }
+        }
+    }
+  }
+}
+
+/* Formulaires (add-attachment, edit-attachment) */
+.add-attachment,
+.edit-attachment-form {
+  label.form-label {
+    font-weight: 500; margin-bottom: 5px; font-size: 0.9rem; color: darken($dark-gray, 5%);
+    .text-danger { font-weight: normal;} // Assure que l'astérisque n'est pas trop gras
+  }
+  input.form-control, select.form-select, textarea.form-control { // Ajouté textarea
+    border-radius: 5px; padding: 8px 12px; border: 1px solid $medium-gray;
+    background-color: white; font-size: 0.9rem;
+    &:focus { border-color: $primary-color; box-shadow: 0 0 0 0.2rem rgba($primary-color, 0.2); }
+  }
+  .form-text { font-size: 0.8rem; }
+  .btn { 
+    font-size: 0.9rem; padding: 8px 15px; border-radius: 5px; // Cohérence du border-radius
+    i { margin-right: 5px; } 
+  }
+  .btn-secondary { background-color: $secondary-color; border-color: $secondary-color; &:hover{background-color: darken($secondary-color, 10%); border-color: darken($secondary-color, 10%);} }
+  .btn-primary { background-color: $primary-color; border-color: $primary-color; &:hover{background-color: darken($primary-color, 10%); border-color: darken($primary-color, 10%);} }
+  .btn-success { background-color: $success-color; border-color: $success-color; &:hover{background-color: darken($success-color, 10%); border-color: darken($success-color, 10%);} }
+}
+
+/* Spinner de chargement */
+.spinner-border { width: 3rem; height: 3rem; color: $primary-color; } // Couleur du spinner
+
+/* Footer */
+app-front-footer {
+  margin-top: auto; // Assure que le footer est poussé en bas si le contenu est court
+  width: 100%;
+  background-color: $dark-gray; // Un fond sombre pour le footer
+  color: $light-gray; // Texte clair sur fond sombre
+  padding: 30px 0;
+  text-align: center;
+  font-size: 0.9rem;
+}

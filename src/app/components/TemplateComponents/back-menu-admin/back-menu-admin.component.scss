@@ -1,0 +1,13 @@
+.outer-li {
+            border-bottom: 4px solid rgb(0, 0, 0); /* Add a white line at the bottom */
+        }
+
+        .outer-li:last-child {
+            border-bottom: none; /* Remove the line from the last item */
+        }
+
+        .nav-item {
+            background-color: transparent; /* Make the inner div transparent */
+            padding: 8px 15px;
+            border-radius: 0; /* Remove rounded corners */
+        }

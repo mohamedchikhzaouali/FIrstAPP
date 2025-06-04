@@ -1,0 +1,129 @@
+<section class="meetings-page" id="meetings">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="section-heading">
+          <h2>Edit Article</h2>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="text-center my-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+    </div>
+
+    <div class="row" *ngIf="!loading">
+      <div class="col-lg-12">
+        <div class="meeting-single-item">
+          <div class="down-content">
+            <form (ngSubmit)="onSubmit()" class="meeting-form">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label>Title*</label>
+                    <input type="text" class="form-control" [(ngModel)]="article.title" name="title" required>
+                  </div>
+                </div>
+
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label>Publication Status*</label>
+                    <select class="form-control" [(ngModel)]="article.publicationStatus" name="publicationStatus" required>
+                      <option *ngFor="let status of publicationStatuses" [value]="status">{{ status }}</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label>Picture URL</label>
+                    <input type="text" class="form-control" [(ngModel)]="article.picture" name="picture">
+                  </div>
+                </div>
+
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label>Category*</label>
+                    <select class="form-control" [(ngModel)]="article.categorie" name="categorie" required>
+                      <option value="NEWS">News</option>
+                      <option value="SUCCESS_STORY">Success Story</option>
+                      <option value="BLOG">Blog</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-12 mt-4">
+                  <h4>Resources</h4>
+                  <div class="resource-form bg-light p-4 rounded">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label>Description</label>
+                          <input type="text" class="form-control" [(ngModel)]="newResource.description" name="resourceDescription">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label>Video URL</label>
+                          <input type="text" class="form-control" [(ngModel)]="newResource.video" name="resourceVideo">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label>PDF URL</label>
+                          <input type="text" class="form-control" [(ngModel)]="newResource.pdf" name="resourcePdf">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label>Resource Picture</label>
+                          <input type="text" class="form-control" [(ngModel)]="newResource.picture" name="resourcePicture">
+                        </div>
+                      </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary mt-3" (click)="addResource()">
+                      <i class="fa fa-plus"></i> Add Resource
+                    </button>
+                  </div>
+                </div>
+
+                <div class="col-12 mt-4" *ngIf="article.ressources && article.ressources.length > 0">
+                  <h5>Current Resources:</h5>
+                  <div class="list-group">
+                    <div class="list-group-item d-flex justify-content-between align-items-center"
+                         *ngFor="let resource of article.ressources; let i = index">
+                      <div>
+                        <strong>{{resource.description}}</strong>
+                        <div class="small text-muted">
+                          <span *ngIf="resource.video">Video URL: {{resource.video}}</span>
+                          <span *ngIf="resource.pdf">PDF URL: {{resource.pdf}}</span>
+                          <span *ngIf="resource.picture">Picture URL: {{resource.picture}}</span>
+                        </div>
+                      </div>
+                      <button type="button" class="btn btn-danger btn-sm" (click)="removeResource(i)">
+                        <i class="fa fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-lg-12 mt-4">
+                  <div class="d-flex justify-content-between">
+                    <button type="submit" class="gradient-button">Update Article</button>
+                    <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

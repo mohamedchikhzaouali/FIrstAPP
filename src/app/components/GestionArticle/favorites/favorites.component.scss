@@ -1,0 +1,103 @@
+/* General container styling */
+.favorite-articles-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  border-radius: 8px;
+}
+
+/* Header styles */
+h2 {
+  text-align: center;
+  color: #2c3e50;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* Styling each favorite item */
+.favorite-item {
+  background-color: #fff;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Header of each favorite */
+.favorite-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.favorite-header h3 {
+  font-size: 20px;
+  color: #34495e;
+}
+
+.favorite-header .date {
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+/* Article Card Styling */
+.article-card {
+  padding: 15px;
+  background-color: #ecf0f1;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.article-info {
+  margin-bottom: 15px;
+}
+
+.article-info h4 {
+  font-size: 18px;
+  color: #2c3e50;
+}
+
+.article-info p {
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+/* Category, views, shares styling */
+.category, .views, .shares {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.article-image {
+  max-width: 100%;
+  height: auto;
+  margin-top: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Remove button */
+.remove-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.remove-btn:hover {
+  background-color: #c0392b;
+}
+
+/* No articles message */
+.no-articles-message {
+  color: #e74c3c;
+  font-size: 14px;
+  text-align: center;
+  font-weight: bold;
+}

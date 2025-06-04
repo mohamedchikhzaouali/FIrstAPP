@@ -1,0 +1,105 @@
+<body>
+  <app-front-header-teacher *ngIf="(userRole$ | async) === 'TEACHER'"></app-front-header-teacher>
+  <app-front-header-student *ngIf="(userRole$ | async) === 'STUDENT'"></app-front-header-student>
+
+  <div class="page-content">
+    <br>
+
+    <div class="container">
+      <h2 class="text-center text-primary mb-4">Claims List</h2>
+
+      <div *ngIf="reclamationEnCours" class="mb-4 edit-form">
+        <h3 class="text-primary">Edit claim</h3>
+        <form [formGroup]="reclamationEnCoursForm" (ngSubmit)="updateReclamation()">
+          <div class="mb-3">
+            <label for="objet" class="form-label">Type</label>
+            <select id="objet" class="form-control" formControlName="objet">
+              <option value="" disabled selected>-- Select a claim type --</option> <option *ngFor="let type of reclamationTypes" [value]="type.key">
+                {{ type.label }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group mb-2">
+            <label for="description">Description</label>
+            <textarea class="form-control" id="description" formControlName="description" required></textarea>
+          </div>
+          <div class="form-group mb-3">
+            <label for="date">Date</label>
+            <input type="date" class="form-control" id="date" formControlName="date" required>
+          </div>
+          <button type="submit" class="btn btn-primary me-2" [disabled]="reclamationEnCoursForm.invalid">Update</button>
+          <button type="button" class="btn btn-secondary" (click)="annulerModification()">Cancel</button>
+        </form>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <input
+          type="text"
+          class="form-control w-50"
+          placeholder="SEARCH by Type or Description"
+          [(ngModel)]="objet"
+          (ngModelChange)="filterReclamations()">
+        <div class="d-flex align-items-center">
+          <button (click)="loadReclamations()" class="btn btn-outline-secondary me-2">Refresh</button>
+          <button (click)="goToAddReclamation()" class="btn btn-primary">Add Claim</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover text-center align-middle">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Description</th>
+              <th>Date</th>
+              <th>Actions</th>
+              <th>Download</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let reclamation of reclamations">
+              <td>{{ formatReclamationType(reclamation.objet) }}</td>
+              <td [ngClass]="{'text-success fw-bold': reclamation.statut === 'traité', 'text-danger fw-bold': reclamation.statut === 'non traité'}">
+                {{ reclamation.statut === 'traité' ? 'Resolved' : 'Unresolved' }}
+              </td>
+              <td>{{ reclamation.description }}</td>
+              <td>{{ reclamation.date | date: 'shortDate' }}</td>
+              <td>
+                <div class="d-flex justify-content-center flex-wrap">
+                  <button
+                    [disabled]="reclamation.statut === 'traité'"
+                    (click)="modifierReclamation(reclamation)"
+                    class="btn btn-sm btn-outline-info me-1 mb-1">
+                    <i class="bi bi-pencil-square"></i> Update
+                  </button>
+                  <button
+                    (click)="supprimerReclamation(reclamation.id)"
+                    class="btn btn-sm btn-outline-danger mb-1"
+                    [disabled]="reclamation.statut === 'traité'">
+                    <i class="bi bi-trash"></i> Delete
+                  </button>
+                </div>
+              </td>
+              <td>
+                <button
+                  (click)="downloadReclamation(reclamation)"
+                  class="btn btn-sm btn-outline-success"
+                  title="Download Claim Details">
+                  <i class="bi bi-download"></i> Download
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="!reclamations || reclamations.length === 0">
+              <td colspan="6" class="text-center fst-italic py-4">No claims found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <br><br><br>
+  </div>
+
+  <app-front-footer></app-front-footer>
+</body>

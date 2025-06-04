@@ -1,0 +1,85 @@
+<div class="chatbot-container" [class.open]="chatVisible">
+  <!-- Chat toggle button -->
+  <button class="chat-toggle-btn" (click)="toggleChat()" [class.has-limit]="apiLimitInfo?.isLimited">
+    <i class="fa" [ngClass]="chatVisible ? 'fa-times' : 'fa-comment'"></i>
+    <span class="chat-label" *ngIf="!chatVisible">AI Assistant</span>
+    <span class="chat-limit-indicator" *ngIf="apiLimitInfo && apiLimitInfo.remainingCalls < 10 && !chatVisible">
+      <i class="fa fa-exclamation-triangle"></i>
+    </span>
+  </button>
+
+  <!-- Chat window -->
+  <div class="chat-window" *ngIf="chatVisible">
+    <div class="chat-header">
+      <h3>BrainWave Assistant</h3>
+      <div class="api-limit-display" *ngIf="apiLimitInfo">
+        <span [class.limit-warning]="apiLimitInfo.remainingCalls < 10"
+              [class.limit-exceeded]="apiLimitInfo.isLimited">
+          {{ getLimitStatusDisplay() }}
+        </span>
+      </div>
+    </div>
+    
+    <div class="chat-messages" #messagesContainer>
+      <div *ngFor="let message of messages" 
+           [ngClass]="message.isUser ? 'user-message' : 'bot-message'">
+        <div class="message-content">
+          <p>{{ message.content }}</p>
+          
+          <!-- Display recommended articles if available -->
+          <div *ngIf="!message.isUser && message.data?.articles?.length > 0" class="recommendations">
+            <h4>Articles recommandés:</h4>
+            <ul>
+              <li *ngFor="let article of message.data.articles">
+                <a (click)="viewArticle(article)">{{ article.title }}</a>
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Display tags if available -->
+          <div *ngIf="!message.isUser && message.data?.tags?.length > 0" class="tags-info">
+            <h4>Tags pertinents:</h4>
+            <div class="tags-list">
+              <span *ngFor="let tag of message.data.tags" class="tag">{{ tag.name }}</span>
+            </div>
+          </div>
+          
+          <!-- Display content suggestions if available -->
+          <div *ngIf="!message.isUser && message.data?.content_improvements" class="suggestions">
+            <h4>Suggestions pour le contenu:</h4>
+            <p>{{ message.data.content_improvements }}</p>
+          </div>
+        </div>
+        <div class="message-time">
+          {{ message.timestamp | date:'shortTime' }}
+        </div>
+      </div>
+      
+      <!-- Loading indicator -->
+      <div *ngIf="isLoading" class="loading-indicator">
+        <div class="typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="chat-input">
+      <input 
+        type="text" 
+        [(ngModel)]="newMessage" 
+        placeholder="Tapez votre message..." 
+        (keyup.enter)="sendMessage()"
+        [disabled]="isLoading || (apiLimitInfo?.isLimited || false)"
+      >
+      <button (click)="sendMessage()" [disabled]="isLoading || !newMessage.trim() || (apiLimitInfo?.isLimited || false)">
+        <i class="fa fa-paper-plane"></i>
+      </button>
+    </div>
+    
+    <div class="chat-footer" *ngIf="apiLimitInfo?.isLimited">
+      <p class="limit-message">Limite d'API atteinte. Les fonctionnalités avancées ne sont pas disponibles.</p>
+    </div>
+  </div>
+</div>

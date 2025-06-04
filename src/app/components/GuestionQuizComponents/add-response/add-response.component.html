@@ -1,0 +1,68 @@
+<body>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <div class="page-content">
+
+    <div class="container">
+      <br>
+      <h2 class="styled-titre">Add response for the question :</h2>
+      <h5 class="styled-question">{{ question?.question }}</h5>
+      <br>
+  
+      <button type="button" class="btn btn-modern-back" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+  
+      <form [formGroup]="addResponseForm" (ngSubmit)="addResponse()">
+        <div formArrayName="responsesArray">
+          <div *ngFor="let responseForm of responsesArray.controls; let i = index" [formGroupName]="i" class="response-container">
+            <div class="response-header">
+              <h3 class="styled-response">Response {{ i + 1 }}</h3>
+              <button type="button" class="delete-response-button" (click)="removeResponse(i)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+  
+            <div *ngIf="questionType === 'MULTIPLE_CHOICE'">
+              <label for="response{{i}}">Response</label>
+              <input id="response{{i}}" formControlName="response" class="form-control" required />
+              <div *ngIf="responseForm.get('response')?.invalid && (responseForm.get('response')?.dirty || responseForm.get('response')?.touched)" class="alert alert-danger">
+                Response is required.
+              </div>
+              <label>Correct ?</label>
+              <select formControlName="responseCorrect" class="form-control">
+                <option [ngValue]="true">Yes</option>
+                <option [ngValue]="false">No</option>
+              </select>
+            </div>
+  
+            <div *ngIf="questionType === 'DRAG_AND_DROP'">
+              <label>Source</label>
+              <input formControlName="sourceText" class="form-control" required />
+              <div *ngIf="responseForm.get('sourceText')?.invalid && (responseForm.get('sourceText')?.dirty || responseForm.get('sourceText')?.touched)" class="alert alert-danger">
+                Source is required.
+              </div>
+              <label>Target</label>
+              <input formControlName="targetText" class="form-control" required />
+              <div *ngIf="responseForm.get('targetText')?.invalid && (responseForm.get('targetText')?.dirty || responseForm.get('targetText')?.touched)" class="alert alert-danger">
+                Target is required.
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div *ngIf="errorMessage" class="alert alert-danger">
+          {{ errorMessage }}
+        </div>
+
+        <button type="button" class="btn btn-secondary" (click)="addAnotherResponse()">Add other Response +</button>
+        <button type="submit" class="btn btn-primary" [disabled]="isAddButtonDisabled">Add</button>
+
+      </form>
+    </div>
+</div>
+   <!-- ***** Footer Area Start ***** -->
+   <app-front-footer></app-front-footer>
+   <!-- ***** Footer Area End ***** -->
+
+  </body>

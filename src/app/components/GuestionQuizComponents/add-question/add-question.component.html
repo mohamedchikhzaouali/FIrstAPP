@@ -1,0 +1,58 @@
+<body>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <div class="page-content">
+    
+    <div class="container">
+      <br><br>
+      <h2 class="styled-titre">Add Questions</h2>
+      <br>
+  
+      <button type="button" class="btn btn-modern-back" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+  
+      <form [formGroup]="addQuestionForm" (ngSubmit)="addQuestions()" enctype="multipart/form-data">
+        <div formArrayName="questionsArray">
+          <div *ngFor="let questionForm of questionsArray.controls; let i = index" [formGroupName]="i" class="response-container">
+            <div class="response-header">
+              <h3 class="styled-response">Question {{ i + 1 }}</h3>
+              <button type="button" class="delete-response-button" (click)="removeQuestion(i)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+            <div class="mb-3">
+              <label for="question{{i}}" class="styled-titres-label">Question Text</label>
+              <input id="question{{i}}" formControlName="question" class="form-control" required />
+              <div *ngIf="questionForm.get('question')?.invalid && (questionForm.get('question')?.dirty || questionForm.get('question')?.touched)" class="alert alert-danger">
+                Question Text is required.
+              </div>
+            </div>
+  
+            <div class="mb-3">
+              <label for="type{{i}}" class="styled-titres-label">Type of Question</label>
+              <select id="type{{i}}" class="form-control" formControlName="type">
+                <option *ngFor="let type of questionTypes" [value]="type">{{ type }}</option>
+              </select>
+              <div *ngIf="questionForm.get('type')?.invalid && (questionForm.get('type')?.dirty || questionForm.get('type')?.touched)" class="alert alert-danger">
+                Type of Question is required.
+              </div>
+            </div>
+  
+            <div class="mb-3">
+              <label for="file{{i}}" class="styled-titres-label">Question Image</label>
+              <input type="file" id="file{{i}}" class="form-control" (change)="onFileSelected($event, i)" />
+            </div>
+          </div>
+        </div>
+  
+        <button type="button" class="btn btn-secondary" (click)="addAnotherQuestion()">Add other Question +</button>
+        <button type="submit" class="btn btn-primary" [disabled]="addQuestionForm.invalid">Add</button>
+      </form>
+    </div>
+  </div>
+     <!-- ***** Footer Area Start ***** -->
+     <app-front-footer></app-front-footer>
+     <!-- ***** Footer Area End ***** -->
+  
+    </body>

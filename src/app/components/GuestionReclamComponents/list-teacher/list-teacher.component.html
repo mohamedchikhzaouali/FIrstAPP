@@ -1,0 +1,57 @@
+<body>
+  <app-front-header-teacher *ngIf="(userRole$ | async) === 'TEACHER'"></app-front-header-teacher>
+  <app-front-header-student *ngIf="(userRole$ | async) === 'STUDENT'"></app-front-header-student>
+    
+    <div class="container">
+      <h2 class="text-center text-primary mb-4">Claim List</h2>
+  
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <input
+          type="text"
+          class="form-control w-50"
+          placeholder="SEARCH"
+          [(ngModel)]="objet"
+          (ngModelChange)="filterReclamations()"  >
+          <!-- Filtrer les réclamations lors de la saisie -->
+        
+        <div>
+          <button (click)="loadReclamations()" class="btn btn-outline-secondary">Refresh</button>
+          <!-- Nouveau bouton pour redirection vers Ajouter Réclamation -->
+          <button (click)="goToAddReclamation()" class="btn btn-primary ml-3">Add Claim</button>
+        </div>
+      </div>
+  
+      <table class="table table-hover text-center">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let reclamation of reclamations">
+            <td>{{ reclamation.objet }}</td>
+            <td [ngClass]="{'text-success': reclamation.statut === 'traité', 'text-danger': reclamation.statut === 'non traité'}">
+              {{ reclamation.statut }}
+            </td>
+            <td>{{ reclamation.description }}</td>
+            <td>{{ reclamation.date | date: 'shortDate' }}</td>
+            <td>
+              <button 
+                (click)="supprimerReclamation(reclamation.id)" 
+                class="btn btn-sm btn-outline-danger"
+                [disabled]="reclamation.statut === 'traité'">
+                <i class="bi bi-trash"></i> delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <app-front-footer></app-front-footer>
+  </body>
+  

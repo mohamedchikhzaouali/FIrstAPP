@@ -1,0 +1,1024 @@
+<section class="article-details-page py-5">
+  <div class="container">
+    <div *ngIf="loading" class="text-center my-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+    </div>
+
+    <div class="row" *ngIf="article">
+      <div class="col-lg-12">
+        <div class="article-container shadow-lg rounded-3 overflow-hidden">
+          <!-- Article Header -->
+          <div class="article-header position-relative">
+            <img [src]="article.picture || 'assets/images/default-article.jpg'"
+                 [alt]="article.title"
+                 class="article-cover-image">
+            <div class="article-overlay"></div>
+            <div class="article-badge-container">
+              <span class="article-badge" [ngClass]="{
+                'badge-news': article.categorie === 'NEWS',
+                'badge-success-story': article.categorie === 'SUCCESS_STORY',
+                'badge-blog': article.categorie === 'BLOG'
+              }">{{ article.categorie }}</span>
+              <span class="article-status-badge" [ngClass]="{
+                'status-draft': article.publicationStatus === 'DRAFT',
+                'status-pending': article.publicationStatus === 'PENDING_REVIEW' || article.publicationStatus === 'PENDING_APPROVAL',
+                'status-published': article.publicationStatus === 'PUBLISHED',
+                'status-archived': article.publicationStatus === 'ARCHIVED'
+              }">{{ article.publicationStatus }}</span>
+            </div>
+          </div>
+
+          <div class="article-content p-4 p-md-5">
+            <!-- Article Title and Meta -->
+            <div class="title-section mb-4">
+              <h1 class="article-title mb-3">{{ article.title }}</h1>
+              <div class="article-meta">
+                <div class="meta-item">
+                  <i class="fa fa-calendar-o"></i>
+                  <span>{{ article.date | date }}</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fa fa-eye"></i>
+                  <span>{{ article.views || 0 }} views</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fa fa-share-alt"></i>
+                  <span>{{ article.numberShares || 0 }} shares</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="resources-section mt-4" *ngIf="article.ressources && article.ressources.length > 0">
+              <h3 class="mb-4">Resources</h3>
+              <div class="row">
+                <div class="col-md-6 mb-4" *ngFor="let resource of article.ressources">
+                  <div class="resource-card card h-100">
+                    <img *ngIf="resource.picture"
+                         [src]="resource.picture"
+                         class="card-img-top resource-image"
+                         [alt]="resource.description">
+
+                    <div class="card-body">
+                      <h5 class="card-title" *ngIf="resource.description">
+                        {{ resource.description }}
+                      </h5>
+
+                      <div class="resource-links mt-3">
+                        <a *ngIf="resource.video"
+                           [href]="resource.video"
+                           target="_blank"
+                           class="btn btn-outline-primary me-2">
+                          <i class="fa fa-video-camera"></i> Watch Video
+                        </a>
+
+                        <a *ngIf="resource.pdf"
+                           [href]="resource.pdf"
+                           target="_blank"
+                           class="btn btn-outline-danger">
+                          <i class="fa fa-file-pdf-o"></i> View PDF
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Enhanced Similar Articles Section -->
+            <div class="similar-articles-section mt-5">
+              <div class="section-header">
+                <div class="section-icon">
+                  <i class="fa fa-chain"></i>
+                </div>
+                <h2 class="section-title">Similar Articles</h2>
+              </div>
+              
+              <!-- Empty state with improved design -->
+              <div *ngIf="similarArticles.length === 0" class="empty-state">
+                <div class="empty-state-icon">
+                  <i class="fa fa-search"></i>
+                </div>
+                <h4>No Similar Articles Found</h4>
+                <p>Articles with matching topics and tags will appear here.</p>
+              </div>
+              
+              <!-- Similar articles with improved card design -->
+              <div class="similar-articles-grid" *ngIf="similarArticles.length > 0">
+                <div class="similar-article-card" *ngFor="let similar of similarArticles" 
+                     [routerLink]="['/articles', similar.id]">
+                  <div class="similar-article-image">
+                    <img [src]="similar.picture || 'assets/images/default-article.jpg'" 
+                         [alt]="similar.title">
+                    <span class="similar-article-category"
+                          [ngClass]="{
+                            'category-news': similar.categorie === 'NEWS',
+                            'category-success': similar.categorie === 'SUCCESS_STORY',
+                            'category-blog': similar.categorie === 'BLOG'
+                          }">{{ similar.categorie }}</span>
+                  </div>
+                  <div class="similar-article-content">
+                    <h3 class="similar-article-title">{{ similar.title }}</h3>
+                    <div class="similar-article-date">
+                      <i class="fa fa-calendar-o"></i>
+                      <span>{{ similar.date | date:'mediumDate' }}</span>
+                    </div>
+                    <div class="similar-article-tags" *ngIf="similar.tags && similar.tags.length > 0">
+                      <span *ngFor="let tag of similar.tags" class="similar-article-tag">
+                        {{ tag.name }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Enhanced Action Buttons -->
+            <div class="action-buttons-container mt-5">
+              <div class="action-buttons-wrapper">
+                <button *ngIf="article.publicationStatus === 'DRAFT'"
+                        class="action-button approve-button"
+                        (click)="publishDirectly('PENDING_APPROVAL')"
+                        [disabled]="loading">
+                  <i class="fa fa-check"></i> 
+                  <span>Submit for Approval</span>
+                </button>
+
+                <button *ngIf="article.publicationStatus !== 'ARCHIVED'"
+                        class="action-button archive-button"
+                        (click)="archiveArticle('ARCHIVED')"
+                        [disabled]="loading">
+                  <i class="fa fa-archive"></i>
+                  <span>Archive</span>
+                </button>
+
+                <button class="action-button edit-button"
+                        [routerLink]="['/articles/edit', article.id]"
+                        [disabled]="loading">
+                  <i class="fa fa-edit"></i>
+                  <span>Edit</span>
+                </button>
+
+                <button class="action-button delete-button"
+                        (click)="deleteArticle(article.id)"
+                        [disabled]="loading">
+                  <i class="fa fa-trash"></i>
+                  <span>Delete</span>
+                </button>
+              </div>
+              
+              <div class="secondary-actions">
+                <button class="secondary-button back-button"
+                        (click)="goBack()"
+                        [disabled]="loading">
+                  <i class="fa fa-arrow-left"></i>
+                  <span>Back</span>
+                </button>
+
+                <button class="secondary-button share-button" (click)="shareOnFacebook()">
+                  <i class="fa fa-facebook"></i>
+                  <span>Share</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Article Details Page Styling */
+  .article-details-page {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    padding: 40px 0;
+  }
+  
+  .article-container {
+    background-color: white;
+    margin-bottom: 30px;
+  }
+  
+  /* Article Header */
+  .article-header {
+    height: 350px;
+    overflow: hidden;
+  }
+  
+  .article-cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  
+  .article-container:hover .article-cover-image {
+    transform: scale(1.03);
+  }
+  
+  .article-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.7) 100%);
+  }
+  
+  .article-badge-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .article-badge, .article-status-badge {
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    display: inline-block;
+  }
+  
+  .badge-news {
+    background-color: #4361ee;
+    color: white;
+  }
+  
+  .badge-success-story {
+    background-color: #10b981;
+    color: white;
+  }
+  
+  .badge-blog {
+    background-color: #3b82f6;
+    color: white;
+  }
+  
+  .status-draft {
+    background-color: #6b7280;
+    color: white;
+  }
+  
+  .status-pending {
+    background-color: #f59e0b;
+    color: white;
+  }
+  
+  .status-published {
+    background-color: #10b981;
+    color: white;
+  }
+  
+  .status-archived {
+    background-color: #1f2937;
+    color: white;
+  }
+  
+  /* Article Content */
+  .article-content {
+    position: relative;
+  }
+  
+  .article-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #111827;
+  }
+  
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    color: #6b7280;
+    margin-top: 10px;
+  }
+  
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .meta-item i {
+    color: #4361ee;
+  }
+  
+  /* Similar Articles Section */
+  .similar-articles-section {
+    padding-top: 30px;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .section-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: rgba(67, 97, 238, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+  }
+  
+  .section-icon i {
+    color: #4361ee;
+    font-size: 24px;
+  }
+  
+  .section-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+  }
+  
+  /* Empty State */
+  .empty-state {
+    background-color: rgba(243, 244, 246, 0.6);
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  
+  .empty-state-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: rgba(67, 97, 238, 0.1);
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .empty-state-icon i {
+    color: #4361ee;
+    font-size: 28px;
+  }
+  
+  .empty-state h4 {
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  
+  .empty-state p {
+    color: #6b7280;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  /* Similar Articles Grid */
+  .similar-articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .similar-article-card {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .similar-article-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  .similar-article-image {
+    height: 160px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .similar-article-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  
+  .similar-article-card:hover .similar-article-image img {
+    transform: scale(1.1);
+  }
+  
+  .similar-article-category {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .category-news {
+    background-color: #4361ee;
+    color: white;
+  }
+  
+  .category-success {
+    background-color: #10b981;
+    color: white;
+  }
+  
+  .category-blog {
+    background-color: #3b82f6;
+    color: white;
+  }
+  
+  .similar-article-content {
+    padding: 20px;
+  }
+  
+  .similar-article-title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 10px;
+    color: #111827;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 50px;
+  }
+  
+  .similar-article-date {
+    color: #6b7280;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  
+  .similar-article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 15px;
+  }
+  
+  .similar-article-tag {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  /* Action Buttons */
+  .action-buttons-container {
+    padding-top: 30px;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .action-buttons-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .action-button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 22px; /* Updated to match home component */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    min-width: 120px;
+    text-transform: uppercase; /* Added to match home style */
+  }
+  
+  .action-button:hover {
+    opacity: 0.9; /* Updated to match home component hover effect */
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .approve-button {
+    background-color: #a12c2f; /* Updated to match home component red */
+    color: white;
+  }
+  
+  .archive-button {
+    background-color: #1f2937;
+    color: white;
+  }
+  
+  .edit-button {
+    background-color: #f5a425; /* Updated to match home component yellow */
+    color: #fff;
+  }
+  
+  .delete-button {
+    background-color: #a12c2f; /* Updated to match home component red */
+    color: white;
+  }
+  
+  .secondary-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .secondary-button {
+    padding: 10px 15px;
+    border: 1px solid #e5e7eb;
+    background-color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+  
+  .secondary-button:hover {
+    background-color: #f9fafb;
+  }
+  
+  .back-button i, .share-button i {
+    color: #6b7280;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .article-header {
+      height: 250px;
+    }
+    
+    .article-title {
+      font-size: 1.8rem;
+    }
+    
+    .similar-articles-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .action-button {
+      width: 100%;
+    }
+    
+    .secondary-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    .secondary-button {
+      width: 100%;
+    }
+  }
+  
+  /* Tag Styles */
+  .article-tags-section {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+  }
+  
+  .tags-container {
+    margin-top: 1rem;
+  }
+  
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: #4361ee;
+    color: white;
+    padding: 0.35rem 0.75rem;
+    border-radius: 2rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+  }
+  
+  .remove-tag-btn {
+    margin-left: 0.5rem;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+  
+  .remove-tag-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .no-tags {
+    color: #6c757d;
+    font-style: italic;
+  }
+  
+  .add-tag-form {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+  }
+  
+  /* Similar Articles Styles */
+  .similar-articles-section {
+    margin-bottom: 3rem;
+  }
+  
+  .section-title {
+    position: relative;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, #4361ee, #4cc9f0);
+  }
+  
+  .similar-article-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .similar-article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  }
+  
+  .similar-article-card .card-img-top {
+    height: 180px;
+    object-fit: cover;
+  }
+  
+  .similar-article-card .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .article-tag {
+    font-size: 0.75rem;
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+  }
+  
+  .no-similar-articles {
+    background-color: #f8f9fa;
+    padding: 2rem;
+    text-align: center;
+    border-radius: 0.5rem;
+    color: #6c757d;
+  }
+
+  .hover-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .hover-card:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Enhanced Tag Styles */
+  .tag-card {
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .tag-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+  }
+  
+  .card-header {
+    padding: 0.8rem 1.25rem;
+    font-weight: 600;
+  }
+  
+  .tags-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  
+  .tag-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: #4361ee;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(67, 97, 238, 0.25);
+    transition: all 0.2s ease;
+  }
+  
+  .tag-badge:hover {
+    background-color: #3a56d4;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
+  }
+  
+  .tag-remove-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0.5rem;
+    padding: 0;
+    font-size: 0.7rem;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .tag-remove-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(1.1);
+  }
+  
+  .empty-tags-message, .empty-articles-message {
+    text-align: center;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    color: #6c757d;
+    font-style: italic;
+  }
+  
+  .tag-form {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+  
+  .btn-add-tag {
+    height: 100%;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-add-tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Enhanced Similar Articles Styles */
+  .similar-article-card {
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .similar-article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .similar-article-card .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+  
+  .similar-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  
+  .similar-tag-badge {
+    display: inline-block;
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 0.2rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+  }
+
+  /* Simplified Tag Styles */
+  .section-label {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #495057;
+  }
+  
+  .tags-container {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 60px;
+  }
+  
+  .article-tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .article-tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: #a12c2f; /* Updated to match home component red */
+    color: white;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .remove-tag-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    color: white;
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .remove-tag-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+  }
+  
+  .database-tags {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 60px;
+  }
+  
+  .tags-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .db-tag {
+    background-color: #e9ecef;
+    border: none;
+    color: #495057;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .db-tag:hover:not(:disabled) {
+    background-color: #4361ee;
+    color: white;
+  }
+  
+  .db-tag:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+  
+  .no-tags-message {
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    padding: 10px;
+  }
+  
+  /* Updated Tag Styles to Match Screenshot */  
+  .tags-container {
+    background-color: #f8f9fa;
+    min-height: 60px;
+  }
+  
+  .article-tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: #0d6efd;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .remove-tag-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .available-tag-pill {
+    background-color: #e9ecef;
+    border: none;
+    color: #495057;
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: normal;
+    transition: all 0.2s;
+  }
+  
+  .available-tag-pill:hover:not(:disabled) {
+    background-color: #a12c2f; /* Updated to match home component red */
+    color: white;
+  }
+
+  /* Add styles for predefined tags */
+  .predefined-tags-section {
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 12px;
+  }
+  
+  .available-tag-pill.predefined {
+    background-color: #f5a425; /* Updated to match home component yellow */
+    color: #fff;
+    border: 1px solid #f5a425;
+  }
+  
+  .available-tag-pill.predefined:hover:not(:disabled) {
+    background-color: #f5a425; /* Updated to keep consistent */
+    opacity: 0.9;
+    color: #fff;
+    border-color: #f5a425;
+  }
+</style>
